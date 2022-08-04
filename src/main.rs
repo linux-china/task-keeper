@@ -1,5 +1,6 @@
 use crate::app::build_app;
-use crate::keeper::run_tasks;
+use crate::keeper::{run_tasks, list_tasks, RUNNERS};
+use colored::Colorize;
 
 mod app;
 mod keeper;
@@ -11,7 +12,20 @@ fn main() {
 
     // list tasks
     if matches.is_present("list") {
-        println!("{}", "list tasks");
+        let all_tasks = list_tasks();
+        if let Ok(tasks_hashmap) = all_tasks {
+            println!("{}", "Available tasks:".bold().green());
+            RUNNERS.iter().for_each(|runner| {
+                if let Some(tasks) = tasks_hashmap.get(*runner) {
+                    println!("{}", format!("  {}:", runner).bold().blue());
+                    tasks.iter().for_each(|task| {
+                        println!("    -- {}", task);
+                    });
+                }
+            });
+        } else {
+            println!("[tk] no tasks found");
+        }
         return;
     }
     // migrate tasks
