@@ -4,6 +4,7 @@ use colored::Colorize;
 
 mod app;
 mod keeper;
+mod errors;
 
 fn main() {
     let app = build_app();
