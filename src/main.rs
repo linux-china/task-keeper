@@ -20,7 +20,7 @@ fn main() {
                 if let Some(tasks) = tasks_hashmap.get(*runner) {
                     println!("{}", format!("  {}:", runner).bold().blue());
                     tasks.iter().for_each(|task| {
-                        println!("    -- {}", task);
+                        println!("    -- {}", task.name);
                     });
                 }
             });
