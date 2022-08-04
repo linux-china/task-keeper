@@ -5,6 +5,7 @@ use colored::Colorize;
 mod app;
 mod keeper;
 mod errors;
+mod models;
 
 fn main() {
     let app = build_app();
