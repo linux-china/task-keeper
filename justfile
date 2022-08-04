@@ -4,6 +4,9 @@ help:
 task-hello:
   cargo run --bin tk -- hello
 
+list:
+  cargo run --bin tk -- --list
+
 hello:
   echo "hello"
 
