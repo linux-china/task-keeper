@@ -1,5 +1,5 @@
 //! clap App for command cli
-use clap::{Command, Arg, AppSettings};
+use clap::{Command, Arg};
 
 pub const VERSION: &str = "0.1.0";
 
@@ -47,9 +47,9 @@ pub fn build_app() -> Command<'static> {
                 .required(false),
         )
         .arg(Arg::new("tasks")
-            .required(false)
-            .help("Run task")
-            .index(1)
-            .multiple_values(true),
+                 .required(false)
+                 .help("Run task")
+                 .index(1)
+                 .multiple_values(true),
         )
 }
