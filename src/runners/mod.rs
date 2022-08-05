@@ -11,7 +11,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::{runners, task};
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "just", "fleet", "make", "npm", "deno"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "just", "make", "npm", "deno", "fleet"];
 
 pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     run_command_with_env_vars(command_name, args, &None, verbose)

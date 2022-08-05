@@ -21,8 +21,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let makefile_meta_text = capture_command_output("make", &["-pRrq"])
         .map(|output| {
             String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
-        })
-        .unwrap();
+        })?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*:.*").unwrap();
 
     let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())

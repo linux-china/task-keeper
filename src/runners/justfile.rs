@@ -31,8 +31,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let json_text = capture_command_output("just", &["--unstable", "--dump", "--dump-format=json"])
         .map(|output| {
             String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
-        })
-        .unwrap();
+        })?;
     serde_json::from_str::<JustfileJson>(&json_text)
         .map(|justfile_json| {
             justfile_json.recipes
