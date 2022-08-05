@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  hello:
+    desc: Say Hello
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  hello2:
+    cmds:
+      - echo 'Hello2'
+    silent: true
