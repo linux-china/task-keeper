@@ -65,28 +65,60 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
         tasks.insert("fleet".to_string(), runners::fleet::list_tasks().unwrap());
     }
     if runners::justfile::is_available() {
-        tasks.insert("just".to_string(), runners::justfile::list_tasks().unwrap());
+        if runners::justfile::is_command_available() {
+            tasks.insert("just".to_string(), runners::justfile::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] just(https://github.com/casey/just) command not available for justfile").bold().red());
+        }
     }
     if runners::packagejson::is_available() {
-        tasks.insert("npm".to_string(), runners::packagejson::list_tasks().unwrap());
+        if runners::packagejson::is_command_available() {
+            tasks.insert("npm".to_string(), runners::packagejson::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] npm(https://nodejs.org) command not available for package.json").bold().red());
+        }
     }
     if runners::denojson::is_available() {
-        tasks.insert("deno".to_string(), runners::denojson::list_tasks().unwrap());
+        if runners::denojson::is_command_available() {
+            tasks.insert("deno".to_string(), runners::denojson::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] deno(https://deno.land) command not available for deno.json").bold().red());
+        }
     }
     if runners::makefile::is_available() {
-        tasks.insert("make".to_string(), runners::makefile::list_tasks().unwrap());
+        if runners::makefile::is_command_available() {
+            tasks.insert("make".to_string(), runners::makefile::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] make(https://www.gnu.org/software/make) command not available for makefile").bold().red());
+        }
     }
     if runners::rakefile::is_available() {
-        tasks.insert("rake".to_string(), runners::rakefile::list_tasks().unwrap());
+        if runners::rakefile::is_command_available() {
+            tasks.insert("rake".to_string(), runners::rakefile::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] rake(https://ruby.github.io/rake/) command not available for rakefile").bold().red());
+        }
     }
     if runners::taskfileyml::is_available() {
-        tasks.insert("task".to_string(), runners::taskfileyml::list_tasks().unwrap());
+        if runners::taskfileyml::is_command_available() {
+            tasks.insert("task".to_string(), runners::taskfileyml::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] task(https://taskfile.dev) command not available for Taskfile.yml").bold().red());
+        }
     }
     if runners::makefiletoml::is_available() {
-        tasks.insert("cargo-make".to_string(), runners::makefiletoml::list_tasks().unwrap());
+        if runners::makefiletoml::is_command_available() {
+            tasks.insert("cargo-make".to_string(), runners::makefiletoml::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml").bold().red());
+        }
     }
     if runners::taskspy::is_available() {
-        tasks.insert("invoke".to_string(), runners::taskspy::list_tasks().unwrap());
+        if runners::taskspy::is_command_available() {
+            tasks.insert("invoke".to_string(), runners::taskspy::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
+        }
     }
     Ok(tasks)
 }
