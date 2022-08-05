@@ -51,6 +51,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "fleet" => runners::fleet::run_task(task_name, extra_args, verbose),
         "deno" => runners::denojson::run_task(task_name, extra_args, verbose),
         "make" => runners::makefile::run_task(task_name, extra_args, verbose),
+        "rake" => runners::rakefile::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
 }
@@ -71,6 +72,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     }
     if runners::makefile::is_available() {
         tasks.insert("make".to_string(), runners::makefile::list_tasks().unwrap());
+    }
+    if runners::rakefile::is_available() {
+        tasks.insert("rake".to_string(), runners::rakefile::list_tasks().unwrap());
     }
     Ok(tasks)
 }
