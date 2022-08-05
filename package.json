@@ -1,0 +1,7 @@
+{
+  "name": "task-keeper-demo",
+  "scripts": {
+    "start": "echo start",
+    "test": "this is a test result"
+  }
+}
