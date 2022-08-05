@@ -138,7 +138,7 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
         "command" => configuration.args.clone().unwrap_or_default(),
         "cargo" => configuration.cargo_full_args(),
         "maven" | "gradle" => configuration.tasks.clone().unwrap_or_default(),
-        "python" => configuration.arguments.clone().unwrap_or_default(),
+        "python" => configuration.python_full_args().clone(),
         "go" => configuration.params.clone().unwrap_or_default(),
         _ => vec![],
     }
