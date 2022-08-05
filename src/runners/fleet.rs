@@ -79,7 +79,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     std::env::current_dir()
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<FleetRunJson>(&data).unwrap())
+        .map(|data| serde_jsonrc::from_str::<FleetRunJson>(&data).unwrap())
         .map(|fleet_run_json| {
             fleet_run_json.configurations
                 .iter()
