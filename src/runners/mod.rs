@@ -2,6 +2,7 @@ pub mod fleet;
 pub mod justfile;
 pub mod packagejson;
 pub mod denojson;
+pub mod makefile;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
