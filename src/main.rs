@@ -2,6 +2,7 @@ use crate::app::build_app;
 use crate::keeper::{run_tasks, list_tasks};
 use colored::Colorize;
 use crate::runners::RUNNERS;
+use dotenv::dotenv;
 
 mod app;
 mod keeper;
@@ -13,6 +14,7 @@ fn main() {
     let app = build_app();
     let matches = app.get_matches();
     let verbose = matches.is_present("verbose");
+    let no_dotenv = matches.is_present("no-dotenv");
 
     // list tasks
     if matches.is_present("list") {
@@ -36,6 +38,10 @@ fn main() {
     if matches.is_present("from") && matches.is_present("to") {
         println!("{}", "migrate tasks");
         return;
+    }
+    // load .env for tasks
+    if !no_dotenv {
+        dotenv().ok();
     }
     // run tasks
     if matches.is_present("tasks") {
