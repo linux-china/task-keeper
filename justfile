@@ -1,3 +1,4 @@
+# display help
 help:
   cargo run --bin tk -- --help
 
@@ -12,3 +13,7 @@ hello:
 
 hello2:
   echo "hello2"
+
+build:
+  cargo build --bin tk
+  cp target/debug/tk ~/bin
