@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use std::process::{Command, Output, Stdio};
+use std::process::{Output};
 use colored::Colorize;
-use error_stack::{IntoReport, report, Result, ResultExt};
+use error_stack::{report, Result};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners;
@@ -39,7 +39,7 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
             }
         }
     }
-    Ok((task_count))
+    Ok(task_count)
 }
 
 pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
