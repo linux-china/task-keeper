@@ -11,7 +11,7 @@ Task Keeper is a tool to manage tasks from different task file, such as `Makefil
 
 # Task runners to support
 
-* Makefile(make): https://www.gnu.org/software/make/manual/make.html
+* Makefile(make): https://www.gnu.org/software/make/manual/make.html `make -qn`
 * scripts in package.json(npm or yarn): https://docs.npmjs.com/cli/v8/using-npm/scripts
 * tasks in deno.json(deno): https://deno.land/manual/tools/task_runner
 * justfile(just): https://github.com/casey/just
