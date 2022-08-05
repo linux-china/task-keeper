@@ -53,6 +53,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "make" => runners::makefile::run_task(task_name, extra_args, verbose),
         "rake" => runners::rakefile::run_task(task_name, extra_args, verbose),
         "task" => runners::taskfileyml::run_task(task_name, extra_args, verbose),
+        "invoke" => runners::taskspy::run_task(task_name, extra_args, verbose),
         "cargo-make" => runners::makefiletoml::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
@@ -83,6 +84,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     }
     if runners::makefiletoml::is_available() {
         tasks.insert("cargo-make".to_string(), runners::makefiletoml::list_tasks().unwrap());
+    }
+    if runners::taskspy::is_available() {
+        tasks.insert("invoke".to_string(), runners::taskspy::list_tasks().unwrap());
     }
     Ok(tasks)
 }
