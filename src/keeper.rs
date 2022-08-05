@@ -48,6 +48,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "npm" => runners::packagejson::run_task(task_name, extra_args, verbose),
         "just" => runners::justfile::run_task(task_name, extra_args, verbose),
         "fleet" => runners::fleet::run_task(task_name, extra_args, verbose),
+        "deno" => runners::denojson::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
 }
@@ -62,6 +63,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     }
     if runners::packagejson::is_available() {
         tasks.insert("npm".to_string(), runners::packagejson::list_tasks().unwrap());
+    }
+    if runners::denojson::is_available() {
+        tasks.insert("deno".to_string(), runners::denojson::list_tasks().unwrap());
     }
     Ok(tasks)
 }
