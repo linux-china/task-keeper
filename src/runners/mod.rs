@@ -1,6 +1,7 @@
 pub mod fleet;
 pub mod justfile;
 pub mod packagejson;
+pub mod denojson;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
