@@ -1,0 +1,16 @@
+[tasks.print-env]
+category = "Tools"
+script = '''
+#!@duckscript
+echo "*************************************"
+echo "Extended Info:"
+echo "    Unstable Environment Key: ${CARGO_MAKE_TEMP_UNSTABLE_KEY}"
+echo "    Unstable Test Environment: ${CARGO_MAKE_TEMP_UNSTABLE_TEST_ENV}"
+echo "    Unstable Format Environment: ${CARGO_MAKE_TEMP_UNSTABLE_FMT_ENV}"
+echo "*************************************"
+'''
+
+[tasks.my-ip2]
+description = "Prints the internet IP outbound address"
+command = "curl"
+args = ["https://httpbin.org/ip"]
