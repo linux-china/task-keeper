@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "build-my-app",
+      "type": "cargo",
+      "cargoArgs": [
+        "build",
+        "--release"
+      ]
+    },
+    {
+      "name": "my-ip",
+      "type": "command",
+      "program": "curl",
+      "args": [
+        "https://httpbin.org/ip"
+      ]
+    }
+  ]
+}
