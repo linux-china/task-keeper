@@ -23,4 +23,6 @@ pub enum KeeperError {
     InvalidMakefileToml,
     #[error("TK-206001: failed to parse Makefile.toml")]
     InvalidJustfile,
+    #[error("TK-207001: failed to read Procfile")]
+    InvalidProcfile,
 }
