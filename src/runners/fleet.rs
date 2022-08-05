@@ -6,9 +6,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::{IntoReport, report, Result};
-use crate::runners::{run_command, run_command_with_env_vars};
-use which::which;
-
+use crate::runners::{is_command_available, run_command, run_command_with_env_vars};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -126,10 +124,6 @@ fn get_command_name(configuration: &Configuration) -> String {
         "command" => configuration.program.clone().unwrap_or_default(),
         _ => "".to_owned(),
     }
-}
-
-fn is_command_available(command_name: &str) -> bool {
-    which(command_name).is_ok()
 }
 
 fn get_command_args(configuration: &Configuration) -> Vec<String> {
