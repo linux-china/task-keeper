@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 use std::process::Output;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, report, Result};
 use crate::runners::{run_command, run_command_with_env_vars};
+use which::which;
 
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -105,7 +107,12 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
     let args: Vec<&str> = args.iter()
         .map(|arg| arg.as_str())
         .collect();
-    run_command(&command_name, &args, verbose)
+    if is_command_available(&command_name) {
+        run_command(&command_name, &args, verbose)
+    } else {
+        println!("{}", format!("{} is not available", command_name).bold().red());
+        Err(report!(KeeperError::CommandNotFound(command_name)))
+    }
 }
 
 //todo: add support for other types
@@ -119,6 +126,10 @@ fn get_command_name(configuration: &Configuration) -> String {
         "command" => configuration.program.clone().unwrap_or_default(),
         _ => "".to_owned(),
     }
+}
+
+fn is_command_available(command_name: &str) -> bool {
+    which(command_name).is_ok()
 }
 
 fn get_command_args(configuration: &Configuration) -> Vec<String> {
