@@ -3,6 +3,7 @@ use crate::keeper::{run_tasks, list_tasks};
 use colored::Colorize;
 use crate::runners::RUNNERS;
 use dotenv::dotenv;
+use std::collections::HashSet;
 
 mod app;
 mod keeper;
@@ -16,6 +17,22 @@ fn main() {
     let verbose = matches.is_present("verbose");
     let no_dotenv = matches.is_present("no-dotenv");
 
+    // summary to list all task names
+    if matches.is_present("summary") {
+        let mut task_names: HashSet<String> = HashSet::new();
+        let all_tasks = list_tasks();
+        if let Ok(tasks_hashmap) = all_tasks {
+            RUNNERS.iter().for_each(|runner| {
+                if let Some(tasks) = tasks_hashmap.get(*runner) {
+                    tasks.iter().for_each(|task| {
+                        task_names.insert(task.name.clone());
+                    });
+                }
+            });
+        }
+        println!("{}", task_names.into_iter().collect::<Vec<String>>().join(" "));
+        return;
+    }
     // list tasks
     if matches.is_present("list") {
         let all_tasks = list_tasks();
