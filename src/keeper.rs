@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
+use colored::Colorize;
 use error_stack::{IntoReport, report, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -12,26 +13,28 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
     if let Ok(tasks_hashmap) = all_tasks {
         if !cli_runner.is_empty() { //runner is specified
             if let Some(tasks) = tasks_hashmap.get(cli_runner) {
-                tasks.iter()
-                    .for_each(|task| {
-                        let task_name = task.name.as_str();
-                        if task_names.contains(&task_name) {
-                            run_task(cli_runner, task, extra_args, verbose).unwrap();
-                        }
-                    });
-            }
-        } else { //unknown runner
-            RUNNERS.iter().for_each(|runner| {
-                if let Some(tasks) = tasks_hashmap.get(*runner) {
+                for task_name in task_names {
                     tasks.iter()
                         .for_each(|task| {
-                            let task_name = task.name.as_str();
-                            if task_names.contains(&task_name) {
-                                run_task(runner, task, extra_args, verbose).unwrap();
+                            if task.name.as_str() == *task_name {
+                                run_task(cli_runner, task, extra_args, verbose).unwrap();
                             }
                         });
                 }
-            });
+            }
+        } else { //unknown runner
+            for task_name in task_names {
+                RUNNERS.iter().for_each(|runner| {
+                    if let Some(tasks) = tasks_hashmap.get(*runner) {
+                        tasks.iter()
+                            .for_each(|task| {
+                                if task.name.as_str() == *task_name {
+                                    run_task(runner, task, extra_args, verbose).unwrap();
+                                }
+                            });
+                    }
+                });
+            }
         }
     } else {
         println!("[tk] no tasks found");
@@ -41,6 +44,7 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
 
 pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let task_name = task.name.as_str();
+    println!("{}", format!("[tk] execute {} for {}", task_name, runner).bold().blue());
     match runner {
         "npm" => runners::packagejson::run_task(task_name, extra_args, verbose),
         "just" => runners::justfile::run_task(task_name, extra_args, verbose),
