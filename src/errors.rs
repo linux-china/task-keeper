@@ -3,6 +3,8 @@ use thiserror::Error as ThisError;
 #[allow(dead_code)]
 #[derive(ThisError, Debug)]
 pub enum KeeperError {
+    #[error("TK-001404: command not found: {0}")]
+    CommandNotFound(String),
     #[error("TK-100404: task not found: {0}")]
     TaskNotFound(String),
     #[error("TK-100500: failed to run tasks: {0}")]
