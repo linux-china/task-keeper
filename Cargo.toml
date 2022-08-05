@@ -24,6 +24,7 @@ dirs = "4"
 which = "4"
 thiserror = "1"
 error-stack = "0.1"
+dotenv = "0.15"
 update-informer = { version = "0.5", default_features = false, features = ["github"] }
 
 [profile.release]
