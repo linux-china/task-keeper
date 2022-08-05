@@ -1,13 +1,11 @@
 use std::io::{BufRead, BufReader};
-use std::process::{Output, Termination};
-use clap::arg;
+use std::process::{Output};
 use colored::Colorize;
 use error_stack::{IntoReport, report, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::{is_command_available, run_command};
 use crate::task;
-use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
