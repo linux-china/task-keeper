@@ -3,6 +3,9 @@ from invoke import task
 
 @task
 def build(c):
+    """
+    build project
+    """
     print("Building!")
 
 
