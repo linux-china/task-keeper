@@ -76,30 +76,19 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+    Ok(parse_run_json().configurations.iter().map(|configuration| task!(configuration.name, "fleet")).collect())
+}
+
+fn parse_run_json() -> FleetRunJson {
     std::env::current_dir()
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_jsonrc::from_str::<FleetRunJson>(&data).unwrap())
-        .map(|fleet_run_json| {
-            fleet_run_json.configurations
-                .iter()
-                .map(|configuration| task!(configuration.name, "fleet"))
-                .collect()
-        })
-        .report()
-        .change_context(KeeperError::InvalidPackageJson)
-}
-
-fn parse() -> FleetRunJson {
-    std::env::current_dir()
-        .map(|dir| dir.join(".fleet").join("run.json"))
-        .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<FleetRunJson>(&data).unwrap())
         .unwrap()
 }
 
 pub fn run_task(task_name: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    parse().configurations.iter()
+    parse_run_json().configurations.iter()
         .find(|configuration| configuration.name == task_name)
         .map(|configuration| {
             let args = get_command_args(configuration);
