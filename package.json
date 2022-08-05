@@ -2,6 +2,8 @@
   "name": "task-keeper-demo",
   "scripts": {
     "start": "echo start",
-    "test": "this is a test result"
+    "test": "this is a test result",
+    "hello": "echo hello",
+    "prehello": "echo prehello"
   }
 }
