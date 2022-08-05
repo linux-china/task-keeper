@@ -1,14 +1,11 @@
-use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
 use std::process::Output;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result};
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-
 
 pub fn is_available() -> bool {
     std::env::current_dir()

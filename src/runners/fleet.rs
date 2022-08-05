@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 use std::process::Output;
-use clap::CommandFactory;
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{IntoReport, Result};
 use crate::runners::{run_command, run_command_with_env_vars};
 
 
@@ -153,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_run_configuration() {
-        let mut configuration = Configuration::new_command("my-ip", "curl", &["https://httpbin.org/ip".to_owned()]);
+        let configuration = Configuration::new_command("my-ip", "curl", &["https://httpbin.org/ip".to_owned()]);
         run_configuration(&configuration, true).unwrap();
     }
 }

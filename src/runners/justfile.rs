@@ -45,8 +45,8 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
 
 pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let mut args = vec![];
-    args.extend(extra_args);
     args.push(task);
+    args.extend(extra_args);
     run_command("just", &args, verbose)
 }
 
