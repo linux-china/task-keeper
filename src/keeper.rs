@@ -5,8 +5,7 @@ use error_stack::{IntoReport, report, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners;
-
-pub const RUNNERS: &'static [&'static str] = &["make", "npm", "deno", "just"];
+use crate::runners::RUNNERS;
 
 pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
     let all_tasks = list_tasks();
