@@ -7,7 +7,8 @@ use crate::models::Task;
 use crate::runners;
 use crate::runners::RUNNERS;
 
-pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
+pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], verbose: bool) -> Result<i32, KeeperError> {
+    let mut task_count = 0;
     let all_tasks = list_tasks();
     if let Ok(tasks_hashmap) = all_tasks {
         if !cli_runner.is_empty() { //runner is specified
@@ -16,6 +17,7 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
                     tasks.iter()
                         .for_each(|task| {
                             if task.name.as_str() == *task_name {
+                                task_count += 1;
                                 run_task(cli_runner, task, extra_args, verbose).unwrap();
                             }
                         });
@@ -28,6 +30,7 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
                         tasks.iter()
                             .for_each(|task| {
                                 if task.name.as_str() == *task_name {
+                                    task_count += 1;
                                     run_task(runner, task, extra_args, verbose).unwrap();
                                 }
                             });
@@ -35,10 +38,8 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
                 });
             }
         }
-    } else {
-        println!("[tk] no tasks found");
     }
-    Ok(())
+    Ok((task_count))
 }
 
 pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
@@ -49,6 +50,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "just" => runners::justfile::run_task(task_name, extra_args, verbose),
         "fleet" => runners::fleet::run_task(task_name, extra_args, verbose),
         "deno" => runners::denojson::run_task(task_name, extra_args, verbose),
+        "make" => runners::makefile::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
 }
@@ -66,6 +68,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     }
     if runners::denojson::is_available() {
         tasks.insert("deno".to_string(), runners::denojson::list_tasks().unwrap());
+    }
+    if runners::makefile::is_available() {
+        tasks.insert("make".to_string(), runners::makefile::list_tasks().unwrap());
     }
     Ok(tasks)
 }
