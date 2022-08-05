@@ -17,6 +17,13 @@ pub fn build_app() -> Command<'static> {
                 .required(false),
         )
         .arg(
+            Arg::new("no-dotenv")
+                .long("no-dotenv")
+                .takes_value(false)
+                .help("Disable to load .env file")
+                .required(false),
+        )
+        .arg(
             Arg::new("list")
                 .long("list")
                 .short('l')
