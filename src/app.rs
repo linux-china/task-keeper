@@ -17,6 +17,13 @@ pub fn build_app() -> Command<'static> {
                 .required(false),
         )
         .arg(
+            Arg::new("summary")
+                .long("summary")
+                .takes_value(false)
+                .help("List names of available tasks")
+                .required(false),
+        )
+        .arg(
             Arg::new("no-dotenv")
                 .long("no-dotenv")
                 .takes_value(false)
