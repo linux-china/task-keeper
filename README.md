@@ -1,6 +1,7 @@
 Task Keeper
 =================
-tk(Task Keeper) is a tool to manage tasks from different task file, such as `Makefile`, `package.json` etc.
+tk(Task Keeper) is a tool to manage tasks from different task file, 
+such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc.
 
 ![Task Keeper](./screenshot.png)
 
@@ -25,7 +26,7 @@ tk(Task Keeper) is a tool to manage tasks from different task file, such as `Mak
 * cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 
-# todo
+# Todo
 
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
