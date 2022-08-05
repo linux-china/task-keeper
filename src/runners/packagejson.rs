@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::process::Output;
 use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
+use crate::runners::run_command;
 use crate::task;
 
 
@@ -33,6 +35,13 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .change_context(KeeperError::InvalidPackageJson)
 }
 
+pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    let mut args = vec!["run"];
+    args.extend(extra_args);
+    args.push(task);
+    run_command("npm", &args, verbose)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -41,6 +50,14 @@ mod tests {
     fn test_parse() {
         if let Ok(tasks) = list_tasks() {
             println!("{:?}", tasks);
+        }
+    }
+
+    #[test]
+    fn test_run() {
+        if let Ok(output) = run_task("start", &["--verbose"], true) {
+            let status_code = output.status.code().unwrap_or(0);
+            println!("exit code: {}", status_code);
         }
     }
 }
