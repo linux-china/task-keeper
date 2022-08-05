@@ -25,3 +25,9 @@ thiserror = "1"
 error-stack = "0.1"
 update-informer = { version = "0.5", default_features = false, features = ["github"] }
 
+[profile.release]
+strip = true
+lto = true
+opt-level = "z"
+codegen-units = 1
+panic = "abort"
