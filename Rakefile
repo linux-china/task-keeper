@@ -1,3 +1,4 @@
+desc "doit task"
 task :doit do
   puts "DONE"
 end
