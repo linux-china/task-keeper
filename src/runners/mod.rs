@@ -6,13 +6,14 @@ pub mod makefile;
 pub mod rakefile;
 pub mod taskspy;
 pub mod taskfileyml;
+pub mod makefiletoml;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
 use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "just", "make", "npm", "deno", "fleet"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "npm", "deno", "fleet"];
 
 pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     run_command_with_env_vars(command_name, args, &None, verbose)
