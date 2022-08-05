@@ -1,6 +1,8 @@
 Task Keeper
 =================
-Task Keeper is a tool to manage tasks from different task file, such as `Makefile`, `package.json` etc.
+tk(Task Keeper) is a tool to manage tasks from different task file, such as `Makefile`, `package.json` etc.
+
+![Task Keeper](./screenshot.png)
 
 # Features
 
@@ -8,17 +10,22 @@ Task Keeper is a tool to manage tasks from different task file, such as `Makefil
 * Invoke task: `tk task_name`
 * Invoke task from a runner: `tk --runner=npm start`
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
+* .env support by default: `tk --no-dotenv` to disable
 
-# Task runners to support
+# Task runners support
 
-* Makefile(make): https://www.gnu.org/software/make/manual/make.html `make -qn`
-* scripts in package.json(npm or yarn): https://docs.npmjs.com/cli/v8/using-npm/scripts
-* tasks in deno.json(deno): https://deno.land/manual/tools/task_runner
-* justfile(just): https://github.com/casey/just
-* .fleet/run.json(fleet): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
-* .vscode/launch.json(code): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
-* Jakefile(jake): https://jakejs.com/docs-page.html#item-overview-jakefiles
-* Rakefile(rake): https://ruby.github.io/rake/  `rake -AT`
-* tasks.py: https://www.pyinvoke.org/ `invoke --list --list-format=json`
-* Taskfile.yml: https://github.com/go-task/task 
-* Procfile(proc): https://devcenter.heroku.com/articles/procfile
+* make(Makefile): https://www.gnu.org/software/make/manual/make.html `make -qn`
+* npm(package.json): https://docs.npmjs.com/cli/v8/using-npm/scripts
+* deno(deno.json): https://deno.land/manual/tools/task_runner
+* just(justfile): https://github.com/casey/just
+* fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
+* Rakefile(rake): https://ruby.github.io/rake/
+* invoke(tasks.py): https://www.pyinvoke.org/
+* task(Taskfile.yml): https://github.com/go-task/task  https://www.sobyte.net/post/2022-04/taskfile/
+* cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
+* proc(Procfile): https://devcenter.heroku.com/articles/procfile
+
+# todo
+
+* jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
+* code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
