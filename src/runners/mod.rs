@@ -7,13 +7,19 @@ pub mod rakefile;
 pub mod taskspy;
 pub mod taskfileyml;
 pub mod makefiletoml;
+pub mod procfile;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
 use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
+use which::which;
 
 pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "npm", "deno", "fleet"];
+
+pub fn is_command_available(command_name: &str) -> bool {
+    which(command_name).is_ok()
+}
 
 pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     run_command_with_env_vars(command_name, args, &None, verbose)
