@@ -6,6 +6,7 @@ use crate::runners::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
+use which::which;
 
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -25,6 +26,10 @@ pub fn is_available() -> bool {
     std::env::current_dir()
         .map(|dir| dir.join("justfile").exists() || dir.join("Justfile").exists())
         .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("just").is_ok()
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {

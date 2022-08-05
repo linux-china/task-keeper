@@ -6,6 +6,7 @@ use crate::runners::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result};
 use regex::Regex;
+use which::which;
 
 
 pub fn is_available() -> bool {
@@ -14,6 +15,10 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
+
+pub fn is_command_available() -> bool {
+    which("rake").is_ok()
+}
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let makefile_meta_text = capture_command_output("rake", &["-AT"])

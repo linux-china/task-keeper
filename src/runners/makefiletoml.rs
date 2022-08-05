@@ -6,6 +6,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::run_command;
 use crate::task;
+use which::which;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
@@ -26,6 +27,10 @@ pub fn is_available() -> bool {
     std::env::current_dir()
         .map(|dir| dir.join("Makefile.toml").exists())
         .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("cargo-make").is_ok()
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {

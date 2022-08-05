@@ -6,6 +6,7 @@ use crate::runners::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result};
 use regex::Regex;
+use which::which;
 
 
 pub fn is_available() -> bool {
@@ -14,9 +15,13 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
+pub fn is_command_available() -> bool {
+    get_go_task_command().is_some()
+}
+
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let makefile_meta_text = capture_command_output("go-task", &["--list-all"])
+    let makefile_meta_text = capture_command_output(&get_go_task_command().unwrap(), &["--list-all"])
         .map(|output| {
             String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
         })?;
@@ -43,12 +48,29 @@ pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output
     let mut args = vec![];
     args.extend(extra_args);
     args.push(task);
-    run_command("go-task", &args, verbose)
+    run_command(&get_go_task_command().unwrap(), &args, verbose)
+}
+
+fn get_go_task_command() -> Option<String> {
+    if let Ok(path) = which("go-task") {
+        Some(path.to_str().unwrap().to_owned())
+    } else if let Ok(path) = which("task") {
+        Some(path.to_str().unwrap().to_owned())
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_which_task() {
+        if let Some(path) = get_go_task_command() {
+            println!("{:?}", path);
+        }
+    }
 
     #[test]
     fn test_parse() {

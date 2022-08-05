@@ -6,7 +6,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::run_command;
 use crate::task;
-
+use which::which;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct PackageJson {
@@ -17,6 +17,10 @@ pub fn is_available() -> bool {
     std::env::current_dir()
         .map(|dir| dir.join("package.json").exists())
         .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("npm").is_ok()
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
