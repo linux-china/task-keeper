@@ -3,6 +3,7 @@ pub mod justfile;
 pub mod packagejson;
 pub mod denojson;
 pub mod makefile;
+pub mod rakefile;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
@@ -10,7 +11,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::{runners, task};
 
-pub const RUNNERS: &'static [&'static str] = &["make", "npm", "deno", "just","fleet"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "just", "fleet", "make", "npm", "deno"];
 
 pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     run_command_with_env_vars(command_name, args, &None, verbose)
