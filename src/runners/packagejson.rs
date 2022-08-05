@@ -27,7 +27,10 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|package_json| {
             package_json.scripts
                 .map(|scripts| {
-                    scripts.iter().map(|(name, command)| task!(name, "npm", command)).collect()
+                    scripts.iter()
+                        .filter(|(name, _)| !name.starts_with("pre") && !name.starts_with("post"))
+                        .map(|(name, command)| task!(name, "npm", command))
+                        .collect()
                 })
                 .unwrap_or_else(|| vec![])
         })
