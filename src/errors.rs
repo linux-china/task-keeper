@@ -18,5 +18,7 @@ pub enum KeeperError {
     #[error("TK-205001: failed to parse Justfile: {0}")]
     InvalidCodeLaunchJson(String),
     #[error("TK-206001: failed to parse Justfile")]
+    InvalidMakefileToml,
+    #[error("TK-206001: failed to parse Makefile.toml")]
     InvalidJustfile,
 }
