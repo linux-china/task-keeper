@@ -6,6 +6,7 @@ mod app;
 mod keeper;
 mod errors;
 mod models;
+mod runners;
 
 fn main() {
     let app = build_app();
@@ -43,7 +44,7 @@ fn main() {
         if let Some(index) = double_dash {
             extra_args = tasks.split_off(index)[1..].to_vec();
         }
-        let runner = matches.value_of("runner").unwrap_or("just");
+        let runner = matches.value_of("runner").unwrap_or("");
         run_tasks(runner, &tasks, &extra_args, verbose).unwrap();
         return;
     }
