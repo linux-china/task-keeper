@@ -46,7 +46,16 @@ fn main() {
             extra_args = tasks.split_off(index)[1..].to_vec();
         }
         let runner = matches.value_of("runner").unwrap_or("");
-        run_tasks(runner, &tasks, &extra_args, verbose).unwrap();
+        let task_count = run_tasks(runner, &tasks, &extra_args, verbose).unwrap();
+        if task_count == 0 { // no tasks executed
+            if runners::makefile::is_available() { // try Makefile
+                for task in tasks {
+                    runners::makefile::run_task(task, &extra_args, verbose).unwrap();
+                }
+            } else {
+                println!("{}", "[tk] no tasks found".bold().red());
+            }
+        }
         return;
     }
 
