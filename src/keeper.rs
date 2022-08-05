@@ -55,6 +55,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "task" => runners::taskfileyml::run_task(task_name, extra_args, verbose),
         "invoke" => runners::taskspy::run_task(task_name, extra_args, verbose),
         "cargo-make" => runners::makefiletoml::run_task(task_name, extra_args, verbose),
+        "procfile" => runners::procfile::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
 }
@@ -63,6 +64,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     let mut tasks = HashMap::new();
     if runners::fleet::is_available() {
         tasks.insert("fleet".to_string(), runners::fleet::list_tasks().unwrap());
+    }
+    if runners::procfile::is_available() {
+        tasks.insert("procfile".to_string(), runners::procfile::list_tasks().unwrap());
     }
     if runners::justfile::is_available() {
         if runners::justfile::is_command_available() {

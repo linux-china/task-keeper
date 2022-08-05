@@ -15,7 +15,7 @@ use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use which::which;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "npm", "deno", "fleet"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "procfile", "npm", "deno", "fleet"];
 
 pub fn is_command_available(command_name: &str) -> bool {
     which(command_name).is_ok()
