@@ -1,6 +1,6 @@
 use thiserror::Error as ThisError;
 
-/// errors for config component: app-100
+#[allow(dead_code)]
 #[derive(ThisError, Debug)]
 pub enum KeeperError {
     #[error("TK-100404: task not found: {0}")]
