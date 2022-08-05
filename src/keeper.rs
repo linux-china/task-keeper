@@ -43,7 +43,7 @@ pub fn run_tasks(cli_runner: &str, task_names: &[&str], extra_args: &[&str], ver
 
 pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let task_name = task.name.as_str();
-    println!("{}", format!("[tk] execute {} for {}", task_name, runner).bold().blue());
+    println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
     match runner {
         "npm" => runners::packagejson::run_task(task_name, extra_args, verbose),
         "just" => runners::justfile::run_task(task_name, extra_args, verbose),
