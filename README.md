@@ -47,7 +47,7 @@ curl https://httpbin.org/ip
 
 ```shell
 curl https://httpbin.org/ip \
-    | grep 'origin' \
-    | head -n 1
+    --user-agent "Task Keeper/0.1.0" \
+    --silent
 curl https://httpbin.org/headers
 ```
