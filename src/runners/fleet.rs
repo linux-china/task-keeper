@@ -35,6 +35,7 @@ pub struct Configuration {
 }
 
 impl Configuration {
+    #[allow(dead_code)]
     pub fn new_command(name: &str, command: &str, args: &[String]) -> Self {
         Configuration {
             name: name.to_owned(),
