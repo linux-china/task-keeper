@@ -29,6 +29,10 @@ pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<O
 
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<Output, KeeperError> {
     let command_and_args = shlex::split(command_line).unwrap();
+    // command line contains pipe or not
+    if command_and_args.iter().any(|arg| arg == "|") {
+        return run_command_by_shell(command_line, verbose);
+    }
     let command_name = &command_and_args[0];
     let args: Vec<&str> = command_and_args[1..].iter().map(AsRef::as_ref).collect();
     if is_command_available(&command_name) {
@@ -62,6 +66,30 @@ pub fn run_command_with_env_vars(command_name: &str, args: &[&str], env_vars: &O
     Ok(output)
 }
 
+pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output, KeeperError> {
+    let mut command = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+    } else {
+        Command::new("sh")
+    };
+    if cfg!(target_os = "windows") {
+        command.args(["/C", command_line])
+    } else {
+        command.arg("-c").arg(command_line)
+    };
+    if verbose {
+        println!("[tk] command line:  {:?}", command);
+    }
+    let output = command
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .output()
+        .report()
+        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
+    Ok(output)
+}
+
 pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, KeeperError> {
     let mut command = Command::new(command_name);
     if args.len() > 0 {
@@ -75,4 +103,14 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
         .report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_pipe_line() {
+        run_command_line("ls -al | wc -l", true).unwrap();
+    }
 }
