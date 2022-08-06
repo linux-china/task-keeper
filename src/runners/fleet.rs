@@ -87,26 +87,23 @@ fn parse_run_json() -> FleetRunJson {
 }
 
 pub fn run_task(task_name: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    parse_run_json().configurations.iter()
-        .find(|configuration| configuration.name == task_name)
-        .map(|configuration| {
-            let args = get_command_args(configuration);
-            let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-            let command_name = get_command_name(configuration);
-            run_command_with_env_vars(&command_name, &args, &configuration.environment, verbose).unwrap()
-        })
-        .ok_or_else(|| KeeperError::TaskNotFound(task_name.to_owned()))
-        .report()
+    let run_json = parse_run_json();
+    let result = run_json.configurations
+        .iter()
+        .find(|configuration| configuration.name == task_name);
+    if let Some(configuration) = result {
+        run_configuration(configuration, verbose)
+    } else {
+        Err(report!(KeeperError::TaskNotFound(task_name.to_owned())))
+    }
 }
 
 fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Output, KeeperError> {
     let command_name = get_command_name(configuration);
-    let args = configuration.args.clone().unwrap_or_default();
-    let args: Vec<&str> = args.iter()
-        .map(|arg| arg.as_str())
-        .collect();
+    let args = get_command_args(configuration);
+    let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
     if is_command_available(&command_name) {
-        run_command(&command_name, &args, verbose)
+        Ok(run_command_with_env_vars(&command_name, &args, &configuration.environment, verbose).unwrap())
     } else {
         println!("{}", format!("{} is not available", command_name).bold().red());
         Err(report!(KeeperError::CommandNotFound(command_name)))
