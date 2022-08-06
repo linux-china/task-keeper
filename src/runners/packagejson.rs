@@ -9,8 +9,10 @@ use crate::task;
 use which::which;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
+#[serde(rename_all = "camelCase")]
 struct PackageJson {
     pub scripts: Option<HashMap<String, String>>,
+    pub package_manager: Option<String>,
 }
 
 pub fn is_available() -> bool {
@@ -24,10 +26,7 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    std::env::current_dir()
-        .map(|dir| dir.join("package.json"))
-        .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<PackageJson>(&data).unwrap())
+    parse_package_json()
         .map(|package_json| {
             package_json.scripts
                 .map(|scripts| {
@@ -38,15 +37,29 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 })
                 .unwrap_or_else(|| vec![])
         })
+}
+
+fn parse_package_json() -> Result<PackageJson, KeeperError> {
+    std::env::current_dir()
+        .map(|dir| dir.join("package.json"))
+        .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
+        .map(|data| serde_json::from_str::<PackageJson>(&data).unwrap())
         .report()
         .change_context(KeeperError::InvalidPackageJson)
 }
 
 pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    let package_json = parse_package_json()?;
+    let mut command_name = "npm";
+    if let Some(package_manager) = package_json.package_manager {
+        if package_manager.starts_with("yarn") {
+            command_name = "yarn";
+        }
+    }
     let mut args = vec!["run"];
     args.extend(extra_args);
     args.push(task);
-    run_command("npm", &args, verbose)
+    run_command(command_name, &args, verbose)
 }
 
 #[cfg(test)]
