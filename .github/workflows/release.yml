@@ -1,0 +1,30 @@
+name: Release task keeper
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    name: ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            fileName: tk-linux-x86_64
+            file: target/release/tk
+          - os: macos-latest
+            fileName: tk-osx-x86_64
+            file: target/release/tk
+          - os: windows-latest
+            fileName: tk-windows-x86_64.exe
+            file: target/release/tk.exe
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cargo build
+        run: cargo build --release
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.fileName }}
+          path: ${{ matrix.file }}
