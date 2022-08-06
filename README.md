@@ -27,6 +27,16 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 * markdown(README.md): shell code block support
 
+# How to get started?
+
+* Install by cargo: `cargo install task-keeper`
+* Download and install from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
+
+After install, execute `tk --help` for usage. Some commands as following: 
+
+* list tasks: `tk --list`
+* execute task: `tk task_name`
+
 # Todo
 
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
