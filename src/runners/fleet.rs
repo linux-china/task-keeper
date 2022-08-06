@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{IntoReport, report, Result};
-use crate::runners::{is_command_available, run_command, run_command_with_env_vars};
+use error_stack::{report, Result};
+use crate::runners::{is_command_available, run_command_with_env_vars};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

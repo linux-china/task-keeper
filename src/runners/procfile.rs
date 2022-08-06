@@ -1,10 +1,9 @@
 use std::io::{BufRead, BufReader};
 use std::process::{Output};
-use colored::Colorize;
-use error_stack::{IntoReport, report, Result, ResultExt};
+use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::runners::{is_command_available, run_command, run_command_line};
+use crate::runners::{run_command_line};
 use crate::task;
 
 pub fn is_available() -> bool {

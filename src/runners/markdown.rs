@@ -1,11 +1,9 @@
 use std::io::{BufRead, BufReader};
-use std::process::{ExitStatus, Output, Termination};
-use colored::Colorize;
-use error_stack::{IntoReport, report, Result, ResultExt};
-use toml::value::Index;
+use std::process::{Output};
+use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::runners::{is_command_available, run_command, run_command_line};
+use crate::runners::{run_command_line};
 use crate::task;
 
 pub fn is_available() -> bool {
@@ -72,7 +70,7 @@ fn parse_task_from_code_block(counter: i32, code_block: &str) -> Task {
             line_escape = line.ends_with("\\");
         });
     let mut name = format!("md-{}", counter);
-    let mut description = command_lines.join("\n");
+    let description = command_lines.join("\n");
     if first_line.starts_with("##") {
         name = str::replace(first_line[2..].trim(), " ", "-");
     }
