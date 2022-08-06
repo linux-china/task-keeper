@@ -1,6 +1,6 @@
 Task Keeper
 =================
-tk(Task Keeper) is a tool to manage tasks from different task file, 
+tk(Task Keeper) is a tool to manage tasks from different task file,
 such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc.
 
 ![Task Keeper](./screenshot.png)
@@ -30,3 +30,23 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+
+# Shell scripts in Markdown
+
+```shell
+$ ## http-methods
+$ curl https://httpsbin.org/get
+$ curl https://httpsbin.org/post
+```
+
+```shell
+## print my internet ip
+curl https://httpsbin.org/ip
+```
+
+```shell
+curl https://httpbin.org/ip \
+    | grep 'origin' \
+    | head -n 1
+curl https://httpbin.org/headers
+```
