@@ -25,6 +25,7 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 * task(Taskfile.yml): https://github.com/go-task/task  https://www.sobyte.net/post/2022-04/taskfile/
 * cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
+* markdown(README.md): shell code block support
 
 # Todo
 
