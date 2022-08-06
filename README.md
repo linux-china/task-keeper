@@ -35,13 +35,13 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 
 ```shell
 $ ## http-methods
-$ curl https://httpsbin.org/get
-$ curl https://httpsbin.org/post
+$ curl https://httpbin.org/get
+$ curl -X POST https://httpbin.org/post
 ```
 
 ```shell
 ## print my internet ip
-curl https://httpsbin.org/ip
+curl https://httpbin.org/ip
 ```
 
 ```shell
