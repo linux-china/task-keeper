@@ -46,6 +46,10 @@ impl Configuration {
         }
     }
 
+    pub fn formatted_name(&self) -> String {
+        str::replace(&self.name, " ", "-")
+    }
+
     pub fn cargo_full_args(&self) -> Vec<String> {
         let mut full_args = vec![];
         if let Some(ref args) = self.cargo_args {
@@ -76,7 +80,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json().configurations.iter().map(|configuration| task!(configuration.name, "fleet")).collect())
+    Ok(parse_run_json().configurations.iter().map(|configuration| task!(&configuration.formatted_name(), "fleet")).collect())
 }
 
 fn parse_run_json() -> FleetRunJson {
@@ -91,7 +95,7 @@ pub fn run_task(task_name: &str, _extra_args: &[&str], verbose: bool) -> Result<
     let run_json = parse_run_json();
     let result = run_json.configurations
         .iter()
-        .find(|configuration| configuration.name == task_name);
+        .find(|configuration| configuration.formatted_name() == task_name);
     if let Some(configuration) = result {
         run_configuration(configuration, verbose)
     } else {
