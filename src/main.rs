@@ -40,14 +40,16 @@ fn main() {
             println!("{}", "Available tasks:".bold().green());
             RUNNERS.iter().for_each(|runner| {
                 if let Some(tasks) = tasks_hashmap.get(*runner) {
-                    println!("{}", format!("  {}:", runner).bold().blue());
-                    tasks.iter().for_each(|task| {
-                        if task.description.is_empty() {
-                            println!("    -- {}", task.name.bold());
-                        } else {
-                            println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
-                        }
-                    });
+                    if !tasks.is_empty() {
+                        println!("{}", format!("  {}:", runner).bold().blue());
+                        tasks.iter().for_each(|task| {
+                            if task.description.is_empty() {
+                                println!("    -- {}", task.name.bold());
+                            } else {
+                                println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
+                            }
+                        });
+                    }
                 }
             });
         } else {
