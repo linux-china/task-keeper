@@ -4,7 +4,7 @@ use colored::Colorize;
 use error_stack::{IntoReport, report, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::runners::{is_command_available, run_command};
+use crate::runners::{is_command_available, run_command, run_command_line};
 use crate::task;
 
 pub fn is_available() -> bool {
@@ -38,15 +38,7 @@ pub fn run_task(task: &str, _extra_args: &[&str], verbose: bool) -> Result<Outpu
     let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
         KeeperError::TaskNotFound(task.to_string())
     })?;
-    let command_and_args = shlex::split(&task.description).unwrap();
-    let command_name = &command_and_args[0];
-    let args: Vec<&str> = command_and_args[1..].iter().map(AsRef::as_ref).collect();
-    if is_command_available(&command_name) {
-        run_command(&command_name, &args, verbose)
-    } else {
-        println!("{}", format!("{} is not available to run '{}'", command_name, task.description).bold().red());
-        Err(report!(KeeperError::CommandNotFound(command_name.clone())))
-    }
+    run_command_line(&task.description, verbose)
 }
 
 #[cfg(test)]
