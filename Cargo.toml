@@ -2,6 +2,15 @@
 name = "task-keeper"
 version = "0.1.0"
 edition = "2021"
+authors = ["linux_china <libing.chen@gmail.com>"]
+description = "Task keeper to manage tasks from different task runners"
+keywords = ["task", "just", "npm", "deno"]
+categories = ["command-line-utilities"]
+documentation = "https://github.com/linux-china/task-keeper"
+readme = "README.md"
+homepage = "https://github.com/linux-china/task-keeper"
+repository = "https://github.com/linux-china/task-keeper"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
