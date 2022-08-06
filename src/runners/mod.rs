@@ -70,7 +70,8 @@ pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output,
     let mut command = if cfg!(target_os = "windows") {
         Command::new("cmd")
     } else {
-        Command::new("sh")
+        let shell_name = std::env::var("SHELL").unwrap_or("sh".to_owned());
+        Command::new(&shell_name)
     };
     if cfg!(target_os = "windows") {
         command.args(["/C", command_line])
@@ -112,5 +113,15 @@ mod tests {
     #[test]
     fn test_run_pipe_line() {
         run_command_line("ls -al | wc -l", true).unwrap();
+    }
+
+    #[test]
+    fn test_function_alias() {
+        let command_name = "lss";
+        if let Ok(path) = which(command_name) {
+            println!("{:?}", path);
+        } else {
+            println!("{} is a function", command_name);
+        }
     }
 }
