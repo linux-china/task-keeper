@@ -45,7 +45,7 @@ fn main() {
                         if task.description.is_empty() {
                             println!("    -- {}", task.name.bold());
                         } else {
-                            println!("    -- {} : {}", task.name.bold(), task.description);
+                            println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
                         }
                     });
                 }
@@ -88,4 +88,16 @@ fn main() {
 
     // display help message
     build_app().print_help().unwrap();
+}
+
+fn format_description(description: &str) -> String {
+    let mut short_desc = description.to_string();
+    if description.contains("\n") {
+        short_desc = description.split("\n").next().unwrap().to_string();
+        short_desc = format!("{} ...", short_desc);
+    }
+    if short_desc.len() > 60 {
+        short_desc = format!("{} ...", &short_desc[0..60]);
+    }
+    return short_desc;
 }
