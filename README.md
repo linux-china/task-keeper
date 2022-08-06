@@ -52,7 +52,7 @@ $ curl -X POST https://httpbin.org/post
 
 ```shell
 ## print my internet ip
-curl https://httpbin.org/ip
+curl --silent https://httpbin.org/ip | jq '.origin'
 ```
 
 ```shell
