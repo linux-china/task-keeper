@@ -11,7 +11,7 @@ fi
 function help() {
   echo "$1 <command> [options]"
   echo
-  echo "commands: start, stop, restart, status"
+  echo "commands: start, stop"
 }
 
 function start() {
