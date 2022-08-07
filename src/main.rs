@@ -4,12 +4,16 @@ use colored::Colorize;
 use crate::runners::RUNNERS;
 use dotenv::dotenv;
 use std::collections::HashSet;
+use std::io::Write;
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::Path;
 
 mod app;
 mod keeper;
 mod errors;
 mod models;
 mod runners;
+mod managers;
 
 fn main() {
     let app = build_app();
@@ -62,12 +66,38 @@ fn main() {
         println!("{}", "migrate tasks");
         return;
     }
-    // load .env for tasks
-    if !no_dotenv {
-        dotenv().ok();
+    // create task file by runner
+    if matches.is_present("init") {
+        let runner_name = matches.value_of("init").unwrap();
+        if runner_name == "shell" {
+            let exists = Path::new("./task.sh").exists();
+            if !exists {
+                let mut file = if cfg!(target_os = "windows") {
+                    std::fs::File::create("./task.sh").unwrap()
+                } else {
+                    std::fs::OpenOptions::new()
+                        .create(true)
+                        .write(true)
+                        .mode(0o755)
+                        .open("./task.sh")
+                        .unwrap()
+                };
+                let bytes = include_bytes!("./templates/task.sh");
+                file.write_all(bytes).unwrap();
+            } else {
+                println!("{}", "[tk] task.sh already exists".bold().red());
+            }
+        } else {
+            println!("[tk] Create task file for {} not support now.", runner_name);
+        }
+        return;
     }
     // run tasks
     if matches.is_present("tasks") {
+        // load .env for tasks
+        if !no_dotenv {
+            dotenv().ok();
+        }
         let mut tasks = matches.values_of("tasks").unwrap().collect::<Vec<&str>>();
         let mut extra_args = vec![];
         let double_dash = tasks.iter().position(|x| *x == "--");
