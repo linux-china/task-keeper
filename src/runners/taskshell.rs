@@ -5,17 +5,11 @@ use crate::models::Task;
 use crate::runners::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result};
-use regex::Regex;
-use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
         .map(|dir| dir.join("task.sh").exists())
         .unwrap_or(false)
-}
-
-pub fn is_command_available() -> bool {
-    true
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
