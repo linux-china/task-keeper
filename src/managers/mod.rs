@@ -1,4 +1,5 @@
 pub mod maven;
+pub mod gradle;
 
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
 
