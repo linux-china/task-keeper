@@ -10,6 +10,7 @@ pub mod makefiletoml;
 pub mod procfile;
 pub mod markdown;
 pub mod taskshell;
+pub mod composer;
 
 use std::collections::HashMap;
 use std::process::{Command, Output, Stdio};
@@ -18,7 +19,7 @@ use error_stack::{IntoReport, report, Result, ResultExt};
 use crate::errors::KeeperError;
 use which::which;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "shell", "fleet", "markdown"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "shell", "fleet", "markdown"];
 
 pub fn get_runner_file_name(runner: &str) -> &'static str {
     match runner {
@@ -31,6 +32,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "proc" => "Procfile",
         "npm" => "package.json",
         "deno" => "deno.json",
+        "composer" => "composer.json",
         "fleet" => ".fleet/run.json",
         "shell" => "task.sh",
         "markdown" => "README.md",
