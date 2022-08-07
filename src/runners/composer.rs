@@ -54,11 +54,10 @@ fn parse_composer_json() -> Result<ComposerJson, KeeperError> {
 }
 
 pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    let mut command_name = "composer";
     let mut args = vec!["run-script"];
     args.extend(extra_args);
     args.push(task);
-    run_command(command_name, &args, verbose)
+    run_command("composer", &args, verbose)
 }
 
 #[cfg(test)]
