@@ -18,6 +18,7 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 * make(Makefile): https://www.gnu.org/software/make/manual/make.html `make -qn`
 * npm(package.json): https://docs.npmjs.com/cli/v8/using-npm/scripts
 * deno(deno.json): https://deno.land/manual/tools/task_runner
+* composer(composer.json): https://getcomposer.org/doc/articles/scripts.md
 * just(justfile): https://github.com/casey/just
 * fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * Rakefile(rake): https://ruby.github.io/rake/
@@ -47,20 +48,7 @@ After install, execute `tk --help` for usage. Some commands as following:
 
 ## Package managers support - in plan
 
-package managers:
-
-* Apache Maven: Java, Kotlin, Groovy
-* Gradle: Java, Kotlin, Groovy
-* Sbt: Scala
-* npm: node.js
-* Cargo: Rust
-* PHP Composer: PHP
-* Bundler: Ruby
-* CMake
-* Golang Mod
-* Swift??
-
-Common tasks for all package managers:
+### Common tasks for all package managers:
 
 * init: create project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx`
 * compile: compile source code, not available for some script languages
@@ -70,8 +58,61 @@ Common tasks for all package managers:
 * deps: list all dependencies
 * clean: clean build artifacts, maven: `mvn clean`, cargo: `cargo clean`
 * outdated: display outdated dependencies `go list -u -m all`
-* upgrade: upgrade outdated dependencies `go get -u`
+* update: update outdated dependencies `go get -u`
 * add dependency: `tk add dependency` or `tk -D add dependency` or `tk --runner=npm add dependency`
+
+### Apache Maven
+
+### Gradle
+
+Please set up [gradle-versions-plugin](https://github.com/ben-manes/gradle-versions-plugin) for dependency version
+management.
+You can transparently add the plugin to every Gradle project that you run via a Gradle init script.
+`$HOME/.gradle/init.d/add-versions-plugin.gradle` with following code:
+
+```
+initscript {
+  repositories {
+     gradlePluginPortal()
+  }
+
+  dependencies {
+    classpath 'com.github.ben-manes:gradle-versions-plugin:+'
+  }
+}
+
+allprojects {
+  apply plugin: com.github.benmanes.gradle.versions.VersionsPlugin
+
+  tasks.named("dependencyUpdates").configure {
+    // configure the task, for example wrt. resolution strategies
+  }
+}
+```
+
+### Sbt
+
+Please add [sbt-updates](https://github.com/rtimush/sbt-updates) and DependencyTreePlugin as global plugins.
+`$HOME/.sbt/1.0/plugins/plugins.sbt` with following code:
+
+```
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
+addDependencyTreePlugin
+```
+
+### npm
+
+### Cargo
+
+### Composer
+
+### Bundler
+
+### CMake
+
+### Go Module
+
+### Swift
 
 # Shell scripts in Markdown
 
