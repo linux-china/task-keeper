@@ -6,6 +6,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "composer install".to_string());
     task_command_map.insert("compile".to_string(), "composer check-platform-reqs".to_string());
     task_command_map.insert("build".to_string(), "composer run-script build".to_string());
+    task_command_map.insert("start".to_string(), "composer run-script start".to_string());
     task_command_map.insert("test".to_string(), "composer run-script test".to_string());
     task_command_map.insert("deps".to_string(), "composer depends".to_string());
     task_command_map.insert("doc".to_string(), "composer doc".to_string());
