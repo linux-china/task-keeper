@@ -56,6 +56,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "invoke" => runners::taskspy::run_task(task_name, extra_args, verbose),
         "cargo-make" => runners::makefiletoml::run_task(task_name, extra_args, verbose),
         "procfile" => runners::procfile::run_task(task_name, extra_args, verbose),
+        "composer" => runners::composer::run_task(task_name, extra_args, verbose),
         "markdown" => runners::markdown::run_task(task_name, extra_args, verbose),
         "shell" => runners::taskshell::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
@@ -130,6 +131,13 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
             tasks.insert("invoke".to_string(), runners::taskspy::list_tasks().unwrap());
         } else {
             println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
+        }
+    }
+    if runners::composer::is_available() {
+        if runners::composer::is_command_available() {
+            tasks.insert("composer".to_string(), runners::composer::list_tasks().unwrap());
+        } else {
+            println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
         }
     }
     Ok(tasks)
