@@ -12,3 +12,14 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("outdated".to_string(), "mvn versions:display-dependency-updates".to_string());
     task_command_map
 }
+
+fn get_mvn_command() -> &'static str {
+    let wrapper_available = std::env::current_dir()
+        .map(|dir| dir.join("mvnw").exists())
+        .unwrap_or(false);
+    if wrapper_available {
+        "./mvnw"
+    } else {
+        "mvn"
+    }
+}
