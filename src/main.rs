@@ -41,7 +41,7 @@ fn main() {
             RUNNERS.iter().for_each(|runner| {
                 if let Some(tasks) = tasks_hashmap.get(*runner) {
                     if !tasks.is_empty() {
-                        println!("{}", format!("  {}:", runner).bold().blue());
+                        println!("{}", format!("  {}: {}", runner, runners::get_runner_file_name(runner)).bold().blue());
                         tasks.iter().for_each(|task| {
                             if task.description.is_empty() {
                                 println!("    -- {}", task.name.bold());
