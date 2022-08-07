@@ -12,3 +12,14 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("outdated".to_string(), "./gradlew dependencyUpdates".to_string());
     task_command_map
 }
+
+fn get_gradle_command() -> &'static str {
+    let wrapper_available = std::env::current_dir()
+        .map(|dir| dir.join("gradlew").exists())
+        .unwrap_or(false);
+    if wrapper_available {
+        "./gradlew"
+    } else {
+        "gradle"
+    }
+}
