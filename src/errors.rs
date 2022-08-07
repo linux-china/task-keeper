@@ -27,4 +27,6 @@ pub enum KeeperError {
     InvalidComposerJson,
     #[error("TK-208001: failed to read composer.json")]
     InvalidProcfile,
+    #[error("TK-300001: failed to read pom.xml")]
+    InvalidPomXml,
 }
