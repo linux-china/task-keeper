@@ -31,6 +31,14 @@ pub fn build_app() -> Command<'static> {
                 .required(false),
         )
         .arg(
+            Arg::new("init")
+                .long("init")
+                .takes_value(true)
+                .value_names(&["shell"])
+                .help("Create a new task file by runner name")
+                .required(false),
+        )
+        .arg(
             Arg::new("list")
                 .long("list")
                 .short('l')
