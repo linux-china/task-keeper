@@ -57,6 +57,7 @@ pub fn run_task(runner: &str, task: &Task, extra_args: &[&str], verbose: bool) -
         "cargo-make" => runners::makefiletoml::run_task(task_name, extra_args, verbose),
         "procfile" => runners::procfile::run_task(task_name, extra_args, verbose),
         "markdown" => runners::markdown::run_task(task_name, extra_args, verbose),
+        "shell" => runners::taskshell::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
     }
 }
@@ -71,6 +72,9 @@ pub fn list_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     }
     if runners::markdown::is_available() {
         tasks.insert("markdown".to_string(), runners::markdown::list_tasks().unwrap());
+    }
+    if runners::taskshell::is_available() {
+        tasks.insert("shell".to_string(), runners::taskshell::list_tasks().unwrap());
     }
     if runners::justfile::is_available() {
         if runners::justfile::is_command_available() {
