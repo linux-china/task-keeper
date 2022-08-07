@@ -51,6 +51,7 @@ After install, execute `tk --help` for usage. Some commands as following:
 ### Common tasks for all package managers:
 
 * init: create project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx`
+* install: install all dependencies `npm istall`, `dependency:resolve`
 * compile: compile source code, not available for some script languages
 * build: cargo: `tk build -- --release`, maven: `mvn -DskipTests clean package`, npm: `npm run build`
 * test: run test npm: `npm test`, maven: `mvn test`, cargo: `cargo test`
