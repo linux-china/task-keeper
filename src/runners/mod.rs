@@ -14,7 +14,7 @@ pub mod composer;
 
 use std::process::{Output};
 use colored::Colorize;
-use error_stack::{IntoReport, report, Result};
+use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
 pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "shell", "fleet", "markdown"];
