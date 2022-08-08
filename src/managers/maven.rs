@@ -17,16 +17,17 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "mvn archetype:generate".to_string());
-    task_command_map.insert("install".to_string(), "mvn dependency:resolve".to_string());
-    task_command_map.insert("compile".to_string(), "mvn compile testCompile".to_string());
-    task_command_map.insert("build".to_string(), "mvn -DskipTests package".to_string());
-    task_command_map.insert("start".to_string(), "mvn compile exec:java".to_string());
-    task_command_map.insert("test".to_string(), "mvn test".to_string());
-    task_command_map.insert("deps".to_string(), "mvn dependency:tree".to_string());
-    task_command_map.insert("doc".to_string(), "mvn javadoc:javadoc".to_string());
-    task_command_map.insert("clean".to_string(), "mvn clean".to_string());
-    task_command_map.insert("outdated".to_string(), "mvn versions:display-dependency-updates".to_string());
+    let mvn_command = get_mvn_command();
+    task_command_map.insert("init".to_string(), format!("{} archetype:generate", mvn_command));
+    task_command_map.insert("install".to_string(), format!("{} dependency:resolve", mvn_command));
+    task_command_map.insert("compile".to_string(), format!("{} compile testCompile", mvn_command));
+    task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));
+    task_command_map.insert("start".to_string(), format!("{} compile exec:java", mvn_command));
+    task_command_map.insert("test".to_string(), format!("{} test", mvn_command));
+    task_command_map.insert("deps".to_string(), format!("{} dependency:tree", mvn_command));
+    task_command_map.insert("doc".to_string(), format!("{} javadoc:javadoc", mvn_command));
+    task_command_map.insert("clean".to_string(), format!("{}  clean", mvn_command));
+    task_command_map.insert("outdated".to_string(), format!("{} versions:display-dependency-updates", mvn_command));
     task_command_map
 }
 
