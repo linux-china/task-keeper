@@ -10,6 +10,7 @@ pub mod cargo;
 pub mod sbt;
 pub mod composer;
 pub mod bundler;
+pub mod golang;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
@@ -36,6 +37,9 @@ pub fn get_available_managers() -> Vec<String> {
     }
     if bundler::is_available() {
         managers.push("bundle".to_string());
+    }
+    if golang::is_available() {
+        managers.push("go".to_string());
     }
     managers
 }
@@ -106,6 +110,13 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
             queue.push(bundler::run_task);
         } else {
             println!("{}", format!("[tk] bundle(https://bundler.io/) command not available for Gemfile").bold().red());
+        }
+    }
+    if golang::is_available() {
+        if golang::is_command_available() {
+            queue.push(golang::run_task);
+        } else {
+            println!("{}", format!("[tk] go(https://go.dev/) command not available for go.mod").bold().red());
         }
     }
     match task_name {
