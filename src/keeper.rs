@@ -97,7 +97,7 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
         if runners::justfile::is_command_available() {
             if let Ok(runner_tasks) = runners::justfile::list_tasks() {
                 if !runner_tasks.is_empty() {
-                    all_tasks.insert("justfile".to_string(), runner_tasks);
+                    all_tasks.insert("just".to_string(), runner_tasks);
                 }
             }
         } else {
@@ -192,6 +192,12 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
             println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
         }
     }
+    /*all_tasks.iter().for_each(|(runner, tasks)| {
+        println!("{}", format!("[tk] {} tasks:", runner).bold().green());
+        tasks.iter().for_each(|task| {
+            println!("{}", format!("[tk]   {}", &task.name).bold().yellow());
+        });
+    });*/
     Ok(all_tasks)
 }
 
