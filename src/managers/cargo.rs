@@ -1,5 +1,15 @@
 use std::collections::HashMap;
 
+pub fn is_available() -> bool {
+    std::env::current_dir()
+        .map(|dir| dir.join("Cargo.toml").exists())
+        .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("cargo").is_ok()
+}
+
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("init".to_string(), "cargo new {name}".to_string());

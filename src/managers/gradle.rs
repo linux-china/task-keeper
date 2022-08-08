@@ -1,5 +1,15 @@
 use std::collections::HashMap;
 
+pub fn is_available() -> bool {
+    std::env::current_dir()
+        .map(|dir| dir.join("build.gradle").exists() || dir.join("build.gradle.kts").exists())
+        .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("./gradlew").is_ok() || which("gradle").is_ok()
+}
+
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("init".to_string(), "gradle init".to_string());
