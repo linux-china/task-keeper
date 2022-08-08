@@ -1,4 +1,9 @@
 use std::collections::HashMap;
+use std::process::Output;
+use error_stack::{IntoReport, report, Result, ResultExt};
+use which::which;
+use crate::command_utils::run_command_line;
+use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -26,3 +31,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map
 }
 
+pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    if let Some(command_line) = get_task_command_map().get(task) {
+        run_command_line(command_line, verbose)
+    } else {
+        Err(report!(KeeperError::ManagerTaskNotFound(task.to_owned(), "cargo".to_string())))
+    }
+}
