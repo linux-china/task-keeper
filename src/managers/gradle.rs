@@ -49,3 +49,14 @@ fn get_gradle_command() -> &'static str {
         "gradle"
     }
 }
+
+pub fn get_gradle_build_file() -> &'static str {
+    let gradle_with_kotlin = std::env::current_dir()
+        .map(|dir| dir.join("build.gradle.kts").exists())
+        .unwrap_or(false);
+    if gradle_with_kotlin {
+        "build.gradle.kts"
+    } else {
+        "build.gradle"
+    }
+}
