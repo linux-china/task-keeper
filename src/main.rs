@@ -44,7 +44,7 @@ fn main() {
         if let Ok(tasks_hashmap) = all_tasks {
             if !tasks_hashmap.is_empty() {
                 task_found = true;
-                println!("{}", "Available tasks:".bold().green());
+                println!("{}", "Available task runners:".bold().green());
                 RUNNERS.iter().for_each(|runner| {
                     if let Some(tasks) = tasks_hashmap.get(*runner) {
                         if !tasks.is_empty() {
@@ -64,13 +64,18 @@ fn main() {
         let managers = managers::get_available_managers();
         if !managers.is_empty() {
             task_found = true;
-            let manager_names = managers.join(", ");
-            println!("{} {}", "Available project manager tools:".bold().green(), manager_names);
-            ["install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"]
-                .iter()
-                .for_each(|task| {
-                    println!("    -- {}", task.bold());
-                });
+            println!("{}", "Available project/package management tools:".bold().green());
+            managers.into_iter().for_each(|manager_name| {
+                println!("{}", format!("  {}: {}", manager_name, managers::get_manager_file_name(&manager_name)).bold().blue());
+                let task_command_map = managers::get_manager_command_map(&manager_name);
+                if !task_command_map.is_empty() {
+                    task_command_map.into_iter().for_each(|(task_name, command_line)| {
+                        if &task_name != "init" {
+                            println!("    -- {} : {}", task_name.bold(), command_line);
+                        }
+                    });
+                }
+            });
         }
         if !task_found {
             println!("{}", "No task runner or project management tool found!".bold().red());
