@@ -121,7 +121,7 @@ fn main() {
 
     // migrate tasks
     if matches.is_present("from") && matches.is_present("to") {
-        println!("{}", "migrate tasks");
+        println!("{}", "Task migration has not yet been implemented!".bold().red());
         return;
     }
     // create task file by runner
