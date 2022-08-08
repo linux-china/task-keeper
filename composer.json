@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "test": "phpunit",
+    "hello": "echo 'Hello Composer!'",
+    "my-ip": [
+      "curl --version",
+      "curl https://httpbin.org/ip"
+    ],
+    "post-package-install": [
+      "MyVendor\\MyClass::postPackageInstall"
+    ],
+    "pre-package-install": [
+      "MyVendor\\MyClass::prePackageInstall"
+    ]
+  }
+}
