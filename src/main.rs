@@ -125,7 +125,7 @@ fn main() {
         if runner_name == "shell" {
             let exists = Path::new("./task.sh").exists();
             if !exists {
-                let mut file = if cfg!(target_os = "windows") {
+                let mut file = if cfg!(windows) {
                     std::fs::File::create("./task.sh").unwrap()
                 } else {
                     use std::os::unix::fs::OpenOptionsExt;
