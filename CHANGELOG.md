@@ -11,7 +11,7 @@
 - CMake ad Conan support
 - Swift package manager support
 - [JBang](https://www.jbang.dev/) support: jbang-catalog.json
-- Adjust project/package managers display
+- Adjust project/package managers' display
 
 ## [0.2.0] - 2022-08-07
 
