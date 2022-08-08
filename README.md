@@ -1,7 +1,9 @@
 Task Keeper
 =================
-tk(Task Keeper) is a tool to manage tasks from different task file,
-such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc.
+tk(Task Keeper) is a tool to manage tasks from different task files,
+such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc,
+and call tasks from different project management tools,
+such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
 ![Task Keeper](./screenshot.png)
 
@@ -12,6 +14,29 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 * Invoke task from a runner: `tk --runner=npm start`
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
 * .env support by default: `tk --no-dotenv` to disable
+
+# How to get started?
+
+* Install by cargo: `cargo install task-keeper`
+* Download and install from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
+
+After install, execute `tk --help` for usage. Some commands as following:
+
+* list tasks: `tk --list`
+* execute task: `tk task_name`
+
+# Why task keeper?
+
+Sorry, I got lost in different task files and management tools, and sometimes I even can not remember how to run them.
+
+* Find tasks: `Makefile`,`justfile`, `package.json`, `deno.json`, `Taskfile.yml`, `tasks.py`, `README.md` etc, and
+  too many task files to check tasks.
+* Run task: `just taskName`, `npm run task_name`, `deno task task_name`, `composer run-script task_name` etc
+* Check outdated dependencies: `mvn versions:display-dependency-updates`, `./gradlew dependencyUpdates`, `npm outdated`
+  etc
+* Build project: `mvn -DskipTests package`, `./gradlew assemble`, `cargo build` etc
+
+Too many differences, I want to save my brain and keyboard, and you know MacBook keyboard's price tag is $400+.
 
 # Task runners support
 
@@ -29,24 +54,7 @@ such as `Makefile`,`justfile`, `package.json`, `deno.jso`, `.fleet/run.json` etc
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 
-# How to get started?
-
-* Install by cargo: `cargo install task-keeper`
-* Download and install from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
-
-After install, execute `tk --help` for usage. Some commands as following:
-
-* list tasks: `tk --list`
-* execute task: `tk task_name`
-
-# Todo
-
-## Task Runners
-
-* jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
-* code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
-
-## Package managers support - in plan
+# Package manager support
 
 ### Common tasks for all package managers:
 
@@ -64,6 +72,8 @@ After install, execute `tk --help` for usage. Some commands as following:
 * add dependency: `tk add dependency` or `tk -D add dependency` or `tk --runner=npm add dependency`
 
 ### Apache Maven
+
+Available
 
 ### Gradle
 
@@ -104,17 +114,38 @@ addDependencyTreePlugin
 
 ### npm
 
+Available
+
 ### Cargo
+
+Available
 
 ### Composer
 
+Available
+
 ### Bundler
 
-### CMake
+Available
 
 ### Go Module
 
+Available
+
+### CMake
+
+Not available
+
 ### Swift
+
+Not Available
+
+# Todo
+
+## Task Runners
+
+* jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
+* code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 
 # Shell scripts in Markdown
 
