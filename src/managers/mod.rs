@@ -13,6 +13,29 @@ pub mod composer;
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
 
+pub fn get_available_managers() -> Vec<String> {
+    let mut managers = Vec::new();
+    if maven::is_available() {
+        managers.push("maven".to_string());
+    }
+    if gradle::is_available() {
+        managers.push("gradle".to_string());
+    }
+    if sbt::is_available() {
+        managers.push("sbt".to_string());
+    }
+    if npm::is_available() {
+        managers.push("npm".to_string());
+    }
+    if cargo::is_available() {
+        managers.push("cargo".to_string());
+    }
+    if composer::is_available() {
+        managers.push("composer".to_string());
+    }
+    managers
+}
+
 pub fn get_manager_file_name(runner: &str) -> &'static str {
     match runner {
         "maven" => "pom.xml",
