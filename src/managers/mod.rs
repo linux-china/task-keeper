@@ -12,10 +12,11 @@ pub mod sbt;
 pub mod composer;
 pub mod bundler;
 pub mod golang;
-mod cmakeconan;
+pub mod cmakeconan;
+pub mod swift;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go","swift"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -45,6 +46,9 @@ pub fn get_available_managers() -> Vec<String> {
     }
     if cmakeconan::is_available() {
         managers.push("cmake".to_string());
+    }
+    if swift::is_available() {
+        managers.push("swift".to_string());
     }
     managers
 }
@@ -76,6 +80,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "go" => golang::get_task_command_map(),
         "cmake" => cmakeconan::get_task_command_map(),
         "bundle" => bundler::get_task_command_map(),
+        "swift" => swift::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -143,6 +148,13 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
             queue.insert("cmake", cmakeconan::run_task);
         } else {
             println!("{}", format!("[tk] cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt").bold().red());
+        }
+    }
+    if swift::is_available() {
+        if swift::is_command_available() {
+            queue.insert("swift", cmakeconan::run_task);
+        } else {
+            println!("{}", format!("[tk] swift(https://www.swift.org/) command not available for Package.swift").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
