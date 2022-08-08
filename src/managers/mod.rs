@@ -1,7 +1,7 @@
 use std::process::Output;
 use colored::Colorize;
 use crate::errors::KeeperError;
-use error_stack::{IntoReport, report, Result, ResultExt};
+use error_stack::{Result};
 
 pub mod maven;
 pub mod gradle;
