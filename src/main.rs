@@ -5,7 +5,6 @@ use crate::runners::RUNNERS;
 use dotenv::dotenv;
 use std::collections::HashSet;
 use std::io::Write;
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 
 mod app;
@@ -129,6 +128,7 @@ fn main() {
                 let mut file = if cfg!(target_os = "windows") {
                     std::fs::File::create("./task.sh").unwrap()
                 } else {
+                    use std::os::unix::fs::OpenOptionsExt;
                     std::fs::OpenOptions::new()
                         .create(true)
                         .write(true)
