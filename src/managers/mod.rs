@@ -48,7 +48,7 @@ pub fn get_available_managers() -> Vec<String> {
 pub fn get_manager_file_name(runner: &str) -> &'static str {
     match runner {
         "maven" => "pom.xml",
-        "gradle" => "build.gradle[.kts]",
+        "gradle" => gradle::get_gradle_build_file(),
         "sbt" => "build.sbt",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
