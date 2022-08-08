@@ -78,6 +78,43 @@ fn main() {
         }
         return;
     }
+    /*// display runner help and tasks
+    if matches.is_present("runner") && !matches.is_present("tasks") {
+        let runner = matches.value_of("runner").unwrap();
+        let mut intro = "";
+        let mut usage = "";
+        println!("{}", format!("{}: ", runner).bold().blue());
+        println!("{}", format!("{}: ", runner).bold().blue());
+        // match item in runners
+        let tasks = match runner {
+            "npm" => {
+                runners::packagejson::list_tasks()
+            }
+            "just" => { runners::justfile::list_tasks() }
+            "fleet" => { runners::fleet::list_tasks() }
+            "deno" => { runners::denojson::list_tasks() }
+            "make" => { runners::makefile::list_tasks() }
+            "rake" => { runners::rakefile::list_tasks() }
+            "task" => { runners::taskfileyml::list_tasks() }
+            "invoke" => { runners::taskspy::list_tasks() }
+            "cargo-make" => { runners::makefiletoml::list_tasks() }
+            "procfile" => { runners::procfile::list_tasks() }
+            "composer" => { runners::composer::list_tasks() }
+            "markdown" => { runners::markdown::list_tasks() }
+            "shell" => { runners::taskshell::list_tasks() }
+            "mave" => { runners::taskshell::list_tasks() }
+            "gradle" => { runners::taskshell::list_tasks() }
+            "sbt" => { runners::taskshell::list_tasks() }
+            "cargo" => {
+                intro = "Rust's package manager";
+                usage = "cargo [+toolchain] [OPTIONS] [SUBCOMMAND]";
+                runners::taskshell::list_tasks()
+            }
+            "bundle" => { runners::taskshell::list_tasks() }
+            _ => vec![]
+        };
+    }*/
+
     // migrate tasks
     if matches.is_present("from") && matches.is_present("to") {
         println!("{}", "migrate tasks");
