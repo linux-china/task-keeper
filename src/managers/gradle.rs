@@ -17,16 +17,17 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
+    let gradle_command = get_gradle_command();
     task_command_map.insert("init".to_string(), "gradle init".to_string());
-    task_command_map.insert("install".to_string(), "./gradlew classes dependencies".to_string());
-    task_command_map.insert("compile".to_string(), "./gradlew classes testClasses".to_string());
-    task_command_map.insert("build".to_string(), "./gradlew assemble".to_string());
-    task_command_map.insert("build".to_string(), "./gradlew run".to_string());
-    task_command_map.insert("test".to_string(), "./gradlew test".to_string());
-    task_command_map.insert("deps".to_string(), "./gradlew dependencies".to_string());
-    task_command_map.insert("doc".to_string(), "./gradlew javadoc".to_string());
-    task_command_map.insert("clean".to_string(), "./gradlew clean".to_string());
-    task_command_map.insert("outdated".to_string(), "./gradlew dependencyUpdates".to_string());
+    task_command_map.insert("install".to_string(), format!("{} classes dependencies", gradle_command));
+    task_command_map.insert("compile".to_string(), format!("{} classes testClasses", gradle_command));
+    task_command_map.insert("build".to_string(), format!("{} assemble", gradle_command));
+    task_command_map.insert("build".to_string(), format!("{} run", gradle_command));
+    task_command_map.insert("test".to_string(), format!("{} test", gradle_command));
+    task_command_map.insert("deps".to_string(), format!("{} dependencies", gradle_command));
+    task_command_map.insert("doc".to_string(), format!("{} javadoc", gradle_command));
+    task_command_map.insert("clean".to_string(), format!("{} clean", gradle_command));
+    task_command_map.insert("outdated".to_string(), format!("{} dependencyUpdates", gradle_command));
     task_command_map
 }
 
