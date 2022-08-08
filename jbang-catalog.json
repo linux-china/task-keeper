@@ -1,0 +1,12 @@
+{
+  "aliases": {
+    "Hello": {
+      "script-ref": "temp/Hello.java",
+      "description": "Java Hello World"
+    },
+    "HelloWorld": {
+      "script-ref": "temp/Hello.java",
+      "description": "Java Hello World Clone"
+    }
+  }
+}
