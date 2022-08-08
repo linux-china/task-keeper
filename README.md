@@ -54,6 +54,7 @@ After install, execute `tk --help` for usage. Some commands as following:
 * install: install all dependencies `npm istall`, `dependency:resolve`
 * compile: compile source code, not available for some script languages
 * build: cargo: `tk build -- --release`, maven: `mvn -DskipTests clean package`, npm: `npm run build`
+* start: start project
 * test: run test npm: `npm test`, maven: `mvn test`, cargo: `cargo test`
 * doc: generate documentation
 * deps: list all dependencies
