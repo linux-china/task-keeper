@@ -1,7 +1,7 @@
 use std::process::Output;
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::runners::{run_command, capture_command_output};
+use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};

@@ -3,7 +3,7 @@ use std::process::{Output};
 use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::runners::{run_command_line};
+use crate::command_utils::{run_command_line};
 use crate::task;
 
 pub fn is_available() -> bool {
