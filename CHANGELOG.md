@@ -4,10 +4,18 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2022-08-07
+
+### Added
+
+- Package Manager support: maven, gradle, sbt, cargo, composer etc
+- Composer scripts support
+- vanilla shell script task.sh support: use `tk --init=shell` to generate `task.sh` file
+
 ### Changed
 
 - Command line with pipes supported in Markdown: `curl --silent https://httpbin.org/ip | jq '.origin'`
-- Yarn support: if `"packageManager"` in `package.json` contains `yarn`, then use `yarn run` instead of `npm run` 
+- Yarn support: if `"packageManager"` in `package.json` contains `yarn`, then use `yarn run` instead of `npm run`
 - Ignore runner whe no tasks found
 
 ## [0.1.0] - 2022-08-05
