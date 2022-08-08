@@ -11,13 +11,14 @@ pub mod procfile;
 pub mod markdown;
 pub mod taskshell;
 pub mod composer;
+pub mod jbang;
 
 use std::process::{Output};
 use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "shell", "fleet", "markdown"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "markdown"];
 
 pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -35,6 +36,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
         "composer" => composer::run_task(task_name, extra_args, verbose),
         "markdown" => markdown::run_task(task_name, extra_args, verbose),
         "shell" => taskshell::run_task(task_name, extra_args, verbose),
+        "jbang" => jbang::run_task(task_name, extra_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
     }
 }
@@ -54,6 +56,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "fleet" => ".fleet/run.json",
         "shell" => "task.sh",
         "markdown" => "README.md",
+        "jbang" => "jbang-catalog.json",
         _ => "unknown",
     }
 }
