@@ -9,6 +9,7 @@ pub mod npm;
 pub mod cargo;
 pub mod sbt;
 pub mod composer;
+pub mod bundler;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
@@ -33,6 +34,9 @@ pub fn get_available_managers() -> Vec<String> {
     if composer::is_available() {
         managers.push("composer".to_string());
     }
+    if bundler::is_available() {
+        managers.push("bundle".to_string());
+    }
     managers
 }
 
@@ -47,6 +51,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "composer" => "composer.json",
         "go" => "go.mod",
         "swift" => "Package.swift",
+        "bundle" => "Gemfile",
         _ => "unknown",
     }
 }
@@ -63,7 +68,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
     }
     if gradle::is_available() {
         if gradle::is_command_available() {
-            queue.push(maven::run_task);
+            queue.push(gradle::run_task);
         } else {
             println!("{}", format!("[tk] gradle(https://gradle.org/) command not available").bold().red());
         }
@@ -94,6 +99,13 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
             queue.push(composer::run_task);
         } else {
             println!("{}", format!("[tk] gradle(https://gradle.org/) command not available for composer.json").bold().red());
+        }
+    }
+    if bundler::is_available() {
+        if bundler::is_command_available() {
+            queue.push(bundler::run_task);
+        } else {
+            println!("{}", format!("[tk] bundle(https://bundler.io/) command not available for Gemfile").bold().red());
         }
     }
     match task_name {
