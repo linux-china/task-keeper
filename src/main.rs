@@ -1,5 +1,5 @@
 use crate::app::build_app;
-use crate::keeper::{run_tasks, list_tasks};
+use crate::keeper::{run_tasks, list_all_runner_tasks};
 use colored::Colorize;
 use crate::runners::RUNNERS;
 use dotenv::dotenv;
@@ -7,6 +7,7 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
+use crate::models::Task;
 
 mod app;
 mod keeper;
@@ -14,6 +15,7 @@ mod errors;
 mod models;
 mod runners;
 mod managers;
+mod command_utils;
 
 fn main() {
     let app = build_app();
@@ -24,7 +26,7 @@ fn main() {
     // summary to list all task names
     if matches.is_present("summary") {
         let mut task_names: HashSet<String> = HashSet::new();
-        let all_tasks = list_tasks();
+        let all_tasks = list_all_runner_tasks();
         if let Ok(tasks_hashmap) = all_tasks {
             RUNNERS.iter().for_each(|runner| {
                 if let Some(tasks) = tasks_hashmap.get(*runner) {
@@ -39,25 +41,41 @@ fn main() {
     }
     // list tasks
     if matches.is_present("list") {
-        let all_tasks = list_tasks();
+        let mut task_found = false;
+        let all_tasks = list_all_runner_tasks();
         if let Ok(tasks_hashmap) = all_tasks {
-            println!("{}", "Available tasks:".bold().green());
-            RUNNERS.iter().for_each(|runner| {
-                if let Some(tasks) = tasks_hashmap.get(*runner) {
-                    if !tasks.is_empty() {
-                        println!("{}", format!("  {}: {}", runner, runners::get_runner_file_name(runner)).bold().blue());
-                        tasks.iter().for_each(|task| {
-                            if task.description.is_empty() {
-                                println!("    -- {}", task.name.bold());
-                            } else {
-                                println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
-                            }
-                        });
+            if !tasks_hashmap.is_empty() {
+                task_found = true;
+                println!("{}", "Available tasks:".bold().green());
+                RUNNERS.iter().for_each(|runner| {
+                    if let Some(tasks) = tasks_hashmap.get(*runner) {
+                        if !tasks.is_empty() {
+                            println!("{}", format!("  {}: {}", runner, runners::get_runner_file_name(runner)).bold().blue());
+                            tasks.iter().for_each(|task| {
+                                if task.description.is_empty() {
+                                    println!("    -- {}", task.name.bold());
+                                } else {
+                                    println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
+                                }
+                            });
+                        }
                     }
-                }
-            });
-        } else {
-            println!("[tk] no tasks found");
+                });
+            }
+        }
+        let managers = managers::get_available_managers();
+        if !managers.is_empty() {
+            task_found = true;
+            let manager_names = managers.join(", ");
+            println!("{} {}", "Available project manager tools:".bold().green(), manager_names);
+            ["install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"]
+                .iter()
+                .for_each(|task| {
+                    println!("    -- {}", task.bold());
+                });
+        }
+        if !task_found {
+            println!("{}", "No task runner or project management tool found!".bold().red());
         }
         return;
     }
