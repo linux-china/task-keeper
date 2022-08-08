@@ -61,6 +61,20 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
     }
 }
 
+pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
+    match runner {
+        "maven" => maven::get_task_command_map(),
+        "gradle" => gradle::get_task_command_map(),
+        "sbt" => sbt::get_task_command_map(),
+        "npm" => npm::get_task_command_map(),
+        "cargo" => cargo::get_task_command_map(),
+        "composer" => composer::get_task_command_map(),
+        "go" => golang::get_task_command_map(),
+        "bundle" => bundler::get_task_command_map(),
+        _ => HashMap::new(),
+    }
+}
+
 pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
     let mut queue: HashMap<&str, fn(&str, &[&str], bool) -> Result<Output, KeeperError>> = HashMap::new();
     if maven::is_available() {
