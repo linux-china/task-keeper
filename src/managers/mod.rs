@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::process::Output;
 use colored::Colorize;
 use crate::errors::KeeperError;
@@ -61,75 +62,92 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
 }
 
 pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
-    println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
-    let mut queue: Vec<fn(&str, &[&str], bool) -> Result<Output, KeeperError>> = vec![];
+    let mut queue: HashMap<&str, fn(&str, &[&str], bool) -> Result<Output, KeeperError>> = HashMap::new();
     if maven::is_available() {
         if maven::is_command_available() {
-            queue.push(maven::run_task);
+            queue.insert("maven", maven::run_task);
         } else {
             println!("{}", format!("[tk] maven(https://maven.apache.org/) command not available for pom.xml").bold().red());
         }
     }
     if gradle::is_available() {
         if gradle::is_command_available() {
-            queue.push(gradle::run_task);
+            queue.insert("gradle", gradle::run_task);
         } else {
             println!("{}", format!("[tk] gradle(https://gradle.org/) command not available").bold().red());
         }
     }
     if sbt::is_available() {
         if sbt::is_command_available() {
-            queue.push(sbt::run_task);
+            queue.insert("sbt", sbt::run_task);
         } else {
             println!("{}", format!("[tk] sbt(https://www.scala-sbt.org/) command not available for build.sbt").bold().red());
         }
     }
     if npm::is_available() {
         if npm::is_command_available() {
-            queue.push(npm::run_task);
+            queue.insert("npm", npm::run_task);
         } else {
             println!("{}", format!("[tk] npm(https://nodejs.org/) command not available for package.json").bold().red());
         }
     }
     if cargo::is_available() {
         if cargo::is_command_available() {
-            queue.push(cargo::run_task);
+            queue.insert("cargo", cargo::run_task);
         } else {
             println!("{}", format!("[tk] cargo(https://gradle.org/) command not available for Cargo.toml").bold().red());
         }
     }
     if composer::is_available() {
         if composer::is_command_available() {
-            queue.push(composer::run_task);
+            queue.insert("composer", composer::run_task);
         } else {
             println!("{}", format!("[tk] gradle(https://gradle.org/) command not available for composer.json").bold().red());
         }
     }
     if bundler::is_available() {
         if bundler::is_command_available() {
-            queue.push(bundler::run_task);
+            queue.insert("bundle", bundler::run_task);
         } else {
             println!("{}", format!("[tk] bundle(https://bundler.io/) command not available for Gemfile").bold().red());
         }
     }
     if golang::is_available() {
         if golang::is_command_available() {
-            queue.push(golang::run_task);
+            queue.insert("go", golang::run_task);
         } else {
             println!("{}", format!("[tk] go(https://go.dev/) command not available for go.mod").bold().red());
         }
     }
-    match task_name {
-        "init" => {}
-        "start" => { // only execute start task once
-            if let Some(task) = queue.first() {
-                task(task_name, extra_args, verbose).unwrap();
-            }
+    if queue.is_empty() { // no manager found
+        println!("{}", format!("[tk] no available manager detected").bold().red());
+    } else if !runner.is_empty() { // run task by runner name
+        if let Some(task) = queue.get(runner) {
+            println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
+            task(task_name, extra_args, verbose).unwrap();
+        } else {
+            println!("{}", format!("[tk] {} manager not available", runner).bold().red());
         }
-        _ => {
-            queue.iter().for_each(|task| {
-                task(task_name, extra_args, verbose).unwrap();
-            });
+    } else { // run task by all available managers
+        match task_name {
+            "init" => {}
+            "start" => { // only execute start task once
+                if queue.len() == 1 {
+                    queue.iter().for_each(|(runner_name, task)| {
+                        println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
+                        task(task_name, extra_args, verbose).unwrap();
+                    });
+                } else {
+                    let runner_names = queue.iter().map(|(runner_name, _task)| runner_name.to_owned()).collect::<Vec<_>>().join(",");
+                    println!("{}", format!("[tk] Failed to run start because of multi start tasks from {}", runner_names).bold().red());
+                }
+            }
+            _ => {
+                queue.iter().for_each(|(runner_name, task)| {
+                    println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
+                    task(task_name, extra_args, verbose).unwrap();
+                });
+            }
         }
     }
     Ok(())
