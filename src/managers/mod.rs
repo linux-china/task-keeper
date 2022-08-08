@@ -12,6 +12,7 @@ pub mod sbt;
 pub mod composer;
 pub mod bundler;
 pub mod golang;
+mod cmakeconan;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go"];
@@ -42,6 +43,9 @@ pub fn get_available_managers() -> Vec<String> {
     if golang::is_available() {
         managers.push("go".to_string());
     }
+    if cmakeconan::is_available() {
+        managers.push("cmake".to_string());
+    }
     managers
 }
 
@@ -52,7 +56,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "sbt" => "build.sbt",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
-        "cmake" => "CMakeLists.txt",
+        "cmake" => "CMakeLists.txt,conanfile.txt",
         "composer" => "composer.json",
         "go" => "go.mod",
         "swift" => "Package.swift",
@@ -70,6 +74,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "cargo" => cargo::get_task_command_map(),
         "composer" => composer::get_task_command_map(),
         "go" => golang::get_task_command_map(),
+        "cmake" => cmakeconan::get_task_command_map(),
         "bundle" => bundler::get_task_command_map(),
         _ => HashMap::new(),
     }
@@ -131,6 +136,13 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
             queue.insert("go", golang::run_task);
         } else {
             println!("{}", format!("[tk] go(https://go.dev/) command not available for go.mod").bold().red());
+        }
+    }
+    if cmakeconan::is_available() {
+        if cmakeconan::is_command_available() {
+            queue.insert("cmake", cmakeconan::run_task);
+        } else {
+            println!("{}", format!("[tk] cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
