@@ -71,6 +71,8 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * update: update outdated dependencies `go get -u`
 * add dependency: `tk add dependency` or `tk -D add dependency` or `tk --runner=npm add dependency`
 
+**Attention**: if package manager's task name is in a task runner, and task keeper will not execute package manager's command.  
+
 ### Apache Maven
 
 Available 
