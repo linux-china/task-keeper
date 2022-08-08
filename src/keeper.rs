@@ -64,83 +64,135 @@ pub fn run_manager_task(runner: &str, task_name: &str, extra_args: &[&str], verb
 }
 
 pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
-    let mut tasks = HashMap::new();
+    let mut all_tasks = HashMap::new();
     if runners::fleet::is_available() {
-        tasks.insert("fleet".to_string(), runners::fleet::list_tasks().unwrap());
+        if let Ok(runner_tasks) = runners::fleet::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("fleet".to_string(), runner_tasks);
+            }
+        }
     }
     if runners::procfile::is_available() {
-        tasks.insert("procfile".to_string(), runners::procfile::list_tasks().unwrap());
+        if let Ok(runner_tasks) = runners::procfile::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("procfile".to_string(), runner_tasks);
+            }
+        }
     }
     if runners::markdown::is_available() {
-        tasks.insert("markdown".to_string(), runners::markdown::list_tasks().unwrap());
+        if let Ok(runner_tasks) = runners::markdown::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("markdown".to_string(), runner_tasks);
+            }
+        }
     }
     if runners::taskshell::is_available() {
-        tasks.insert("shell".to_string(), runners::taskshell::list_tasks().unwrap());
+        if let Ok(runner_tasks) = runners::taskshell::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("shell".to_string(), runner_tasks);
+            }
+        }
     }
     if runners::justfile::is_available() {
         if runners::justfile::is_command_available() {
-            tasks.insert("just".to_string(), runners::justfile::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::justfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("justfile".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] just(https://github.com/casey/just) command not available for justfile").bold().red());
         }
     }
     if runners::packagejson::is_available() {
         if runners::packagejson::is_command_available() {
-            tasks.insert("npm".to_string(), runners::packagejson::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::packagejson::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("npm".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] npm(https://nodejs.org) command not available for package.json").bold().red());
         }
     }
     if runners::denojson::is_available() {
         if runners::denojson::is_command_available() {
-            tasks.insert("deno".to_string(), runners::denojson::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::denojson::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("deno".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] deno(https://deno.land) command not available for deno.json").bold().red());
         }
     }
     if runners::makefile::is_available() {
         if runners::makefile::is_command_available() {
-            tasks.insert("make".to_string(), runners::makefile::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::makefile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("make".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] make(https://www.gnu.org/software/make) command not available for makefile").bold().red());
         }
     }
     if runners::rakefile::is_available() {
         if runners::rakefile::is_command_available() {
-            tasks.insert("rake".to_string(), runners::rakefile::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::rakefile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("rake".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] rake(https://ruby.github.io/rake/) command not available for rakefile").bold().red());
         }
     }
     if runners::taskfileyml::is_available() {
         if runners::taskfileyml::is_command_available() {
-            tasks.insert("task".to_string(), runners::taskfileyml::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::taskfileyml::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("task".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] task(https://taskfile.dev) command not available for Taskfile.yml").bold().red());
         }
     }
     if runners::makefiletoml::is_available() {
         if runners::makefiletoml::is_command_available() {
-            tasks.insert("cargo-make".to_string(), runners::makefiletoml::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::makefiletoml::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("cargo-make".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml").bold().red());
         }
     }
     if runners::taskspy::is_available() {
         if runners::taskspy::is_command_available() {
-            tasks.insert("invoke".to_string(), runners::taskspy::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::taskspy::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("invoke".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
         }
     }
     if runners::composer::is_available() {
         if runners::composer::is_command_available() {
-            tasks.insert("composer".to_string(), runners::composer::list_tasks().unwrap());
+            if let Ok(runner_tasks) = runners::composer::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("composer".to_string(), runner_tasks);
+                }
+            }
         } else {
             println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
         }
     }
-    Ok(tasks)
+    Ok(all_tasks)
 }
 
 #[cfg(test)]
