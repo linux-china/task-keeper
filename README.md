@@ -58,13 +58,13 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 
 ### Common tasks for all package managers:
 
-* init: create project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx`
+* init: create project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx` etc
 * install: install all dependencies `npm istall`, `dependency:resolve`
 * compile: compile source code, not available for some script languages
 * build: cargo: `tk build -- --release`, maven: `mvn -DskipTests clean package`, npm: `npm run build`
-* start: start project
+* start: start project `go run main.go`
 * test: run test npm: `npm test`, maven: `mvn test`, cargo: `cargo test`
-* doc: generate documentation
+* doc: generate documentation `mvn javadoc:javadoc`
 * deps: list all dependencies
 * clean: clean build artifacts, maven: `mvn clean`, cargo: `cargo clean`
 * outdated: display outdated dependencies `go list -u -m all`
@@ -73,7 +73,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 
 ### Apache Maven
 
-Available
+Available 
 
 ### Gradle
 
@@ -134,17 +134,18 @@ Available
 
 ### CMake
 
-Not available
+Only support [cmake-conan](https://github.com/conan-io/cmake-conan), and conanfile.txt required. 
 
 ### Swift
 
-Not Available
+Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-outdated) for `outdated` operation.
 
 # Todo
 
 ## Task Runners
 
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
+* JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html  
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 
 # Shell scripts in Markdown
@@ -166,3 +167,4 @@ curl https://httpbin.org/ip \
     --silent
 curl https://httpbin.org/headers
 ```
+
