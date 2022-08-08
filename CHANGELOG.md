@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2022-08-08
+
+### Added
+
+- CMake ad Conan support
+- Swift package manager support
+- Adjust project/package managers display
+
 ## [0.2.0] - 2022-08-07
 
 ### Added
