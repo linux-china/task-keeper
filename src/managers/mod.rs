@@ -56,7 +56,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "sbt" => "build.sbt",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
-        "cmake" => "CMakeLists.txt,conanfile.txt",
+        "cmake" => "CMakeLists.txt, conanfile.txt",
         "composer" => "composer.json",
         "go" => "go.mod",
         "swift" => "Package.swift",
