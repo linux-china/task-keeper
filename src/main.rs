@@ -125,19 +125,11 @@ fn main() {
         if runner_name == "shell" {
             let exists = Path::new("./task.sh").exists();
             if !exists {
-                let mut file = if cfg!(windows) {
-                    std::fs::File::create("./task.sh").unwrap()
-                } else {
-                    use std::os::unix::fs::OpenOptionsExt;
-                    std::fs::OpenOptions::new()
-                        .create(true)
-                        .write(true)
-                        .mode(0o755)
-                        .open("./task.sh")
-                        .unwrap()
-                };
+                let mut tasksh_file = std::fs::File::create("./task.sh").unwrap();
                 let bytes = include_bytes!("./templates/task.sh");
-                file.write_all(bytes).unwrap();
+                tasksh_file.write_all(bytes).unwrap();
+                set_executable("./task.sh");
+                println!("{}", "task.sh created".bold().green());
             } else {
                 println!("{}", "[tk] task.sh already exists".bold().red());
             }
@@ -187,3 +179,12 @@ fn format_description(description: &str) -> String {
     }
     return short_desc;
 }
+
+#[cfg(target_family = "unix")]
+fn set_executable(path: &str) {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755)).unwrap();
+}
+
+#[cfg(not(target_family = "unix"))]
+fn set_executable(path: &str) {}
