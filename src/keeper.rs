@@ -39,6 +39,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&st
                             .for_each(|task| {
                                 if task.name.as_str() == *target_task_name {
                                     task_count += 1;
+                                    runner_task_found = true;
                                     run_runner_task(runner, target_task_name, extra_args, verbose).unwrap();
                                 }
                             });
@@ -203,7 +204,6 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
 
 #[cfg(test)]
 mod tests {
-    use crate::task;
     use super::*;
 
     #[test]
