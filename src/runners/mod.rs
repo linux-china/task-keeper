@@ -35,7 +35,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
         "composer" => composer::run_task(task_name, extra_args, verbose),
         "markdown" => markdown::run_task(task_name, extra_args, verbose),
         "shell" => taskshell::run_task(task_name, extra_args, verbose),
-        _ => Err(report!(KeeperError::FailedToRunTasks(format!("unknown runner: {}", runner)))),
+        _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
     }
 }
 
