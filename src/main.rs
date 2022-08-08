@@ -7,7 +7,6 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
-use crate::models::Task;
 
 mod app;
 mod keeper;
