@@ -56,10 +56,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .change_context(KeeperError::InvalidJBangCatalogJson)
 }
 
-pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    let mut args = vec!["run"];
+pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    let mut args = vec![];
+    args.extend(global_args);
+    args.push("run");
     args.push(task);
-    args.extend(extra_args);
+    args.extend(task_args);
     run_command("jbang", &args, verbose)
 }
 
@@ -76,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("Hello", &[], true) {
+        if let Ok(output) = run_task("Hello", &[], &[],true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

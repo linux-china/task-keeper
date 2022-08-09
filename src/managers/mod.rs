@@ -16,7 +16,7 @@ pub mod cmakeconan;
 pub mod swift;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go","swift"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -85,8 +85,8 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
     }
 }
 
-pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
-    let mut queue: HashMap<&str, fn(&str, &[&str], bool) -> Result<Output, KeeperError>> = HashMap::new();
+pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
+    let mut queue: HashMap<&str, fn(&str, &[&str], &[&str], bool) -> Result<Output, KeeperError>> = HashMap::new();
     if maven::is_available() {
         if maven::is_command_available() {
             queue.insert("maven", maven::run_task);
@@ -152,7 +152,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
     }
     if swift::is_available() {
         if swift::is_command_available() {
-            queue.insert("swift", cmakeconan::run_task);
+            queue.insert("swift", swift::run_task);
         } else {
             println!("{}", format!("[tk] swift(https://www.swift.org/) command not available for Package.swift").bold().red());
         }
@@ -162,7 +162,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
     } else if !runner.is_empty() { // run task by runner name
         if let Some(task) = queue.get(runner) {
             println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
-            task(task_name, extra_args, verbose).unwrap();
+            task(task_name, task_args, global_args, verbose).unwrap();
         } else {
             println!("{}", format!("[tk] {} manager not available", runner).bold().red());
         }
@@ -173,7 +173,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
                 if queue.len() == 1 {
                     queue.iter().for_each(|(runner_name, task)| {
                         println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
-                        task(task_name, extra_args, verbose).unwrap();
+                        task(task_name, task_args, global_args, verbose).unwrap();
                     });
                 } else {
                     let runner_names = queue.iter().map(|(runner_name, _task)| runner_name.to_owned()).collect::<Vec<_>>().join(",");
@@ -183,7 +183,7 @@ pub fn run_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: boo
             _ => {
                 queue.iter().for_each(|(runner_name, task)| {
                     println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
-                    task(task_name, extra_args, verbose).unwrap();
+                    task(task_name, task_args, global_args, verbose).unwrap();
                 });
             }
         }

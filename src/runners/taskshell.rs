@@ -34,10 +34,11 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let mut args = vec![];
+    args.extend(global_args);
     args.push(task);
-    args.extend(extra_args);
+    args.extend(task_args);
     run_command("./task.sh", &args, verbose)
 }
 
@@ -54,7 +55,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("start", &[], true) {
+        if let Ok(output) = run_task("start", &[], &[],true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

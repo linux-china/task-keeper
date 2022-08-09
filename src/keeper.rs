@@ -7,7 +7,7 @@ use crate::models::Task;
 use crate::{managers, runners};
 use crate::runners::RUNNERS;
 
-pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&str], verbose: bool) -> Result<i32, KeeperError> {
+pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<i32, KeeperError> {
     let mut task_count = 0;
     let all_tasks = list_all_runner_tasks();
     if let Ok(tasks_hashmap) = all_tasks {
@@ -20,13 +20,13 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&st
                             if task.name.as_str() == *target_task_name {
                                 task_count += 1;
                                 runner_task_found = true;
-                                run_runner_task(cli_runner, target_task_name, extra_args, verbose).unwrap();
+                                run_runner_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
                             }
                         });
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                         task_count += 1;
-                        run_manager_task(cli_runner, target_task_name, extra_args, verbose).unwrap();
+                        run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
                     }
                 }
             }
@@ -40,7 +40,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&st
                                 if task.name.as_str() == *target_task_name {
                                     task_count += 1;
                                     runner_task_found = true;
-                                    run_runner_task(runner, target_task_name, extra_args, verbose).unwrap();
+                                    run_runner_task(runner, target_task_name, task_args, global_args, verbose).unwrap();
                                 }
                             });
                     }
@@ -48,7 +48,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&st
                 // execute package manager task
                 if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                     task_count += 1;
-                    run_manager_task(cli_runner, target_task_name, extra_args, verbose).unwrap();
+                    run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
                 }
             }
         }
@@ -56,12 +56,12 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], extra_args: &[&st
     Ok(task_count)
 }
 
-pub fn run_runner_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    runners::run_task(runner, task_name, extra_args, verbose)
+pub fn run_runner_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    runners::run_task(runner, task_name, task_args, global_args, verbose)
 }
 
-pub fn run_manager_task(runner: &str, task_name: &str, extra_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
-    managers::run_task(runner, task_name, extra_args, verbose)
+pub fn run_manager_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<(), KeeperError> {
+    managers::run_task(runner, task_name, task_args, global_args, verbose)
 }
 
 pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
@@ -219,7 +219,7 @@ mod tests {
 
     #[test]
     fn test_run_task() {
-        if let Ok(output) = run_runner_task("npm", "start", &[], true) {
+        if let Ok(output) = run_runner_task("npm", "start", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

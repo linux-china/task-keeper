@@ -26,7 +26,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map
 }
 
-pub fn run_task(task: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     if task == "build" {
         if !std::env::current_dir().map(|dir| dir.join("cmake-build-debug").exists()).unwrap_or(false) {
             // run compile first

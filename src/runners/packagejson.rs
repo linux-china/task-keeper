@@ -48,7 +48,7 @@ fn parse_package_json() -> Result<PackageJson, KeeperError> {
         .change_context(KeeperError::InvalidPackageJson)
 }
 
-pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let package_json = parse_package_json()?;
     let mut command_name = "npm";
     if let Some(package_manager) = package_json.package_manager {
@@ -56,9 +56,11 @@ pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output
             command_name = "yarn";
         }
     }
-    let mut args = vec!["run"];
-    args.extend(extra_args);
+    let mut args = vec![];
+    args.extend(global_args);
+    args.push("run");
     args.push(task);
+    args.extend(task_args);
     run_command(command_name, &args, verbose)
 }
 
@@ -75,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("start", &["--verbose"], true) {
+        if let Ok(output) = run_task("start", &["--verbose"], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

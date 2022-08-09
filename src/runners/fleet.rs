@@ -91,7 +91,7 @@ fn parse_run_json() -> FleetRunJson {
         .unwrap()
 }
 
-pub fn run_task(task_name: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task_name: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let run_json = parse_run_json();
     let result = run_json.configurations
         .iter()
@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        run_task("my-ip", &[], false).unwrap();
+        run_task("my-ip", &[], &[],false).unwrap();
     }
 
     #[test]

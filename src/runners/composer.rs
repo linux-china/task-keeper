@@ -53,10 +53,12 @@ fn parse_composer_json() -> Result<ComposerJson, KeeperError> {
         .change_context(KeeperError::InvalidComposerJson)
 }
 
-pub fn run_task(task: &str, extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    let mut args = vec!["run-script"];
-    args.extend(extra_args);
+pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    let mut args = vec![];
+    args.extend(global_args);
+    args.push("run-script");
     args.push(task);
+    args.extend(task_args);
     run_command("composer", &args, verbose)
 }
 
@@ -80,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("my-ip", &[], true) {
+        if let Ok(output) = run_task("my-ip", &[], &[],true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

@@ -35,7 +35,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map
 }
 
-pub fn run_task(task: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {

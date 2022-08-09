@@ -77,7 +77,7 @@ fn parse_task_from_code_block(counter: i32, code_block: &str) -> Task {
     task!(name, "markdown", description)
 }
 
-pub fn run_task(task: &str, _extra_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let tasks = list_tasks()?;
     let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
         KeeperError::TaskNotFound(task.to_string())
@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("http-methods", &[], true) {
+        if let Ok(output) = run_task("http-methods", &[],&[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }
