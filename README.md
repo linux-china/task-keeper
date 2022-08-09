@@ -118,6 +118,8 @@ addDependencyTreePlugin
 
 Available
 
+* If `npm-check` command available, `npm-check -u` will be used as `outdated` task.
+
 ### Cargo
 
 Available
