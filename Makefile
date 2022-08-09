@@ -1,10 +1,13 @@
 .PHONY: hello second clean.h
 
-hello: ## say hello
+# say hello
+hello:
 	echo "hello"
 
+# second task
 second:
 	echo "second"
 
+# clean up
 clean.h:
 	echo "clean"
