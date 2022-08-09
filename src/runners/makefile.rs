@@ -45,7 +45,16 @@ pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: b
     args.extend(global_args);
     args.push(task);
     args.extend(task_args);
-    run_command("make", &args, verbose)
+    run_command(get_make_command(), &args, verbose)
+}
+
+/// Returns the command to run Makefile, either "mmake" or "make"
+fn get_make_command() -> &'static str {
+    if which("mmake").is_ok() {
+        "mmake"
+    } else {
+        "make"
+    }
 }
 
 #[cfg(test)]
@@ -61,7 +70,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("hello", &[], &[],true) {
+        if let Ok(output) = run_task("hello", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }
