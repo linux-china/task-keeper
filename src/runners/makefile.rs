@@ -19,9 +19,12 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+    if which::which("mmake").is_ok() {
+        return list_tasks_by_mmake();
+    }
     let makefile_meta_text = capture_command_output("make", &["-pRrq"])
         .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
+            String::from_utf8(output.stdout).unwrap_or("".to_owned())
         })?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*:.*").unwrap();
 
@@ -36,6 +39,27 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         })
         .map(|task_name| {
             task!(task_name, "make")
+        }).collect();
+    Ok(tasks)
+}
+
+fn list_tasks_by_mmake() -> Result<Vec<Task>, KeeperError> {
+    let makefile_meta_text = capture_command_output("mmake", &["help"])
+        .map(|output| {
+            String::from_utf8(output.stdout).unwrap_or("".to_owned())
+        })?;
+    let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*.*").unwrap();
+    let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
+        .lines()
+        .filter(|line| {
+            line.is_ok() && re.is_match(line.as_ref().unwrap().trim())
+        })
+        .map(|line| line.unwrap().trim().to_owned())
+        .map(|line| {
+            let mut parts = line.split_whitespace();
+            let task_name = parts.next().unwrap();
+            let description = parts.next().unwrap_or("");
+            task!(task_name, "make",description)
         }).collect();
     Ok(tasks)
 }
@@ -64,6 +88,13 @@ mod tests {
     #[test]
     fn test_parse() {
         if let Ok(tasks) = list_tasks() {
+            println!("{:?}", tasks);
+        }
+    }
+
+    #[test]
+    fn test_list_tasks_by_mmake() {
+        if let Ok(tasks) = list_tasks_by_mmake() {
             println!("{:?}", tasks);
         }
     }
