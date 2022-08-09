@@ -146,6 +146,11 @@ Default build directory is `cmake-build-debug`, and you override it by `CMAKE_BI
 
 Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-outdated) for `outdated` operation.
 
+# Task options and global options
+
+Task options are options for task, such as `tk hello --name linux_china`.
+Global options are options for task runner and seperated by double dash, such as `tk hello --name linux_china -- --verbose`
+
 # Todo
 
 ## Task Runners
