@@ -26,7 +26,11 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("deps".to_string(), "npm list".to_string());
     task_command_map.insert("doc".to_string(), "npm run doc".to_string());
     task_command_map.insert("clean".to_string(), "npm run clean".to_string());
-    task_command_map.insert("outdated".to_string(), "npm outdated".to_string());
+    if which::which("npm-check").is_ok() {
+        task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
+    } else {
+        task_command_map.insert("outdated".to_string(), "npm outdated".to_string());
+    }
     task_command_map.insert("update".to_string(), "npm update".to_string());
     task_command_map
 }
