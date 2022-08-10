@@ -40,7 +40,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 
 # Task runners support
 
-* make(Makefile): https://www.gnu.org/software/make/manual/make.html `make -qn`
+* make(Makefile): https://www.gnu.org/software/make/manual/make.html, [Modern Make](https://github.com/tj/mmake) support
 * npm(package.json): https://docs.npmjs.com/cli/v8/using-npm/scripts
 * deno(deno.json): https://deno.land/manual/tools/task_runner
 * composer(composer.json): https://getcomposer.org/doc/articles/scripts.md
@@ -155,9 +155,19 @@ Global options are options for task runner and seperated by double dash, such as
 
 ## Task Runners
 
+* Apache Ant(build.xml): https://ant.apache.org/
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
 * JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html  
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
+* mask(maskfile.md): https://github.com/jacobdeichert/mask
+
+# Package Managers
+
+* Poetry(pyproject.toml): https://python-poetry.org/
+* Pipenv(Pipfile): https://pipenv.pypa.io/en/latest/
+* Bazel(WORKSPACE): https://bazel.build
+* Leiningen(project.clj): https://leiningen.org/
+* realize(.realize.yaml): https://github.com/oxequa/realize
 
 # Shell scripts in Markdown
 
