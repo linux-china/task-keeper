@@ -8,6 +8,7 @@
 
 - `--doctor` option added to check your system for potential problems to run tasks
 - Create task file for jbang, make, just: `tk --init=jbang`, `tk --init=make`, `tk --init=just`
+- hex package manager: mix & rebar3 support
 
 ## [0.4.0] - 2022-08-09
 
