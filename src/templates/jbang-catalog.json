@@ -1,0 +1,14 @@
+{
+  "aliases": {
+    "HelloWorld": {
+      "script-ref": "src/main/jbang/HelloWorld.java",
+      "description": "Hello World",
+      "java": "17"
+    },
+    "YourApp": {
+      "script-ref": "src/main/jbang/YourApp.java",
+      "description": "Run your app",
+      "java": "17"
+    }
+  }
+}
