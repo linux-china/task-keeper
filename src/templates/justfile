@@ -1,0 +1,7 @@
+# say hello
+hello:
+  echo "hello"
+
+# execute task1
+task1:
+  echo "Execute task1"
