@@ -21,7 +21,9 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "go get -u".to_string());
     task_command_map.insert("compile".to_string(), "go build".to_string());
     task_command_map.insert("build".to_string(), "go build".to_string());
-    task_command_map.insert("start".to_string(), "go run main.go".to_string());
+    if std::env::current_dir().map(|dir| dir.join("main.go").exists()).is_ok() {
+        task_command_map.insert("start".to_string(), "go run main.go".to_string());
+    }
     task_command_map.insert("test".to_string(), "go test".to_string());
     task_command_map.insert("deps".to_string(), "go list -m all".to_string());
     task_command_map.insert("doc".to_string(), "go doc".to_string());
