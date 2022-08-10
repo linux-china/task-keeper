@@ -18,9 +18,10 @@ pub mod bazel;
 pub mod poetry;
 pub mod lein;
 pub mod rebar3;
+pub mod mix;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein", "rebar3"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein", "rebar3", "mix"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -85,6 +86,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "poetry" => "pyproject.toml",
         "lein" => "project.clj",
         "rebar3" => "rebar.config",
+        "mix" => "mix.exs",
         _ => "unknown",
     }
 }
@@ -105,6 +107,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "poetry" => poetry::get_task_command_map(),
         "lein" => lein::get_task_command_map(),
         "rebar3" => rebar3::get_task_command_map(),
+        "mix" => mix::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -207,6 +210,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("rebar3", rebar3::run_task);
         } else {
             println!("{}", format!("[tk] rebar3(https://rebar3.readme.io/) command not available for rebar.config").bold().red());
+        }
+    }
+    if mix::is_available() {
+        if mix::is_command_available() {
+            queue.insert("mix", mix::run_task);
+        } else {
+            println!("{}", format!("[tk] mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs").bold().red());
         }
     }
     if queue.is_empty() { // no manager found

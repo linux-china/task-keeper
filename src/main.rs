@@ -361,6 +361,12 @@ fn diagnose() {
             println!("{} rebar3(https://rebar3.readme.io/) command not available for rebar.config", "Warning:".bold().yellow());
         }
     }
+    if managers::mix::is_available() {
+        if !managers::mix::is_command_available() {
+            problems_count += 1;
+            println!("{} mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs", "Warning:".bold().yellow());
+        }
+    }
     if problems_count > 0 {
         println!("{} {} problems found!", "Warning:".bold().yellow(), problems_count);
     } else {
