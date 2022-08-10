@@ -355,7 +355,12 @@ fn diagnose() {
             println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
         }
     }
-
+    if managers::rebar3::is_available() {
+        if !managers::rebar3::is_command_available() {
+            problems_count += 1;
+            println!("{} rebar3(https://rebar3.readme.io/) command not available for rebar.config", "Warning:".bold().yellow());
+        }
+    }
     if problems_count > 0 {
         println!("{} {} problems found!", "Warning:".bold().yellow(), problems_count);
     } else {

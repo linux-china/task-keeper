@@ -17,9 +17,10 @@ pub mod swift;
 pub mod bazel;
 pub mod poetry;
 pub mod lein;
+pub mod rebar3;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein", "rebar3"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -62,6 +63,9 @@ pub fn get_available_managers() -> Vec<String> {
     if lein::is_available() {
         managers.push("lein".to_string());
     }
+    if rebar3::is_available() {
+        managers.push("rebar3".to_string());
+    }
     managers
 }
 
@@ -80,6 +84,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "bazel" => "WORKSPACE",
         "poetry" => "pyproject.toml",
         "lein" => "project.clj",
+        "rebar3" => "rebar.config",
         _ => "unknown",
     }
 }
@@ -99,6 +104,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "bazel" => bazel::get_task_command_map(),
         "poetry" => poetry::get_task_command_map(),
         "lein" => lein::get_task_command_map(),
+        "rebar3" => rebar3::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -194,6 +200,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("lein", lein::run_task);
         } else {
             println!("{}", format!("[tk] lein(https://leiningen.org/) command not available for project.clj").bold().red());
+        }
+    }
+    if rebar3::is_available() {
+        if rebar3::is_command_available() {
+            queue.insert("rebar3", rebar3::run_task);
+        } else {
+            println!("{}", format!("[tk] rebar3(https://rebar3.readme.io/) command not available for rebar.config").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
