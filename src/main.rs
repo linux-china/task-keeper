@@ -136,14 +136,29 @@ fn main() {
         if runner_name == "shell" {
             let exists = Path::new("./task.sh").exists();
             if !exists {
-                let mut tasksh_file = std::fs::File::create("./task.sh").unwrap();
+                let mut tasksh_file = std::fs::File::create("task.sh").unwrap();
                 let bytes = include_bytes!("./templates/task.sh");
                 tasksh_file.write_all(bytes).unwrap();
-                set_executable("./task.sh");
+                set_executable("task.sh");
                 println!("{}", "task.sh created".bold().green());
             } else {
                 println!("{}", "[tk] task.sh already exists".bold().red());
             }
+        } else if runner_name == "make" {
+            let mut make_file = std::fs::File::create("Makefile").unwrap();
+            let bytes = include_bytes!("./templates/Makefile");
+            make_file.write_all(bytes).unwrap();
+            println!("{}", "Makefile created".bold().green());
+        } else if runner_name == "just" {
+            let mut make_file = std::fs::File::create("justfile").unwrap();
+            let bytes = include_bytes!("./templates/justfile");
+            make_file.write_all(bytes).unwrap();
+            println!("{}", "justfile created".bold().green());
+        } else if runner_name == "jbang" {
+            let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
+            let bytes = include_bytes!("./templates/jbang-catalog.json");
+            make_file.write_all(bytes).unwrap();
+            println!("{}", "jbang-catalog.json created".bold().green());
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
