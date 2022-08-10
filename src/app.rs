@@ -41,7 +41,7 @@ pub fn build_app() -> Command<'static> {
             Arg::new("init")
                 .long("init")
                 .takes_value(true)
-                .value_names(&["shell"])
+                .value_names(&["shell", "make", "jbang", "just"])
                 .help("Create a new task file by runner name")
                 .required(false),
         )
