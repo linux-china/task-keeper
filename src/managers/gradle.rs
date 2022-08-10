@@ -33,6 +33,20 @@ pub fn get_task_command_map() -> HashMap<String, String> {
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
+        if task == "start" {
+            let build_gradle_file = get_gradle_build_file();
+            let gradle_build_code = std::env::current_dir()
+                .map(|dir| dir.join(build_gradle_file))
+                .map(|path| std::fs::read_to_string(path).unwrap())
+                .unwrap_or("".to_owned());
+            if (build_gradle_file == "build.gradle.kt" && gradle_build_code.contains(r#"id("org.springframework.boo)"#))
+                || (build_gradle_file == "build.gradle" && gradle_build_code.contains(r#"id 'org.springframework.boot'"#)) {
+                return run_command_line(&format!("{} bootRun", get_gradle_command()), verbose);
+            } else if (build_gradle_file == "build.gradle.kt" && gradle_build_code.contains(r#"id("io.quarkus")"#))
+                || (build_gradle_file == "build.gradle" && gradle_build_code.contains(r#"id 'io.quarkus'"#)) {
+                return run_command_line(&format!("{} --console=plain quarkusDev", get_gradle_command()), verbose);
+            }
+        }
         run_command_line(command_line, verbose)
     } else {
         Err(report!(KeeperError::ManagerTaskNotFound(task.to_owned(), "gradle".to_string())))
