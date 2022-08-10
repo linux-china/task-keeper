@@ -38,6 +38,11 @@ fn main() {
         println!("{}", task_names.into_iter().collect::<Vec<String>>().join(" "));
         return;
     }
+    // check your system for potential problems to run tasks
+    if matches.is_present("doctor") {
+        diagnose();
+        return;
+    }
     // list tasks
     if matches.is_present("list") {
         let mut task_found = false;
@@ -171,6 +176,164 @@ fn main() {
 
     // display help message
     build_app().print_help().unwrap();
+}
+
+fn diagnose() {
+    let mut problems_count = 0;
+    if runners::justfile::is_available() {
+        if !runners::justfile::is_command_available() {
+            problems_count += 1;
+            println!("{} just(https://github.com/casey/just) command not available for justfile", "Warning:".bold().yellow());
+        }
+    }
+    if runners::packagejson::is_available() {
+        if !runners::packagejson::is_command_available() {
+            problems_count += 1;
+            println!("{} npm(https://nodejs.org) command not available for package.json", "Warning:".bold().yellow());
+        }
+    }
+    if runners::denojson::is_available() {
+        if !runners::denojson::is_command_available() {
+            problems_count += 1;
+            println!("{} deno(https://deno.land) command not available for deno.json", "Warning:".bold().yellow());
+        }
+    }
+    if runners::makefile::is_available() {
+        if !runners::makefile::is_command_available() {
+            problems_count += 1;
+            println!("{} make(https://www.gnu.org/software/make) command not available for makefile", "Warning:".bold().yellow());
+        }
+        if which::which("mmake").is_err() {
+            println!("{} mmake(https://github.com/tj/mmake) is more powerful to run Makefile", "Suggestion:".bold().yellow());
+        }
+    }
+    if runners::rakefile::is_available() {
+        if !runners::rakefile::is_command_available() {
+            problems_count += 1;
+            println!("{} rake(https://ruby.github.io/rake/) command not available for rakefile", "Warning:".bold().yellow());
+        }
+    }
+    if runners::taskfileyml::is_available() {
+        if !runners::taskfileyml::is_command_available() {
+            problems_count += 1;
+            println!("{} task(https://taskfile.dev) command not available for Taskfile.yml", "Warning:".bold().yellow());
+        }
+    }
+    if runners::makefiletoml::is_available() {
+        if !runners::makefiletoml::is_command_available() {
+            problems_count += 1;
+            println!("{} cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml", "Warning:".bold().yellow());
+        }
+    }
+    if runners::taskspy::is_available() {
+        if !runners::taskspy::is_command_available() {
+            problems_count += 1;
+            println!("{} invoke(https://www.pyinvoke.org) command not available for tasks.py", "Warning:".bold().yellow());
+        }
+    }
+    if runners::composer::is_available() {
+        if !runners::composer::is_command_available() {
+            problems_count += 1;
+            println!("{} composer(https://getcomposer.org/) command not available for composer.json", "Warning:".bold().yellow());
+        }
+    }
+    if runners::jbang::is_available() {
+        if !runners::jbang::is_command_available() {
+            problems_count += 1;
+            println!("{} jbang(https://www.jbang.dev/) command not available for jbang-catalog.json", "Warning:".bold().yellow());
+        }
+    }
+    // ==========package managers============
+    if managers::maven::is_available() {
+        if !managers::maven::is_command_available() {
+            problems_count += 1;
+            println!("{} maven(https://maven.apache.org/) command not available for pom.xml", "Warning:".bold().yellow());
+        }
+    }
+    if managers::gradle::is_available() {
+        if !managers::gradle::is_command_available() {
+            problems_count += 1;
+            println!("{} gradle(https://gradle.org/) command not available for {}", "Warning:".bold().yellow(), managers::gradle::get_gradle_build_file());
+        } else {
+            //global plugins for gradle $HOME/.gradle/init.d/plugins.gradle
+            if !dirs::home_dir().unwrap().join(".gradle").join("init.d").join("plugins.gradle").exists() {
+                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#gradle",
+                         "Suggestion:".bold().yellow(), "plugins.gradle".bold().blue(), "dependencyUpdates".bold().blue());
+            }
+        }
+    }
+    if managers::sbt::is_available() {
+        if !managers::sbt::is_command_available() {
+            problems_count += 1;
+            println!("{} sbt(https://www.scala-sbt.org/) command not available for build.sbt", "Warning:".bold().yellow());
+        } else {
+            //global plugins for sbt $HOME/.sbt/1.0/plugins/plugins.sbt
+            if !dirs::home_dir().unwrap().join(".sbt").join("1.0").join("plugins").join("plugins.sbt").exists() {
+                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#sbt",
+                         "Suggestion:".bold().yellow(), "plugins.sbt".bold().blue(), "dependencyUpdates".bold().blue());
+            }
+        }
+    }
+    if managers::npm::is_available() {
+        if !managers::npm::is_command_available() {
+            problems_count += 1;
+            println!("{} npm(https://nodejs.org/) command not available for package.json", "Warning:".bold().yellow());
+        }
+    }
+    if managers::cargo::is_available() {
+        if !managers::cargo::is_command_available() {
+            problems_count += 1;
+            println!("{} cargo(https://gradle.org/) command not available for Cargo.toml", "Warning:".bold().yellow());
+        }
+    }
+    if managers::composer::is_available() {
+        if !managers::composer::is_command_available() {
+            problems_count += 1;
+            println!("{} gradle(https://gradle.org/) command not available for composer.json", "Warning:".bold().yellow());
+        }
+    }
+    if managers::bundler::is_available() {
+        if !managers::bundler::is_command_available() {
+            problems_count += 1;
+            println!("{} bundle(https://bundler.io/) command not available for Gemfile", "Warning:".bold().yellow());
+        }
+    }
+    if managers::golang::is_available() {
+        if !managers::golang::is_command_available() {
+            problems_count += 1;
+            println!("{} go(https://go.dev/) command not available for go.mod", "Warning:".bold().yellow());
+        }
+    }
+    if managers::cmakeconan::is_available() {
+        if !managers::cmakeconan::is_command_available() {
+            problems_count += 1;
+            println!("{} cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt", "Warning:".bold().yellow());
+        }
+    }
+    if managers::swift::is_available() {
+        if !managers::swift::is_command_available() {
+            problems_count += 1;
+            println!("{} swift(https://www.swift.org/) command not available for Package.swift", "Warning:".bold().yellow());
+        }
+    }
+    if managers::bazel::is_available() {
+        if !managers::bazel::is_command_available() {
+            problems_count += 1;
+            println!("{} bazel(https://bazel.build/) command not available for WORKSPACE", "Warning:".bold().yellow());
+        }
+    }
+    if managers::poetry::is_available() {
+        if !managers::poetry::is_command_available() {
+            problems_count += 1;
+            println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
+        }
+    }
+
+    if problems_count > 0 {
+        println!("{} {} problems found!", "Warning:".bold().yellow(), problems_count);
+    } else {
+        println!("{} no problems found, and you are a nice developer :)", "Success:".bold().green());
+    }
 }
 
 fn format_description(description: &str) -> String {
