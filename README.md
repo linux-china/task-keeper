@@ -71,11 +71,12 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * update: update outdated dependencies `go get -u`
 * add dependency: `tk add dependency` or `tk -D add dependency` or `tk --runner=npm add dependency`
 
-**Attention**: if package manager's task name is in a task runner, and task keeper will not execute package manager's command.  
+**Attention**: if package manager's task name is in a task runner, and task keeper will not execute package manager's
+command.
 
 ### Apache Maven
 
-Available 
+Available
 
 ### Gradle
 
@@ -138,7 +139,7 @@ Available
 
 ### CMake
 
-Only support [cmake-conan](https://github.com/conan-io/cmake-conan), and conanfile.txt required. 
+Only support [cmake-conan](https://github.com/conan-io/cmake-conan), and conanfile.txt required.
 
 Default build directory is `cmake-build-debug`, and you override it by `CMAKE_BINARY_DIR=_build tk build`.
 
@@ -146,10 +147,18 @@ Default build directory is `cmake-build-debug`, and you override it by `CMAKE_BI
 
 Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-outdated) for `outdated` operation.
 
+### Bazel
+
+Available.
+
+### Poetry
+
+Available.
+
 # Task options and global options
 
 Task options are options for task, such as `tk hello --name linux_china`.
-Global options are options for task runner and seperated by double dash, such as `tk hello --name linux_china -- --verbose`
+Global options are options for task runner and seperated by double dash, such as `tk hello --name Jack -- --verbose`
 
 # Todo
 
@@ -157,7 +166,7 @@ Global options are options for task runner and seperated by double dash, such as
 
 * Apache Ant(build.xml): https://ant.apache.org/
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
-* JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html  
+* JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
 
