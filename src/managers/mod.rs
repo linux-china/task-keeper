@@ -15,9 +15,10 @@ pub mod golang;
 pub mod cmakeconan;
 pub mod swift;
 pub mod bazel;
+pub mod poetry;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -54,6 +55,9 @@ pub fn get_available_managers() -> Vec<String> {
     if bazel::is_available() {
         managers.push("bazel".to_string());
     }
+    if poetry::is_available() {
+        managers.push("poetry".to_string());
+    }
     managers
 }
 
@@ -70,6 +74,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "swift" => "Package.swift",
         "bundle" => "Gemfile",
         "bazel" => "WORKSPACE",
+        "poetry" => "pyproject.toml",
         _ => "unknown",
     }
 }
@@ -87,6 +92,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "bundle" => bundler::get_task_command_map(),
         "swift" => swift::get_task_command_map(),
         "bazel" => bazel::get_task_command_map(),
+        "poetry" => poetry::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -170,6 +176,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             println!("{}", format!("[tk] bazel(https://bazel.build/) command not available for WORKSPACE").bold().red());
         }
     }
+    if poetry::is_available() {
+        if poetry::is_command_available() {
+            queue.insert("poetry", poetry::run_task);
+        } else {
+            println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+        }
+    }
     if queue.is_empty() { // no manager found
         println!("{}", format!("[tk] no available manager detected").bold().red());
     } else if !runner.is_empty() { // run task by runner name
@@ -182,7 +195,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
     } else { // run task by all available managers
         match task_name {
             "init" => {}
-            "start" => { // only execute start task once
+            /*"start" => { // only execute start task once
                 if queue.len() == 1 {
                     queue.iter().for_each(|(runner_name, task)| {
                         println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
@@ -192,7 +205,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
                     let runner_names = queue.iter().map(|(runner_name, _task)| runner_name.to_owned()).collect::<Vec<_>>().join(",");
                     println!("{}", format!("[tk] Failed to run start because of multi start tasks from {}", runner_names).bold().red());
                 }
-            }
+            }*/
             _ => {
                 queue.iter().for_each(|(runner_name, task)| {
                     println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
