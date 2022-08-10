@@ -289,6 +289,18 @@ fn diagnose() {
             }
         }
     }
+    if managers::lein::is_available() {
+        if !managers::lein::is_command_available() {
+            problems_count += 1;
+            println!("{} lein(https://leiningen.org/) command not available for project.clj", "Warning:".bold().yellow());
+        } else {
+            //global plugins for lein $HOME/.lein/profiles.clj
+            if !dirs::home_dir().unwrap().join(".lein").join("profiles.clj").exists() {
+                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#lein",
+                         "Suggestion:".bold().yellow(), "profiles.clj".bold().blue(), "outdated".bold().blue());
+            }
+        }
+    }
     if managers::npm::is_available() {
         if !managers::npm::is_command_available() {
             problems_count += 1;
