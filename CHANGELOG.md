@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.4.0] - 2022-08-09
+
+### Added
+
+- Bazel support
+- Poetry support
+- Maven & Gradle start for Spring Boot and Quarkus
+- Makefile: use mmake if available
+
 ## [0.3.0] - 2022-08-08
 
 ### Added
