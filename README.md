@@ -157,6 +157,29 @@ Available.
 
 Available.
 
+### Lein
+
+Available.
+
+Please set up antq for outdated dependencies. `$HOME/.lein/profiles.clj`
+
+```clojure
+{
+ :user
+ {:dependencies [[com.github.liquidz/antq "RELEASE"]]
+  :aliases {"outdated" ["run" "-m" "antq.core"]}
+ }
+}
+```
+
+### Mix package manager
+
+Available.
+
+### Rebar3 package manager
+
+Available.
+
 # Task options and global options
 
 Task options are options for task, such as `tk hello --name linux_china`.
