@@ -14,6 +14,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 * Invoke task from a runner: `tk --runner=npm start`
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
 * .env support by default: `tk --no-dotenv` to disable
+* `--doctor` support: check your system for potential problems to run tasks
 
 # How to get started?
 
@@ -84,7 +85,7 @@ Available
 Please set up [gradle-versions-plugin](https://github.com/ben-manes/gradle-versions-plugin) for dependency version
 management.
 You can transparently add the plugin to every Gradle project that you run via a Gradle init script.
-`$HOME/.gradle/init.d/add-versions-plugin.gradle` with following code:
+`$HOME/.gradle/init.d/plugins.gradle` with following code:
 
 ```
 initscript {
@@ -175,6 +176,10 @@ Global options are options for task runner and seperated by double dash, such as
 * Pipenv(Pipfile): https://pipenv.pypa.io/en/latest/
 * Leiningen(project.clj): https://leiningen.org/
 * realize(.realize.yaml): https://github.com/oxequa/realize
+
+# Version detection
+
+such as `.node_version`, `.java_version` 
 
 # Shell scripts in Markdown
 
