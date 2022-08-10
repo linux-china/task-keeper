@@ -24,6 +24,13 @@ pub fn build_app() -> Command<'static> {
                 .required(false),
         )
         .arg(
+            Arg::new("doctor")
+                .long("doctor")
+                .takes_value(false)
+                .help("Check your system for potential problems to run tasks")
+                .required(false),
+        )
+        .arg(
             Arg::new("no-dotenv")
                 .long("no-dotenv")
                 .takes_value(false)
