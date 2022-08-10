@@ -50,6 +50,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * invoke(tasks.py): https://www.pyinvoke.org/
 * task(Taskfile.yml): https://github.com/go-task/task  https://www.sobyte.net/post/2022-04/taskfile/
 * cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
+* JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
@@ -166,15 +167,12 @@ Global options are options for task runner and seperated by double dash, such as
 
 * Apache Ant(build.xml): https://ant.apache.org/
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
-* JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
 
 # Package Managers
 
-* Poetry(pyproject.toml): https://python-poetry.org/
 * Pipenv(Pipfile): https://pipenv.pypa.io/en/latest/
-* Bazel(WORKSPACE): https://bazel.build
 * Leiningen(project.clj): https://leiningen.org/
 * realize(.realize.yaml): https://github.com/oxequa/realize
 
