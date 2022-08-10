@@ -14,9 +14,10 @@ pub mod bundler;
 pub mod golang;
 pub mod cmakeconan;
 pub mod swift;
+pub mod bazel;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -50,6 +51,9 @@ pub fn get_available_managers() -> Vec<String> {
     if swift::is_available() {
         managers.push("swift".to_string());
     }
+    if bazel::is_available() {
+        managers.push("bazel".to_string());
+    }
     managers
 }
 
@@ -65,6 +69,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "go" => "go.mod",
         "swift" => "Package.swift",
         "bundle" => "Gemfile",
+        "bazel" => "WORKSPACE",
         _ => "unknown",
     }
 }
@@ -81,6 +86,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "cmake" => cmakeconan::get_task_command_map(),
         "bundle" => bundler::get_task_command_map(),
         "swift" => swift::get_task_command_map(),
+        "bazel" => bazel::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -155,6 +161,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("swift", swift::run_task);
         } else {
             println!("{}", format!("[tk] swift(https://www.swift.org/) command not available for Package.swift").bold().red());
+        }
+    }
+    if bazel::is_available() {
+        if bazel::is_command_available() {
+            queue.insert("bazel", bazel::run_task);
+        } else {
+            println!("{}", format!("[tk] bazel(https://bazel.build/) command not available for WORKSPACE").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
