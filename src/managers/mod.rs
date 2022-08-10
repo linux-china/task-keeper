@@ -16,9 +16,10 @@ pub mod cmakeconan;
 pub mod swift;
 pub mod bazel;
 pub mod poetry;
+pub mod lein;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -58,6 +59,9 @@ pub fn get_available_managers() -> Vec<String> {
     if poetry::is_available() {
         managers.push("poetry".to_string());
     }
+    if lein::is_available() {
+        managers.push("lein".to_string());
+    }
     managers
 }
 
@@ -75,6 +79,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "bundle" => "Gemfile",
         "bazel" => "WORKSPACE",
         "poetry" => "pyproject.toml",
+        "lein" => "project.clj",
         _ => "unknown",
     }
 }
@@ -93,6 +98,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "swift" => swift::get_task_command_map(),
         "bazel" => bazel::get_task_command_map(),
         "poetry" => poetry::get_task_command_map(),
+        "lein" => lein::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -181,6 +187,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("poetry", poetry::run_task);
         } else {
             println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+        }
+    }
+    if lein::is_available() {
+        if lein::is_command_available() {
+            queue.insert("lein", lein::run_task);
+        } else {
+            println!("{}", format!("[tk] lein(https://leiningen.org/) command not available for project.clj").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
