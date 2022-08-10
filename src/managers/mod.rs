@@ -67,6 +67,9 @@ pub fn get_available_managers() -> Vec<String> {
     if rebar3::is_available() {
         managers.push("rebar3".to_string());
     }
+    if mix::is_available() {
+        managers.push("mix".to_string());
+    }
     managers
 }
 
