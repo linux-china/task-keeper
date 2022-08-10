@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- `--doctor` option added to check your system for potential problems to run tasks
+- Create task file for jbang, make, just: `tk --init=jbang`, `tk --init=make`, `tk --init=just`
+
 ## [0.4.0] - 2022-08-09
 
 ### Added
