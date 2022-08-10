@@ -22,7 +22,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), format!("{} dependency:resolve", mvn_command));
     task_command_map.insert("compile".to_string(), format!("{} compile testCompile", mvn_command));
     task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));
-    task_command_map.insert("start".to_string(), format!("{} compile exec:java", mvn_command));
+    task_command_map.insert("start".to_string(), get_start_command_line());
     task_command_map.insert("test".to_string(), format!("{} test", mvn_command));
     task_command_map.insert("deps".to_string(), format!("{} dependency:tree", mvn_command));
     task_command_map.insert("doc".to_string(), format!("{} javadoc:javadoc", mvn_command));
@@ -33,17 +33,6 @@ pub fn get_task_command_map() -> HashMap<String, String> {
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
-        if task == "start" {
-            let pom_xml = std::env::current_dir()
-                .map(|dir| dir.join("pom.xml"))
-                .map(|path| std::fs::read_to_string(path).unwrap())
-                .unwrap_or("<project></project>".to_owned());
-            if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>") {
-                return run_command_line(&format!("{} spring-boot:run", get_mvn_command()), verbose);
-            } else if pom_xml.contains("<artifactId>quarkus-maven-plugin</artifactId>") {
-                return run_command_line(&format!("{} quarkus:dev", get_mvn_command()), verbose);
-            }
-        }
         run_command_line(command_line, verbose)
     } else {
         Err(report!(KeeperError::ManagerTaskNotFound(task.to_owned(), "maven".to_string())))
@@ -59,4 +48,18 @@ fn get_mvn_command() -> &'static str {
     } else {
         "mvn"
     }
+}
+
+fn get_start_command_line() -> String {
+    let pom_xml = std::env::current_dir()
+        .map(|dir| dir.join("pom.xml"))
+        .map(|path| std::fs::read_to_string(path).unwrap())
+        .unwrap_or("<project></project>".to_owned());
+    return if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>") {
+        format!("{} spring-boot:run", get_mvn_command())
+    } else if pom_xml.contains("<artifactId>quarkus-maven-plugin</artifactId>") {
+        format!("{} quarkus:dev", get_mvn_command())
+    } else {
+        format!("{} exec:java", get_mvn_command())
+    };
 }
