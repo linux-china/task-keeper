@@ -19,7 +19,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("install".to_string(), "bazel fetch //...".to_string());
     task_command_map.insert("build".to_string(), "bazel build //...".to_string());
-    task_command_map.insert("deps".to_string(), "bazel query --notool_deps 'deps(//:*)'".to_string());
+    task_command_map.insert("deps".to_string(), "bazel query --notool_deps --noimplicit_deps 'deps(//...)'".to_string());
     task_command_map.insert("clean".to_string(), "bazel clean".to_string());
     task_command_map.insert("test".to_string(), "bazel test //...".to_string());
     task_command_map
