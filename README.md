@@ -197,7 +197,6 @@ Global options are options for task runner and seperated by double dash, such as
 # Package Managers
 
 * Pipenv(Pipfile): https://pipenv.pypa.io/en/latest/
-* Leiningen(project.clj): https://leiningen.org/
 * realize(.realize.yaml): https://github.com/oxequa/realize
 
 # Version detection
