@@ -310,13 +310,13 @@ fn diagnose() {
     if managers::cargo::is_available() {
         if !managers::cargo::is_command_available() {
             problems_count += 1;
-            println!("{} cargo(https://gradle.org/) command not available for Cargo.toml", "Warning:".bold().yellow());
+            println!("{} cargo(https://doc.rust-lang.org/cargo/) command not available for Cargo.toml", "Warning:".bold().yellow());
         }
     }
     if managers::composer::is_available() {
         if !managers::composer::is_command_available() {
             problems_count += 1;
-            println!("{} gradle(https://gradle.org/) command not available for composer.json", "Warning:".bold().yellow());
+            println!("{} composer(https://getcomposer.org/) command not available for composer.json", "Warning:".bold().yellow());
         }
     }
     if managers::bundler::is_available() {
