@@ -1,6 +1,6 @@
 [package]
 name = "task-keeper"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
