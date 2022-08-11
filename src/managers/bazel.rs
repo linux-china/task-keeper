@@ -7,7 +7,7 @@ use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("WORKSPACE").exists() || dir.join("BUILD").exists())
+        .map(|dir| dir.join("WORKSPACE").is_file() || dir.join("BUILD").is_file())
         .unwrap_or(false)
 }
 
