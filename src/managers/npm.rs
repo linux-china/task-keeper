@@ -13,7 +13,9 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
-    which("npm").is_ok() || which("yarn").is_ok()
+    let package_json = parse_package_json().unwrap();
+    let package_manager = get_package_command(&package_json);
+    which(package_manager).is_ok()
 }
 
 pub fn get_task_command_map() -> HashMap<String, String> {
@@ -42,12 +44,18 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     if scripts.contains_key("clean") {
         task_command_map.insert("clean".to_string(), format!("{} run clean", package_manager));
     }
-    if which::which("npm-check").is_ok() {
-        task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
-    } else {
-        task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
-    }
+    task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
     task_command_map.insert("update".to_string(), format!("{} update", package_manager));
+    if package_manager == "yarn@3" || package_manager == "yarn@2" {
+        task_command_map.insert("deps".to_string(), "yarn info --dependents".to_string());
+        task_command_map.insert("update".to_string(), "yarn up".to_string());
+    } else if package_manager == "yarn@1" {
+        task_command_map.insert("update".to_string(), "yarn upgrade".to_string());
+    } else if package_manager == "npm" {
+        if which::which("npm-check").is_ok() {
+            task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
+        }
+    }
     task_command_map
 }
 
