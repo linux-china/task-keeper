@@ -4,6 +4,19 @@
 
 ## [Unreleased]
 
+## [0.5.2] - 2022-08-10
+
+### Added
+
+- packageManager detection for package.json
+- Create task file for deno: `tk --init=deno`
+
+## [0.5.1] - 2022-08-09
+
+### Fixed
+
+- Fix Gradle project with Bazel display
+
 ## [0.5.0] - 2022-08-10
 
 ### Added
