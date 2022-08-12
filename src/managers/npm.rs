@@ -3,6 +3,7 @@ use std::process::Output;
 use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::{run_command_line};
+use crate::common::{get_package_command, parse_package_json};
 use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
@@ -16,22 +17,37 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn get_task_command_map() -> HashMap<String, String> {
+    let package_json = parse_package_json().unwrap();
+    let package_manager = get_package_command(&package_json);
+    let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "npm init".to_string());
-    task_command_map.insert("install".to_string(), "npm install".to_string());
-    task_command_map.insert("compile".to_string(), "npm run compile".to_string());
-    task_command_map.insert("build".to_string(), "npm run build".to_string());
-    task_command_map.insert("start".to_string(), "npm run start".to_string());
-    task_command_map.insert("test".to_string(), "npm run test".to_string());
-    task_command_map.insert("deps".to_string(), "npm list".to_string());
-    task_command_map.insert("doc".to_string(), "npm run doc".to_string());
-    task_command_map.insert("clean".to_string(), "npm run clean".to_string());
+    task_command_map.insert("init".to_string(), format!("{} init", package_manager));
+    task_command_map.insert("install".to_string(), format!("{} install", package_manager));
+    if scripts.contains_key("compile") {
+        task_command_map.insert("compile".to_string(), format!("{} run compile", package_manager));
+    }
+    if scripts.contains_key("build") {
+        task_command_map.insert("build".to_string(), format!("{} run build", package_manager));
+    }
+    if scripts.contains_key("start") {
+        task_command_map.insert("start".to_string(), format!("{} run start", package_manager));
+    }
+    if scripts.contains_key("test") {
+        task_command_map.insert("test".to_string(), format!("{} run test", package_manager));
+    }
+    task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
+    if scripts.contains_key("doc") {
+        task_command_map.insert("doc".to_string(), format!("{} run doc", package_manager));
+    }
+    if scripts.contains_key("clean") {
+        task_command_map.insert("clean".to_string(), format!("{} run clean", package_manager));
+    }
     if which::which("npm-check").is_ok() {
         task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
     } else {
-        task_command_map.insert("outdated".to_string(), "npm outdated".to_string());
+        task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
     }
-    task_command_map.insert("update".to_string(), "npm update".to_string());
+    task_command_map.insert("update".to_string(), format!("{} update", package_manager));
     task_command_map
 }
 
