@@ -56,6 +56,10 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 
+**Tips**:
+
+* Deno: please refer https://github.com/ije/esm.sh/releases/tag/v91 for npm packages manager
+
 # Package manager support
 
 ### Common tasks for all package managers:
