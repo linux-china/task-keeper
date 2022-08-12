@@ -15,6 +15,7 @@ mod models;
 mod runners;
 mod managers;
 mod command_utils;
+mod common;
 
 fn main() {
     let app = build_app();
@@ -72,7 +73,13 @@ fn main() {
             task_found = true;
             println!("{}", "Available project/package management tools:".bold().green());
             managers.into_iter().for_each(|manager_name| {
-                println!("{}", format!("  {}: {}", manager_name, managers::get_manager_file_name(&manager_name)).bold().blue());
+                if manager_name == "npm" {
+                    let package_json = common::parse_package_json().unwrap();
+                    let package_command = common::get_package_command(&package_json);
+                    println!("{}", format!("  {}: {}", package_command, managers::get_manager_file_name(&manager_name)).bold().blue());
+                } else {
+                    println!("{}", format!("  {}: {}", manager_name, managers::get_manager_file_name(&manager_name)).bold().blue());
+                }
                 let task_command_map = managers::get_manager_command_map(&manager_name);
                 if !task_command_map.is_empty() {
                     task_command_map.into_iter().for_each(|(task_name, command_line)| {
