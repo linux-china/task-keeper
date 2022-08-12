@@ -144,8 +144,7 @@ fn main() {
             let exists = Path::new("./task.sh").exists();
             if !exists {
                 let mut tasksh_file = std::fs::File::create("task.sh").unwrap();
-                let bytes = include_bytes!("./templates/task.sh");
-                tasksh_file.write_all(bytes).unwrap();
+                tasksh_file.write_all(include_bytes!("./templates/task.sh")).unwrap();
                 set_executable("task.sh");
                 println!("{}", "task.sh created".bold().green());
             } else {
@@ -153,19 +152,22 @@ fn main() {
             }
         } else if runner_name == "make" {
             let mut make_file = std::fs::File::create("Makefile").unwrap();
-            let bytes = include_bytes!("./templates/Makefile");
-            make_file.write_all(bytes).unwrap();
+            make_file.write_all(include_bytes!("./templates/Makefile")).unwrap();
             println!("{}", "Makefile created".bold().green());
         } else if runner_name == "just" {
             let mut make_file = std::fs::File::create("justfile").unwrap();
-            let bytes = include_bytes!("./templates/justfile");
-            make_file.write_all(bytes).unwrap();
+            make_file.write_all(include_bytes!("./templates/justfile")).unwrap();
             println!("{}", "justfile created".bold().green());
         } else if runner_name == "jbang" {
             let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
-            let bytes = include_bytes!("./templates/jbang-catalog.json");
-            make_file.write_all(bytes).unwrap();
+            make_file.write_all(include_bytes!("./templates/jbang-catalog.json")).unwrap();
             println!("{}", "jbang-catalog.json created".bold().green());
+        } else if runner_name == "deno" {
+            let mut deno_json_file = std::fs::File::create("deno.json").unwrap();
+            deno_json_file.write_all(include_bytes!("./templates/deno.json")).unwrap();
+            let mut import_map_file = std::fs::File::create("import_map.json").unwrap();
+            import_map_file.write_all(include_bytes!("./templates/import_map.json")).unwrap();
+            println!("{}", "deno.json and import_map.json created".bold().green());
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
