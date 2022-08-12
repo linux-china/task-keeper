@@ -20,7 +20,12 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let package_json = parse_package_json().unwrap();
-    let package_manager = get_package_command(&package_json);
+    let package_manager_raw = package_json.package_manager.unwrap_or("npm".to_owned());
+    let package_manager = if package_manager_raw.contains("@") {
+        package_manager_raw.split("@").collect::<Vec<&str>>()[0]
+    } else {
+        &package_manager_raw
+    };
     let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
     task_command_map.insert("init".to_string(), format!("{} init", package_manager));
@@ -37,19 +42,20 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     if scripts.contains_key("test") {
         task_command_map.insert("test".to_string(), format!("{} run test", package_manager));
     }
-    task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
     if scripts.contains_key("doc") {
         task_command_map.insert("doc".to_string(), format!("{} run doc", package_manager));
     }
     if scripts.contains_key("clean") {
         task_command_map.insert("clean".to_string(), format!("{} run clean", package_manager));
     }
+    task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
     task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
     task_command_map.insert("update".to_string(), format!("{} update", package_manager));
-    if package_manager == "yarn@3" || package_manager == "yarn@2" {
+    if package_manager_raw.starts_with("yarn@3") || package_manager_raw.starts_with("yarn@2") {
         task_command_map.insert("deps".to_string(), "yarn info --dependents".to_string());
+        task_command_map.insert("outdated".to_string(), "yarn upgrade-interactive".to_string());
         task_command_map.insert("update".to_string(), "yarn up".to_string());
-    } else if package_manager == "yarn@1" {
+    } else if package_manager_raw.starts_with("yarn@1") {
         task_command_map.insert("update".to_string(), "yarn upgrade".to_string());
     } else if package_manager == "npm" {
         if which::which("npm-check").is_ok() {
