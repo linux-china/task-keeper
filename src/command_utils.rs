@@ -16,7 +16,7 @@ pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<O
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<Output, KeeperError> {
     let command_and_args = shlex::split(command_line).unwrap();
     // command line contains pipe or not
-    if command_and_args.iter().any(|arg| arg == "|") {
+    if command_and_args.iter().any(|arg| arg == "|" || arg == "|&" || arg == ">" || arg == ">>") {
         return run_command_by_shell(command_line, verbose);
     }
     let command_name = &command_and_args[0];
