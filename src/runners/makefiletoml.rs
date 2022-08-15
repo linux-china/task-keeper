@@ -20,7 +20,7 @@ pub struct TaskToml {
     pub description: Option<String>,
     pub category: Option<String>,
     pub command: Option<String>,
-    pub script: Option<String>,
+    pub script: Option<Vec<String>>,
 }
 
 pub fn is_available() -> bool {
@@ -40,8 +40,8 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|data| toml::from_str::<MakefileToml>(&data).unwrap())
         .map(|makefile_toml| {
             makefile_toml.tasks
-                .map(|scripts| {
-                    scripts.iter()
+                .map(|tasks| {
+                    tasks.iter()
                         .map(|(name, task)| task!(name, "cargo-make", task.description.clone().unwrap_or("".to_owned())))
                         .collect()
                 })
