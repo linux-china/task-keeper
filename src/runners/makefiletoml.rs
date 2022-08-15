@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::process::Output;
 use error_stack::{IntoReport, Result, ResultExt};
 use serde::{Deserialize, Serialize};
+use toml::Value;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::run_command;
@@ -20,7 +21,7 @@ pub struct TaskToml {
     pub description: Option<String>,
     pub category: Option<String>,
     pub command: Option<String>,
-    pub script: Option<Vec<String>>,
+    pub script: Option<Value>,
 }
 
 pub fn is_available() -> bool {
