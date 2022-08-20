@@ -11,13 +11,16 @@ pub fn is_available() -> bool {
 pub fn init_env() {
     if let Ok(text) = std::fs::read_to_string(".java-version") {
         let java_version = text.trim();
+        let mut java_found = false;
         if let Some(java_home) = dirs::home_dir()
             .map(|dir| {
                 dir.join(".jbang").join("cache").join("jdks").join(java_version)
             })
             .filter(|dir| dir.exists()) {
+            java_found = true;
             reset_java_home(java_version, &java_home);
-        } else {
+        }
+        if !java_found {
             if let Some(java_candidates_home) = dirs::home_dir()
                 .map(|dir| {
                     dir.join(".sdkman").join("candidates").join("java")
@@ -28,6 +31,7 @@ pub fn init_env() {
                         if let Ok(path) = path {
                             if let Some(name) = path.file_name().to_str() {
                                 if name.starts_with(java_version) {
+                                    java_found = true;
                                     reset_java_home(java_version, &path.path());
                                     break;
                                 }
