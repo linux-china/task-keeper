@@ -16,6 +16,7 @@ mod runners;
 mod managers;
 mod command_utils;
 mod common;
+mod polyglot;
 
 fn main() {
     let app = build_app();
@@ -179,6 +180,8 @@ fn main() {
         if !no_dotenv {
             dotenv().ok();
         }
+        // inject polyglot for tasks
+        polyglot::inject_languages();
         let tasks_options = matches.values_of("tasks").unwrap().collect::<Vec<&str>>();
         let task_context = TaskContext::new(tasks_options);
         let tasks = task_context.names;
