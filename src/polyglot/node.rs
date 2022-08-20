@@ -8,7 +8,7 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn init_env() {
+pub fn find_sdk_home() -> Option<PathBuf> {
     if let Ok(text) = std::fs::read_to_string(".node-version") {
         let node_version = text.trim();
         // find version from nvm
@@ -24,9 +24,14 @@ pub fn init_env() {
                 });
             node_home_path = find_node_home(node_version, &node_candidates_path);
         }
-        if let Some(node_home) = node_home_path {
-            reset_node_home(&node_home);
-        }
+        return node_home_path;
+    }
+    None
+}
+
+pub fn init_env() {
+    if let Some(node_home) = find_sdk_home() {
+        reset_node_home(&node_home);
     }
 }
 

@@ -8,32 +8,27 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn init_env() {
+pub fn find_sdk_home() -> Option<PathBuf> {
     if let Ok(text) = std::fs::read_to_string(".java-version") {
         let java_version = text.trim();
-        let mut java_found = false;
         if let Some(java_home) = dirs::home_dir()
             .map(|dir| {
                 dir.join(".jbang").join("cache").join("jdks").join(java_version)
             })
             .filter(|dir| dir.exists()) {
-            java_found = true;
-            reset_java_home(java_version, &java_home);
+            return Some(java_home);
         }
-        if !java_found {
-            if let Some(java_candidates_home) = dirs::home_dir()
-                .map(|dir| {
-                    dir.join(".sdkman").join("candidates").join("java")
-                })
-                .filter(|dir| dir.exists()) {
-                if let Ok(paths) = std::fs::read_dir(java_candidates_home) {
-                    for path in paths {
-                        if let Ok(path) = path {
-                            if let Some(name) = path.file_name().to_str() {
-                                if name.starts_with(java_version) {
-                                    reset_java_home(java_version, &path.path());
-                                    break;
-                                }
+        if let Some(java_candidates_home) = dirs::home_dir()
+            .map(|dir| {
+                dir.join(".sdkman").join("candidates").join("java")
+            })
+            .filter(|dir| dir.exists()) {
+            if let Ok(paths) = std::fs::read_dir(java_candidates_home) {
+                for path in paths {
+                    if let Ok(path) = path {
+                        if let Some(name) = path.file_name().to_str() {
+                            if name.starts_with(java_version) {
+                                return Some(path.path());
                             }
                         }
                     }
@@ -41,12 +36,19 @@ pub fn init_env() {
             }
         }
     }
+    None
 }
 
-fn reset_java_home(java_version: &str, java_home_path: &PathBuf) {
+pub fn init_env() {
+    if let Some(java_home) = find_sdk_home() {
+        reset_java_home(&java_home);
+    }
+}
+
+fn reset_java_home(java_home_path: &PathBuf) {
     let java_home = java_home_path.to_string_lossy().to_string();
     env::set_var("JAVA_HOME", &java_home);
-    if java_version.ends_with("-grl") {
+    if java_home.contains("-grl") {
         env::set_var("GRAALVM_HOME", &java_home);
     }
     if let Ok(path) = env::var("PATH") {
