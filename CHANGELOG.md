@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2022-08-20
+
+### Added
+
+- Version Manager for Java `.java-version` : find Java from `$HOME/.jbang/cache/jdks` or `$HOME/.sdkman/candidates/java/`
+- Version Manager for Node.js `.java-version` : find Node.js from `$HOME/.nvm/versions/node`
+  or `$HOME/.volta/tools/image/node`
+
 ## [0.5.2] - 2022-08-10
 
 ### Added
