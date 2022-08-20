@@ -36,8 +36,12 @@ fn find_node_home(node_version: &str, node_candidates_path: &Option<PathBuf>) ->
         if let Ok(paths) = std::fs::read_dir(node_candidates_home) {
             for path in paths {
                 if let Ok(node_home) = path {
-                    if let Some(name) = node_home.file_name().to_str() {
-                        if name.contains(node_version) {
+                    if let Some(file_name) = node_home.file_name().to_str() {
+                        let mut real_node_version = file_name;
+                        if file_name.starts_with('v') {
+                            real_node_version = &file_name[1..];
+                        }
+                        if real_node_version.starts_with(node_version) {
                             return Some(node_home.path());
                         }
                     }
