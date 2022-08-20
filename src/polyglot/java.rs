@@ -8,8 +8,12 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
+pub fn get_default_version() -> std::io::Result<String> {
+    std::fs::read_to_string(".java-version").map(|text| text.trim().to_string())
+}
+
 pub fn find_sdk_home() -> Option<PathBuf> {
-    if let Ok(text) = std::fs::read_to_string(".java-version") {
+    if let Ok(text) = get_default_version() {
         let java_version = text.trim();
         if let Some(java_home) = dirs::home_dir()
             .map(|dir| {

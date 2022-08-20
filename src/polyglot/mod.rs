@@ -1,5 +1,5 @@
-mod java;
-mod node;
+pub mod java;
+pub mod node;
 
 cfg_if::cfg_if! {
     if #[cfg(target_os = "windows")] {
