@@ -211,7 +211,7 @@ Task Keeper will detect version configuration file and adjust the environment va
 
 `.java-version` is used for version management, and values as following:
 
-* 17: Java distribution from https://adoptium.net/
+* 17: OpenJDK distributed by https://adoptium.net/
 * 22.2.r17-grl: GraalVM
 
 Task Keeper will try to find Java from `$HOME/.jbang/cache/jdk` or `$HOME/.sdkman/candidates/java/`.
