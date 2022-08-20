@@ -8,7 +8,7 @@ cfg_if::cfg_if! {
     }
 }
 
-pub fn inject_polyglot() {
+pub fn inject_languages() {
     if java::is_available() {
         java::init_env();
     }
