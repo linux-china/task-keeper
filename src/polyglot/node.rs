@@ -11,7 +11,6 @@ pub fn is_available() -> bool {
 pub fn init_env() {
     if let Ok(text) = std::fs::read_to_string(".node-version") {
         let node_version = text.trim();
-        let node_found = false;
         // find version from nvm
         let node_candidates_path = dirs::home_dir()
             .map(|dir| {

@@ -31,7 +31,6 @@ pub fn init_env() {
                         if let Ok(path) = path {
                             if let Some(name) = path.file_name().to_str() {
                                 if name.starts_with(java_version) {
-                                    java_found = true;
                                     reset_java_home(java_version, &path.path());
                                     break;
                                 }
