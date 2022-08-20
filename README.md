@@ -205,7 +205,21 @@ Global options are options for task runner and seperated by double dash, such as
 
 # Version detection
 
-such as `.node_version`, `.java_version` 
+Task Keeper will detect version configuration file and adjust the environment variables to run tasks.
+
+### Java
+
+`.java-version` is used for version management, and values as following:
+
+* 17: Java distribution from https://adoptium.net/
+* 22.2.r17-grl: GraalVM
+
+Task Keeper will try to find Java from `$HOME/.jbang/cache/jdk` or `$HOME/.sdkman/candidates/java/`.
+
+# References
+
+* The Ultimate Guide to Gemfile and
+  Gemfile.lock: https://blog.saeloun.com/2022/08/16/understanding_gemfile_and_gemfile_lock
 
 # Shell scripts in Markdown
 
