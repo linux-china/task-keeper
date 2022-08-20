@@ -379,6 +379,22 @@ fn diagnose() {
             println!("{} mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs", "Warning:".bold().yellow());
         }
     }
+    if polyglot::java::is_available() {
+        if polyglot::java::find_sdk_home().is_none() {
+            problems_count += 1;
+            println!("{} .java-version found, but the JDK({}) not installed!",
+                     "Warning:".bold().yellow(),
+                     polyglot::java::find_sdk_home().unwrap().display());
+        }
+    }
+    if polyglot::node::is_available() {
+        if polyglot::node::find_sdk_home().is_none() {
+            problems_count += 1;
+            println!("{} .node-version found, but the Node.js({}) not installed!",
+                     "Warning:".bold().yellow(),
+                     polyglot::node::get_default_version().unwrap());
+        }
+    }
     if problems_count > 0 {
         println!("{} {} problems found!", "Warning:".bold().yellow(), problems_count);
     } else {
