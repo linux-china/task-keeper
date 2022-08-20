@@ -216,6 +216,15 @@ Task Keeper will detect version configuration file and adjust the environment va
 
 Task Keeper will try to find Java from `$HOME/.jbang/cache/jdk` or `$HOME/.sdkman/candidates/java/`.
 
+### Node.js
+
+`.node-version` is used for Node.js version management, and values as following:
+
+* 18: match major version of Node.js
+* 16.16.0: match version of Node.js
+
+Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.volta/tools/image/node`.
+
 # References
 
 * The Ultimate Guide to Gemfile and
