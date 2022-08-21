@@ -44,6 +44,9 @@ impl TaskContext<'_> {
             } else {
                 task_options = args[task_options_index..len].to_vec();
             }
+            if !task_options.is_empty() && task_options[0] == "-" {
+                task_options.remove(0);
+            }
         }
         //slice task names
         let names = if first_option_index > 0 {
