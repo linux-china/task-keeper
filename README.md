@@ -184,10 +184,11 @@ Available.
 
 Available.
 
-# Task options and global options
+# Task options/params and global options
 
-Task options are options for task, such as `tk hello --name linux_china`.
-Global options are options for task runner and seperated by double dash, such as `tk hello --name Jack -- --verbose`
+* Task options: `tk hello --name linux_china`
+* Task params: `tk hello - Jackie`, use `-` to separate task params
+* Global options for command:  `tk hello --name Jack -- --verbose`, use `--` double dash to separate global options
 
 # Todo
 
@@ -229,6 +230,7 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
 
 * The Ultimate Guide to Gemfile and
   Gemfile.lock: https://blog.saeloun.com/2022/08/16/understanding_gemfile_and_gemfile_lock
+* Your Makefiles are wrong: https://tech.davis-hansson.com/p/make/
 
 # Shell scripts in Markdown
 
