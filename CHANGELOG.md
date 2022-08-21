@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.6.1] - 2022-08-1
+
+### Fixed
+
+- Remove single `-` from task options
+
 ## [0.6.0] - 2022-08-20
 
 ### Added
