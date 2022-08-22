@@ -10,7 +10,7 @@ pub fn is_command_available(command_name: &str) -> bool {
 }
 
 pub fn run_command(command_name: &str, args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    run_command_with_env_vars(command_name, args, &None, verbose)
+    run_command_with_env_vars(command_name, args, &None, &None, verbose)
 }
 
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<Output, KeeperError> {
@@ -29,10 +29,13 @@ pub fn run_command_line(command_line: &str, verbose: bool) -> Result<Output, Kee
     }
 }
 
-pub fn run_command_with_env_vars(command_name: &str, args: &[&str], env_vars: &Option<HashMap<String, String>>, verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_command_with_env_vars(command_name: &str, args: &[&str], working_dir: &Option<String>, env_vars: &Option<HashMap<String, String>>, verbose: bool) -> Result<Output, KeeperError> {
     let mut command = Command::new(command_name);
     if args.len() > 0 {
         command.args(args);
+    }
+    if let Some(current_dir) = working_dir {
+        command.current_dir(current_dir);
     }
     if let Some(vars) = env_vars {
         for (key, value) in vars {
