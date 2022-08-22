@@ -20,7 +20,7 @@ pub struct FleetRunJson {
 pub struct Configuration {
     pub name: String,
     #[serde(rename = "type")]
-    pub type_field: String,
+    pub type_value: String,
     pub program: Option<String>,
     pub working_dir: Option<String>,
     pub environment: Option<HashMap<String, String>>,
@@ -46,7 +46,7 @@ impl Configuration {
     pub fn new_command(name: &str, command: &str, args: &[String]) -> Self {
         Configuration {
             name: name.to_owned(),
-            type_field: "command".to_owned(),
+            type_value: "command".to_owned(),
             program: Some(command.to_owned()),
             args: Some(args.to_vec()),
             ..Default::default()
@@ -87,7 +87,16 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json().configurations.iter().map(|configuration| task!(&configuration.formatted_name(), "fleet")).collect())
+    Ok(parse_run_json().configurations.iter()
+        .map(|configuration| {
+            let description = if &configuration.type_value == "command" {
+                configuration.program.clone().unwrap()
+            } else {
+                configuration.type_value.clone()
+            };
+            task!(&configuration.formatted_name(), "fleet", description)
+        })
+        .collect())
 }
 
 fn parse_run_json() -> FleetRunJson {
@@ -124,7 +133,7 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
 
 //todo: add support for other types
 fn get_command_name(configuration: &Configuration) -> String {
-    match configuration.type_field.as_str() {
+    match configuration.type_value.as_str() {
         "cargo" => "cargo".to_owned(),
         "maven" | "maven-run" => "mvn".to_owned(),
         "gradle" => "./gradlew".to_owned(),
@@ -137,7 +146,7 @@ fn get_command_name(configuration: &Configuration) -> String {
 }
 
 fn get_command_args(configuration: &Configuration) -> Vec<String> {
-    match configuration.type_field.as_str() {
+    match configuration.type_value.as_str() {
         "command" => configuration.args.clone().unwrap_or_default(),
         "cargo" => configuration.cargo_full_args(),
         "maven" | "gradle" => configuration.tasks.clone().unwrap_or_default(),
