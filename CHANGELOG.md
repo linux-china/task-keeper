@@ -8,7 +8,7 @@
 
 ### Added
 
-- Add `.node-modules/bin`, `vendor/bin`, `bin` and `.bin` to the PATH environment variable.
+- Add `.node-modules/bin`, `venv/bin`, `bin` and `.bin` to the PATH environment variable.
 - Run command line after double dash: `tk -- java --version`
 
 ## [0.6.1] - 2022-08-21
