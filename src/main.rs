@@ -202,13 +202,14 @@ fn main() {
         let runner = matches.value_of("runner").unwrap_or("");
         let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
         if task_count == 0 { // no tasks executed
-            if runners::makefile::is_available() { // try Makefile
+            println!("{}", "[tk] no tasks found".bold().red());
+            /*if runners::makefile::is_available() { // try Makefile
                 for task in tasks {
                     runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
                 }
             } else {
                 println!("{}", "[tk] no tasks found".bold().red());
-            }
+            }*/
         }
         return;
     }
