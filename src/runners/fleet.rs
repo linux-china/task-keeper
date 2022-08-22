@@ -14,6 +14,7 @@ pub struct FleetRunJson {
     pub configurations: Vec<Configuration>,
 }
 
+// https://www.jetbrains.com/help/fleet/run-configurations.html
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
@@ -21,6 +22,7 @@ pub struct Configuration {
     #[serde(rename = "type")]
     pub type_field: String,
     pub program: Option<String>,
+    pub working_dir: Option<String>,
     pub environment: Option<HashMap<String, String>>,
     pub args: Option<Vec<String>>,
     pub tasks: Option<Vec<String>>,
@@ -32,6 +34,11 @@ pub struct Configuration {
     pub cargo_extra_args: Option<Vec<String>>,
     pub go_exec_path: Option<String>,
     pub params: Option<Vec<String>>,
+    pub main_class: Option<String>,
+    pub file: Option<String>,
+    // docker
+    pub image_id_or_name: Option<String>,
+    pub run_options: Option<String>,
 }
 
 impl Configuration {
@@ -108,7 +115,7 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
     let args = get_command_args(configuration);
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
     if is_command_available(&command_name) {
-        Ok(run_command_with_env_vars(&command_name, &args, &configuration.environment, verbose).unwrap())
+        Ok(run_command_with_env_vars(&command_name, &args, &configuration.working_dir, &configuration.environment, verbose).unwrap())
     } else {
         println!("{}", format!("{} is not available", command_name).bold().red());
         Err(report!(KeeperError::CommandNotFound(command_name)))
@@ -119,8 +126,9 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
 fn get_command_name(configuration: &Configuration) -> String {
     match configuration.type_field.as_str() {
         "cargo" => "cargo".to_owned(),
-        "maven" => "mvn".to_owned(),
+        "maven" | "maven-run" => "mvn".to_owned(),
         "gradle" => "./gradlew".to_owned(),
+        "docker-run" => "docker".to_owned(),
         "python" => configuration.python_executable_path.clone().unwrap_or("python".to_owned()),
         "go" => configuration.go_exec_path.clone().unwrap_or("go".to_owned()),
         "command" => configuration.program.clone().unwrap_or_default(),
@@ -133,6 +141,28 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
         "command" => configuration.args.clone().unwrap_or_default(),
         "cargo" => configuration.cargo_full_args(),
         "maven" | "gradle" => configuration.tasks.clone().unwrap_or_default(),
+        "maven-run" => {
+            if let Some(args) = &configuration.args {
+                let args_text = args.join(" ");
+                vec!["compile".to_owned(), "exec:java".to_owned(),
+                     format!("-Dexec.mainClass='{}'", configuration.main_class.clone().unwrap_or_default()),
+                     format!("-Dexec.args='{}'", args_text)]
+            } else {
+                vec!["compile".to_owned(), "exec:java".to_owned(),
+                     format!("-Dexec.mainClass={}", configuration.main_class.clone().unwrap_or_default())]
+            }
+        }
+        "docker-run" => {
+            if let Some(run_options_text) = &configuration.run_options {
+                let options = shlex::split(run_options_text).unwrap();
+                let mut args = vec!["run".to_owned()];
+                args.extend(options.iter().cloned());
+                args.push(configuration.image_id_or_name.clone().unwrap_or_default());
+                args
+            } else {
+                vec!["run".to_owned(), configuration.image_id_or_name.clone().unwrap_or_default()]
+            }
+        }
         "python" => configuration.python_full_args().clone(),
         "go" => configuration.params.clone().unwrap_or_default(),
         _ => vec![],
@@ -154,7 +184,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        run_task("my-ip", &[], &[],false).unwrap();
+        run_task("my-ip", &[], &[], false).unwrap();
     }
 
     #[test]
