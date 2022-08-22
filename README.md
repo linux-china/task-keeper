@@ -15,6 +15,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
 * .env support by default: `tk --no-dotenv` to disable
 * `--doctor` support: check your system for potential problems to run tasks
+* Execute command line: `tk -- node hello.js` with correct language version and PATH
 
 # How to get started?
 
@@ -33,8 +34,7 @@ Sorry, I got lost in different task files and management tools, and sometimes I 
 * Find tasks: `Makefile`,`justfile`, `package.json`, `deno.json`, `Taskfile.yml`, `tasks.py`, `README.md` etc, and
   too many task files to check tasks.
 * Run task: `just taskName`, `npm run task_name`, `deno task task_name`, `composer run-script task_name` etc
-* Check outdated dependencies: `mvn versions:display-dependency-updates`, `./gradlew dependencyUpdates`, `npm outdated`
-  etc
+* Check outdated deps: `mvn versions:display-dependency-updates`, `./gradlew dependencyUpdates`, `npm outdated` etc
 * Build project: `mvn -DskipTests package`, `./gradlew assemble`, `cargo build` etc
 
 Too many differences, I want to save my brain and keyboard, and you know MacBook keyboard's price tag is $400+.
@@ -59,6 +59,29 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 **Tips**:
 
 * Deno: please refer https://github.com/ije/esm.sh/releases/tag/v91 for npm packages manager
+
+# Language version detection and PATH
+
+Task Keeper uses `.java-version`, `.node-version`  files to detect language version and bound with local installed SDK.
+
+To make task runner run tasks smoothly, Task Keeper will append following directories to `PATH` automatically:
+
+* `node-modules/.bin`
+* `vendor/bin`
+* `bin`
+* `.bin`
+
+For example, if you use Python virtual env to manage your project, Task Keeper will add `venv/bin` to `PATH`
+automatically, and you don't need to do anything.
+
+```
+hello:
+  python hello.py
+```
+
+**Tips**: you can use double dash to run command with language detection and correct `PATH`,
+such as `tk -- mvn spring-boot:run`. To make life easy, and you can use `alias e='tk --'` to create an alias, 
+then you can run `e mvn spring-boot:run` to run your project.
 
 # Package manager support
 
