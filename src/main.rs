@@ -6,7 +6,9 @@ use dotenv::dotenv;
 use std::collections::HashSet;
 use std::io::Write;
 use std::path::Path;
+use std::env;
 use crate::models::TaskContext;
+use crate::polyglot::PATH_SEPARATOR;
 
 mod app;
 mod keeper;
@@ -182,6 +184,16 @@ fn main() {
         }
         // inject polyglot for tasks
         polyglot::inject_languages();
+        // setup path
+        reset_path_env();
+        // check to execute command directly
+        let tk_args = env::args().skip(1).collect::<Vec<String>>();
+        if tk_args[0] == "--" && tk_args.len() > 1 { // execute command line after double dash
+            let command = &tk_args[1];
+            let args = tk_args.iter().skip(2).map(|arg| arg.as_str()).collect::<Vec<&str>>();
+            command_utils::run_command(command, &args, false).unwrap();
+            return;
+        }
         let tasks_options = matches.values_of("tasks").unwrap().collect::<Vec<&str>>();
         let task_context = TaskContext::new(tasks_options);
         let tasks = task_context.names;
@@ -203,6 +215,18 @@ fn main() {
 
     // display help message
     build_app().print_help().unwrap();
+}
+
+fn reset_path_env() {
+    let current_dir = env::current_dir().unwrap();
+    let mut new_path = env::var("PATH").unwrap_or_else(|_| "".to_string());
+    for dir in ["bin", ".bin", "node_modules/.bin", "venv/bin"].iter() {
+        let bin_path = current_dir.join(dir);
+        if bin_path.exists() {
+            new_path = format!("{}{}{}", bin_path.to_string_lossy().to_string(), PATH_SEPARATOR, new_path);
+        }
+    }
+    env::set_var("PATH", new_path);
 }
 
 fn diagnose() {
