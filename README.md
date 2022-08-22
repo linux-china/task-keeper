@@ -60,6 +60,20 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 
 * Deno: please refer https://github.com/ije/esm.sh/releases/tag/v91 for npm packages manager
 
+### Fleet Run configurations
+
+command type support now:
+
+* command
+* maven/gradle
+* cargo
+* go
+* maven-run
+* cargo-run
+* docker-run
+
+For details, please refer https://www.jetbrains.com/help/fleet/run-configurations.html
+
 # Language version detection and PATH
 
 Task Keeper uses `.java-version`, `.node-version`  files to detect language version and bound with local installed SDK.
