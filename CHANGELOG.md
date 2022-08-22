@@ -4,7 +4,14 @@
 
 ## [Unreleased]
 
-## [0.6.1] - 2022-08-1
+## [0.6.2] - 2022-08-22
+
+### Added
+
+- Add `.node-modules/bin`, `vendor/bin`, `bin` and `.bin` to the PATH environment variable.
+- Run command line after double dash: `tk -- java --version`
+
+## [0.6.1] - 2022-08-21
 
 ### Fixed
 
@@ -14,7 +21,8 @@
 
 ### Added
 
-- Version Manager for Java `.java-version` : find Java from `$HOME/.jbang/cache/jdks` or `$HOME/.sdkman/candidates/java/`
+- Version Manager for Java `.java-version` : find Java from `$HOME/.jbang/cache/jdks`
+  or `$HOME/.sdkman/candidates/java/`
 - Version Manager for Node.js `.java-version` : find Node.js from `$HOME/.nvm/versions/node`
   or `$HOME/.volta/tools/image/node`
 
