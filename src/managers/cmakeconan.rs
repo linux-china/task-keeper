@@ -7,22 +7,24 @@ use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("conanfile.txt").exists() && dir.join("CMakeLists.txt").exists())
+        .map(|dir| dir.join("conanfile.txt").exists())
         .unwrap_or(false)
 }
 
 pub fn is_command_available() -> bool {
-    which("cmake").is_ok() && which("conan").is_ok()
+    which("cmake").is_ok()
 }
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let cmake_binary_dir = get_build_dir();
-    task_command_map.insert("install".to_string(), format!("conan install . -s build_type=Debug --install-folder={}", cmake_binary_dir));
     task_command_map.insert("compile".to_string(), format!("cmake -B {} -DCMAKE_BUILD_TYPE=Debug", cmake_binary_dir));
     task_command_map.insert("build".to_string(), format!("cmake --build {}", cmake_binary_dir));
-    task_command_map.insert("deps".to_string(), "conan info .".to_string());
     task_command_map.insert("clean".to_string(), format!("cmake --build {} --target clean", cmake_binary_dir));
+    if std::env::current_dir().map(|dir| dir.join("CMakeLists.txt").exists()).unwrap_or(false) {
+        task_command_map.insert("install".to_string(), format!("conan install . -s build_type=Debug --install-folder={}", cmake_binary_dir));
+        task_command_map.insert("deps".to_string(), "conan info .".to_string());
+    }
     task_command_map
 }
 
