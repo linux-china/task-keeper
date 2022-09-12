@@ -20,7 +20,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let mvn_command = get_mvn_command();
     task_command_map.insert("init".to_string(), format!("{} archetype:generate", mvn_command));
     task_command_map.insert("install".to_string(), format!("{} dependency:resolve", mvn_command));
-    task_command_map.insert("compile".to_string(), format!("{} compile testCompile", mvn_command));
+    task_command_map.insert("compile".to_string(), format!("{} compile test-compile", mvn_command));
     task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));
     task_command_map.insert("start".to_string(), get_start_command_line());
     task_command_map.insert("test".to_string(), format!("{} test", mvn_command));
