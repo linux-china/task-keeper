@@ -4,9 +4,10 @@ use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::{run_command_line};
 use crate::errors::KeeperError;
+use std::env::current_dir;
 
 pub fn is_available() -> bool {
-    std::env::current_dir()
+    current_dir()
         .map(|dir| dir.join("composer.json").exists())
         .unwrap_or(false)
 }
@@ -21,7 +22,14 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "composer install".to_string());
     task_command_map.insert("compile".to_string(), "composer check-platform-reqs".to_string());
     task_command_map.insert("build".to_string(), "composer run-script build".to_string());
-    task_command_map.insert("start".to_string(), "composer run-script start".to_string());
+    // laravel
+    if current_dir().map(|dir| dir.join("artisan").exists()).unwrap_or(false) {
+        task_command_map.insert("start".to_string(), "php artisan serve".to_string());
+    } else if current_dir().map(|dir| dir.join("spark").exists()).unwrap_or(false) { // CodeIgniter4
+        task_command_map.insert("start".to_string(), "php spark serve".to_string());
+    } else {
+        task_command_map.insert("start".to_string(), "composer run-script start".to_string());
+    }
     task_command_map.insert("test".to_string(), "composer run-script test".to_string());
     task_command_map.insert("deps".to_string(), "composer depends".to_string());
     task_command_map.insert("doc".to_string(), "composer doc".to_string());
