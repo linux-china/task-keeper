@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+## [0.6.3] - 2022-09-15
+
+### Added
+
+- Add laravel and CodeIgniter4 support
+- Make conan optional for cmake
+
+### Fixed
+
+- Update testCompile to test-compile for Maven
+- Fix bug for `tk --init=jbang`
+
 ## [0.6.2] - 2022-08-22
 
 ### Added
