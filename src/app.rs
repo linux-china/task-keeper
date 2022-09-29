@@ -1,9 +1,9 @@
 //! clap App for command cli
-use clap::{Command, Arg};
+use clap::{Command, Arg, ArgAction};
 
 pub const VERSION: &str = "0.6.3";
 
-pub fn build_app() -> Command<'static> {
+pub fn build_app() -> Command {
     Command::new("tk")
         .version(VERSION)
         .about("Task Keeper")
@@ -12,35 +12,35 @@ pub fn build_app() -> Command<'static> {
             Arg::new("verbose")
                 .long("verbose")
                 .short('v')
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Verbose output")
                 .required(false),
         )
         .arg(
             Arg::new("summary")
                 .long("summary")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("List names of available tasks")
                 .required(false),
         )
         .arg(
             Arg::new("doctor")
                 .long("doctor")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Check your system for potential problems to run tasks")
                 .required(false),
         )
         .arg(
             Arg::new("no-dotenv")
                 .long("no-dotenv")
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("Disable to load .env file")
                 .required(false),
         )
         .arg(
             Arg::new("init")
                 .long("init")
-                .takes_value(true)
+                .num_args(1)
                 .value_parser(["shell", "make", "jbang", "just"])
                 .help("Create a new task file by runner name")
                 .required(false),
@@ -49,7 +49,7 @@ pub fn build_app() -> Command<'static> {
             Arg::new("list")
                 .long("list")
                 .short('l')
-                .takes_value(false)
+                .action(ArgAction::SetTrue)
                 .help("List all tasks")
                 .required(false),
         )
@@ -57,21 +57,21 @@ pub fn build_app() -> Command<'static> {
             Arg::new("runner")
                 .long("runner")
                 .short('r')
-                .takes_value(false)
+                .num_args(1)
                 .help("Task Runner")
                 .required(false),
         )
         .arg(
             Arg::new("from")
                 .long("from")
-                .takes_value(false)
+                .num_args(1)
                 .help("Source Runner")
                 .required(false),
         )
         .arg(
             Arg::new("to")
                 .long("to")
-                .takes_value(false)
+                .num_args(1)
                 .help("Target Runner")
                 .required(false),
         )
@@ -79,6 +79,6 @@ pub fn build_app() -> Command<'static> {
                  .required(false)
                  .help("Run task")
                  .index(1)
-                 .multiple_values(true),
+                 .num_args(1..),
         )
 }

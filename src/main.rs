@@ -23,13 +23,13 @@ mod polyglot;
 fn main() {
     let app = build_app();
     let matches = app.get_matches();
-    let verbose = matches.is_present("verbose");
-    let no_dotenv = matches.is_present("no-dotenv");
+    let verbose = matches.get_flag("verbose");
+    let no_dotenv = matches.get_flag("no-dotenv");
 
     // summary to list all task names
-    if matches.is_present("summary") {
+    if matches.get_flag("summary") {
         let mut task_names: HashSet<String> = HashSet::new();
-        let all_tasks = list_all_runner_tasks();
+        let all_tasks = list_all_runner_tasks(false);
         if let Ok(tasks_hashmap) = all_tasks {
             RUNNERS.iter().for_each(|runner| {
                 if let Some(tasks) = tasks_hashmap.get(*runner) {
@@ -43,14 +43,14 @@ fn main() {
         return;
     }
     // check your system for potential problems to run tasks
-    if matches.is_present("doctor") {
+    if matches.get_flag("doctor") {
         diagnose();
         return;
     }
     // list tasks
-    if matches.is_present("list") {
+    if matches.get_flag("list") {
         let mut task_found = false;
-        let all_tasks = list_all_runner_tasks();
+        let all_tasks = list_all_runner_tasks(true);
         if let Ok(tasks_hashmap) = all_tasks {
             if !tasks_hashmap.is_empty() {
                 task_found = true;
@@ -99,8 +99,8 @@ fn main() {
         return;
     }
     /*// display runner help and tasks
-    if matches.is_present("runner") && !matches.is_present("tasks") {
-        let runner = matches.value_of("runner").unwrap();
+    if matches.contains_id("runner") && !matches.contains_id("tasks") {
+        let runner = matches.get_one::<String>("runner").unwrap();
         let mut intro = "";
         let mut usage = "";
         println!("{}", format!("{}: ", runner).bold().blue());
@@ -136,13 +136,13 @@ fn main() {
     }*/
 
     // migrate tasks
-    if matches.is_present("from") && matches.is_present("to") {
+    if matches.contains_id("from") && matches.contains_id("to") {
         println!("{}", "Task migration has not yet been implemented!".bold().red());
         return;
     }
     // create task file by runner
-    if matches.is_present("init") {
-        let runner_name = matches.value_of("init").unwrap();
+    if matches.contains_id("init") {
+        let runner_name = matches.get_one::<String>("init").unwrap();
         if runner_name == "shell" {
             let exists = Path::new("./task.sh").exists();
             if !exists {
@@ -177,7 +177,7 @@ fn main() {
         return;
     }
     // run tasks
-    if matches.is_present("tasks") {
+    if matches.contains_id("tasks") {
         // load .env for tasks
         if !no_dotenv {
             dotenv().ok();
@@ -194,12 +194,17 @@ fn main() {
             command_utils::run_command(command, &args, false).unwrap();
             return;
         }
-        let tasks_options = matches.values_of("tasks").unwrap().collect::<Vec<&str>>();
+        let tasks_options = matches.get_many::<String>("tasks")
+            .into_iter()
+            .flatten()
+            .map(|s| s as &str)
+            .collect::<Vec<_>>();
         let task_context = TaskContext::new(tasks_options);
         let tasks = task_context.names;
         let task_args = &task_context.task_options;
         let global_args = &task_context.global_options;
-        let runner = matches.value_of("runner").unwrap_or("");
+        let default_runner = "".to_owned();
+        let runner = matches.get_one::<String>("runner").unwrap_or(&default_runner);
         let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
         if task_count == 0 { // no tasks executed
             println!("{}", "[tk] no tasks found".bold().red());
