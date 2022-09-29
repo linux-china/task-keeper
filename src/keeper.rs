@@ -9,7 +9,7 @@ use crate::runners::RUNNERS;
 
 pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<i32, KeeperError> {
     let mut task_count = 0;
-    let all_tasks = list_all_runner_tasks();
+    let all_tasks = list_all_runner_tasks(true);
     if let Ok(tasks_hashmap) = all_tasks {
         if !cli_runner.is_empty() { //runner is specified
             if let Some(runner_tasks) = tasks_hashmap.get(cli_runner) {
@@ -64,7 +64,7 @@ pub fn run_manager_task(runner: &str, task_name: &str, task_args: &[&str], globa
     managers::run_task(runner, task_name, task_args, global_args, verbose)
 }
 
-pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError> {
+pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     let mut all_tasks = HashMap::new();
     if runners::fleet::is_available() {
         if let Ok(runner_tasks) = runners::fleet::list_tasks() {
@@ -102,7 +102,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] just(https://github.com/casey/just) command not available for justfile").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] just(https://github.com/casey/just) command not available for justfile").bold().red());
+            }
         }
     }
     if runners::packagejson::is_available() {
@@ -113,7 +115,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] npm(https://nodejs.org) command not available for package.json").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] npm(https://nodejs.org) command not available for package.json").bold().red());
+            }
         }
     }
     if runners::denojson::is_available() {
@@ -124,7 +128,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] deno(https://deno.land) command not available for deno.json").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] deno(https://deno.land) command not available for deno.json").bold().red());
+            }
         }
     }
     if runners::makefile::is_available() {
@@ -135,7 +141,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] make(https://www.gnu.org/software/make) command not available for makefile").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] make(https://www.gnu.org/software/make) command not available for makefile").bold().red());
+            }
         }
     }
     if runners::rakefile::is_available() {
@@ -146,7 +154,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] rake(https://ruby.github.io/rake/) command not available for rakefile").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] rake(https://ruby.github.io/rake/) command not available for rakefile").bold().red());
+            }
         }
     }
     if runners::taskfileyml::is_available() {
@@ -157,7 +167,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] task(https://taskfile.dev) command not available for Taskfile.yml").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] task(https://taskfile.dev) command not available for Taskfile.yml").bold().red());
+            }
         }
     }
     if runners::makefiletoml::is_available() {
@@ -168,7 +180,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml").bold().red());
+            }
         }
     }
     if runners::taskspy::is_available() {
@@ -179,7 +193,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
+            }
         }
     }
     if runners::composer::is_available() {
@@ -190,7 +206,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
+            }
         }
     }
     if runners::jbang::is_available() {
@@ -201,7 +219,9 @@ pub fn list_all_runner_tasks() -> Result<HashMap<String, Vec<Task>>, KeeperError
                 }
             }
         } else {
-            println!("{}", format!("[tk] jbang(https://www.jbang.dev/) command not available for jbang-catalog.json").bold().red());
+            if error_display {
+                println!("{}", format!("[tk] jbang(https://www.jbang.dev/) command not available for jbang-catalog.json").bold().red());
+            }
         }
     }
     /*all_tasks.iter().for_each(|(runner, tasks)| {
