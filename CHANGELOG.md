@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.6.4] - 2022-09-29
+
+### Added
+
+- Update to Clap 4
+
 ## [0.6.3] - 2022-09-15
 
 ### Added
