@@ -19,9 +19,10 @@ pub mod poetry;
 pub mod lein;
 pub mod rebar3;
 pub mod mix;
+pub mod requirements;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "lein", "rebar3", "mix"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "lein", "rebar3", "mix"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -61,6 +62,9 @@ pub fn get_available_managers() -> Vec<String> {
     if poetry::is_available() {
         managers.push("poetry".to_string());
     }
+    if requirements::is_available() {
+        managers.push("pip".to_string());
+    }
     if lein::is_available() {
         managers.push("lein".to_string());
     }
@@ -90,6 +94,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "lein" => "project.clj",
         "rebar3" => "rebar.config",
         "mix" => "mix.exs",
+        "pip" => "requirements.txt",
         _ => "unknown",
     }
 }
@@ -111,6 +116,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "lein" => lein::get_task_command_map(),
         "rebar3" => rebar3::get_task_command_map(),
         "mix" => mix::get_task_command_map(),
+        "pip" => requirements::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -199,6 +205,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("poetry", poetry::run_task);
         } else {
             println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+        }
+    }
+    if requirements::is_available() {
+        if requirements::is_command_available() {
+            queue.insert("requirements", requirements::run_task);
+        } else {
+            println!("{}", format!("[tk] pip(https://pypi.org/project/pip/) command not available for requirements.txt").bold().red());
         }
     }
     if lein::is_available() {
