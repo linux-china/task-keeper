@@ -397,6 +397,12 @@ fn diagnose() {
             println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
         }
     }
+    if managers::requirements::is_available() {
+        if !managers::requirements::is_command_available() {
+            problems_count += 1;
+            println!("{} pip(https://pypi.org/project/pip/) command not available for requirements.txt", "Warning:".bold().yellow());
+        }
+    }
     if managers::rebar3::is_available() {
         if !managers::rebar3::is_command_available() {
             problems_count += 1;
