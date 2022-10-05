@@ -20,6 +20,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "pip install -r requirements.txt".to_string());
     task_command_map.insert("deps".to_string(), "deptree".to_string());
     task_command_map.insert("outdated".to_string(), "pip list --outdated".to_string());
+    task_command_map.insert("update".to_string(), "pip install -U -r requirements.txt".to_string());
     task_command_map
 }
 
