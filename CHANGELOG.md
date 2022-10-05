@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.6.5] - 2022-10-05
+
+### Added
+
+- requirements.txt support
+
 ## [0.6.4] - 2022-09-29
 
 ### Added
