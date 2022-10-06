@@ -7,7 +7,11 @@ use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("build.gradle").exists() || dir.join("build.gradle.kts").exists())
+        .map(|dir| dir.join("build.gradle").exists()
+            || dir.join("build.gradle.kts").exists()
+            || dir.join("settings.gradle").exists()
+            || dir.join("settings.gradle.kts").exists()
+        )
         .unwrap_or(false)
 }
 
