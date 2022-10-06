@@ -7,7 +7,10 @@ use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("requirements.txt").exists() && !dir.join("pyproject.toml").exists())
+        .map(|dir| dir.join("requirements.txt").exists()
+            && !dir.join("pyproject.toml").exists()
+            && !dir.join("Pipfile").exists()
+        )
         .unwrap_or(false)
 }
 
