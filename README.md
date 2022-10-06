@@ -94,7 +94,7 @@ hello:
 ```
 
 **Tips**: you can use double dash to run command with language detection and correct `PATH`,
-such as `tk -- mvn spring-boot:run`. To make life easy, and you can use `alias e='tk --'` to create an alias, 
+such as `tk -- mvn spring-boot:run`. To make life easy, and you can use `alias e='tk --'` to create an alias,
 then you can run `e mvn spring-boot:run` to run your project.
 
 # Package manager support
@@ -194,9 +194,13 @@ Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-ou
 
 Available.
 
-### Poetry
+### Python
 
-Available.
+Available with following tools:
+
+* Poetry
+* pipenv
+* requirements.txt
 
 ### Lein
 
