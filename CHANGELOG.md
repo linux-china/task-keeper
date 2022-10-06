@@ -10,6 +10,7 @@
 
 - requirements.txt support
 - pipenv support
+- Create Pipfile for pipenv: `tk --init=pipenv`
 
 ## [0.6.4] - 2022-09-29
 
