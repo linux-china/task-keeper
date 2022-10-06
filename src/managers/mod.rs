@@ -20,9 +20,10 @@ pub mod lein;
 pub mod rebar3;
 pub mod mix;
 pub mod requirements;
+pub mod pipenv;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "lein", "rebar3", "mix"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "lein", "rebar3", "mix"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -62,6 +63,9 @@ pub fn get_available_managers() -> Vec<String> {
     if poetry::is_available() {
         managers.push("poetry".to_string());
     }
+    if pipenv::is_available() {
+        managers.push("pipenv".to_string());
+    }
     if requirements::is_available() {
         managers.push("pip".to_string());
     }
@@ -95,6 +99,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "rebar3" => "rebar.config",
         "mix" => "mix.exs",
         "pip" => "requirements.txt",
+        "pipenv" => "Pipfile",
         _ => "unknown",
     }
 }
@@ -117,6 +122,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "rebar3" => rebar3::get_task_command_map(),
         "mix" => mix::get_task_command_map(),
         "pip" => requirements::get_task_command_map(),
+        "pipenv" => pipenv::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -205,6 +211,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("poetry", poetry::run_task);
         } else {
             println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+        }
+    }
+    if pipenv::is_available() {
+        if pipenv::is_command_available() {
+            queue.insert("pipenv", pipenv::run_task);
+        } else {
+            println!("{}", format!("[tk] pipenv(https://pipenv.pypa.io/en/latest/) command not available for Pipfile").bold().red());
         }
     }
     if requirements::is_available() {
