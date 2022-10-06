@@ -4,11 +4,12 @@
 
 ## [Unreleased]
 
-## [0.6.5] - 2022-10-05
+## [0.6.5] - 2022-10-06
 
 ### Added
 
 - requirements.txt support
+- pipenv support
 
 ## [0.6.4] - 2022-09-29
 
