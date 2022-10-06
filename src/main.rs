@@ -165,6 +165,10 @@ fn main() {
             let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
             make_file.write_all(include_bytes!("./templates/jbang-catalog.json")).unwrap();
             println!("{}", "jbang-catalog.json created".bold().green());
+        } else if runner_name == "pipenv" {
+            let mut make_file = std::fs::File::create("Pipfile").unwrap();
+            make_file.write_all(include_bytes!("./templates/Pipfile")).unwrap();
+            println!("{}", "Pipfile created".bold().green());
         } else if runner_name == "deno" {
             let mut deno_json_file = std::fs::File::create("deno.json").unwrap();
             deno_json_file.write_all(include_bytes!("./templates/deno.json")).unwrap();
@@ -395,6 +399,12 @@ fn diagnose() {
         if !managers::poetry::is_command_available() {
             problems_count += 1;
             println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
+        }
+    }
+    if managers::pipenv::is_available() {
+        if !managers::pipenv::is_command_available() {
+            problems_count += 1;
+            println!("{} pipenv(https://pipenv.pypa.io/en/latest/) command not available for Pipfile", "Warning:".bold().yellow());
         }
     }
     if managers::requirements::is_available() {
