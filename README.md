@@ -230,7 +230,7 @@ Available.
 
 Task keeper will parse README.md and extract tasks with following code block format:
 
-~~~
+~~~markdown
 ```shell {#task_name}
 curl https://httpbin.org/ip
 ```
