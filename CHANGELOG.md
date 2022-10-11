@@ -14,7 +14,7 @@
 
 - Task code block format adjusted: only `shell` and `sh` supported now
 
-~~~
+~~~markdown
 ```shell {#task_name}
 curl https://httpbin.org/ip
 ```
