@@ -50,7 +50,7 @@ pub fn run_command_with_env_vars(command_name: &str, args: &[&str], working_dir:
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .report()
+        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }
@@ -75,7 +75,7 @@ pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output,
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .report()
+        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }
@@ -90,7 +90,7 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
-        .report()
+        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }

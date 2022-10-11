@@ -16,7 +16,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let procfile_text = std::env::current_dir()
         .map(|dir| dir.join("Procfile"))
         .map(|path| std::fs::read_to_string(path).unwrap())
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidProcfile)?;
     let tasks: Vec<Task> = BufReader::new(procfile_text.as_bytes())
         .lines()

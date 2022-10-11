@@ -37,7 +37,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidPackageJson)
 }
 

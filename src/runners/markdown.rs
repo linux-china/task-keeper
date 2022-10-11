@@ -16,7 +16,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let readme_md = std::env::current_dir()
         .map(|dir| dir.join("README.md"))
         .map(|path| std::fs::read_to_string(path).unwrap())
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidProcfile)?;
     let mut tasks: Vec<Task> = vec![];
     let mut offset = find_shell_code_offset(&readme_md);

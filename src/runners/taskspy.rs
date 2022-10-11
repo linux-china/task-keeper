@@ -46,7 +46,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 })
                 .unwrap_or_else(Vec::new)
         })
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidJustfile)
 }
 

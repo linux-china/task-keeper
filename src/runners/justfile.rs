@@ -44,7 +44,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 .map(|(name, recipe)| task!(name, "just", &recipe.doc.clone().unwrap_or("".to_owned())))
                 .collect()
         })
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidJustfile)
 }
 

@@ -49,7 +49,7 @@ fn parse_composer_json() -> Result<ComposerJson, KeeperError> {
         .map(|dir| dir.join("composer.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_json::from_str::<ComposerJson>(&data).unwrap())
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidComposerJson)
 }
 

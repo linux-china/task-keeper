@@ -17,7 +17,7 @@ pub fn parse_package_json() -> Result<PackageJson, KeeperError> {
         .map(|dir| dir.join("package.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_json::from_str::<PackageJson>(&data).unwrap())
-        .report()
+        .into_report()
         .change_context(KeeperError::InvalidPackageJson)
 }
 
