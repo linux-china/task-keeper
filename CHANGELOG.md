@@ -4,9 +4,21 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2022-10-11
+
 ### Fixed
 
 - Gradle multi projects support
+
+### Adjusted
+
+- Task code block format adjusted: only `shell` and `sh` supported now
+
+~~~
+```shell {#task_name}
+curl https://httpbin.org/ip
+```
+~~~
 
 ## [0.6.5] - 2022-10-06
 
