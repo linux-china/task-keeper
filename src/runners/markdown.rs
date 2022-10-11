@@ -19,27 +19,51 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .report()
         .change_context(KeeperError::InvalidProcfile)?;
     let mut tasks: Vec<Task> = vec![];
-    let mut offset = readme_md.find("```shell");
-    let mut shell_counter = 0;
+    let mut offset = find_shell_code_offset(&readme_md);
     while offset.is_some() {
-        shell_counter += 1;
         let mut offset_num = offset.unwrap() + 8;
         let end = readme_md[offset_num..].find("```").map(|x| x + offset_num);
         if end.is_none() {
             break;
         }
         let end_num = end.unwrap();
-        let code = readme_md.get(offset_num..end_num).unwrap().trim();
-        if !code.is_empty() {
-            tasks.push(parse_task_from_code_block(shell_counter, code));
+        let line_break_offset = readme_md[offset_num..].find('\n').map(|x| x + offset_num).unwrap();
+        let attributes: &str = readme_md.get(offset_num..line_break_offset).unwrap().trim();
+        if attributes.starts_with('{') && attributes.ends_with('}') && attributes.contains('#') {
+            // format as {#name first=second} {#name}
+            let parts = attributes[1..(attributes.len() - 1)].split(' ')
+                .into_iter()
+                .filter(|x| x.starts_with('#'))
+                .collect::<Vec<&str>>();
+            if parts.len() == 1 {
+                let name = parts[0][1..].to_owned();
+                let code = readme_md.get((line_break_offset + 1)..end_num).unwrap().trim();
+                if !code.is_empty() {
+                    tasks.push(parse_task_from_code_block(&name, code));
+                }
+            }
         }
         offset_num = end_num + 3;
-        offset = readme_md[offset_num..].find("```shell").map(|x| x + offset_num);
+        offset = find_shell_code_offset(&readme_md[offset_num..]).map(|x| x + offset_num);
     }
     Ok(tasks)
 }
 
-fn parse_task_from_code_block(counter: i32, code_block: &str) -> Task {
+fn find_shell_code_offset(text: &str) -> Option<usize> {
+    let mut offset = text.find("```shell");
+    if offset.is_none() {
+        offset = text.find("```sh");
+    }
+    if offset.is_none() {
+        offset = text.find("~~~shell");
+    }
+    if offset.is_none() {
+        offset = text.find("~~~sh");
+    }
+    offset
+}
+
+fn parse_task_from_code_block(task_name: &str, code_block: &str) -> Task {
     let lines = BufReader::new(code_block.as_bytes())
         .lines()
         .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
@@ -52,7 +76,6 @@ fn parse_task_from_code_block(counter: i32, code_block: &str) -> Task {
             }
         })
         .collect::<Vec<String>>();
-    let first_line = lines.get(0).unwrap();
     let mut command_lines: Vec<String> = vec![];
     let mut line_escape = false;
     lines.iter()
@@ -69,12 +92,8 @@ fn parse_task_from_code_block(counter: i32, code_block: &str) -> Task {
             }
             line_escape = line.ends_with("\\");
         });
-    let mut name = format!("md-{}", counter);
     let description = command_lines.join("\n");
-    if first_line.starts_with("##") {
-        name = str::replace(first_line[2..].trim(), " ", "-");
-    }
-    task!(name, "markdown", description)
+    task!(task_name, "markdown", description)
 }
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
@@ -104,7 +123,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("http-methods", &[],&[], true) {
+        if let Ok(output) = run_task("http-methods", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }
