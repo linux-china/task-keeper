@@ -226,6 +226,18 @@ Available.
 
 Available.
 
+### Tasks from README.md
+
+Task keeper will parse README.md and extract tasks with following code block format:
+
+~~~
+```shell {#task_name}
+curl https://httpbin.org/ip
+```
+~~~
+
+Now only `shell` and `sh` are supported.
+
 # Task options/params and global options
 
 * Task options: `tk hello --name linux_china`
@@ -273,23 +285,20 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
   Gemfile.lock: https://blog.saeloun.com/2022/08/16/understanding_gemfile_and_gemfile_lock
 * Your Makefiles are wrong: https://tech.davis-hansson.com/p/make/
 
-# Shell scripts in Markdown
+# Task scripts in Markdown
 
-```shell
-$ ## http-methods
+```shell {#demo}
 $ curl https://httpbin.org/get
 $ curl -X POST https://httpbin.org/post
 ```
 
-```shell
-## print my internet ip
+```shell {#myip}
 curl --silent https://httpbin.org/ip | jq '.origin'
 ```
 
-```shell
+```shell {#demo2}
 curl https://httpbin.org/ip \
     --user-agent "Task Keeper/0.1.0" \
     --silent
 curl https://httpbin.org/headers
 ```
-
