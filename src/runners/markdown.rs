@@ -21,16 +21,17 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let mut tasks: Vec<Task> = vec![];
     let mut offset = find_shell_code_offset(&readme_md);
     while offset.is_some() {
-        let mut offset_num = offset.unwrap() + 8;
+        let mut offset_num = offset.unwrap() + 3;
         let end = readme_md[offset_num..].find("```").map(|x| x + offset_num);
         if end.is_none() {
             break;
         }
         let end_num = end.unwrap();
         let line_break_offset = readme_md[offset_num..].find('\n').map(|x| x + offset_num).unwrap();
-        let attributes: &str = readme_md.get(offset_num..line_break_offset).unwrap().trim();
-        if attributes.starts_with('{') && attributes.ends_with('}') && attributes.contains('#') {
+        let language_and_attributes: &str = readme_md.get(offset_num..line_break_offset).unwrap().trim();
+        if language_and_attributes.contains('{') && language_and_attributes.ends_with('}') && language_and_attributes.contains('#') {
             // format as {#name first=second} {#name}
+            let attributes = language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
             let parts = attributes[1..(attributes.len() - 1)].split(' ')
                 .into_iter()
                 .filter(|x| x.starts_with('#'))
@@ -53,12 +54,6 @@ fn find_shell_code_offset(text: &str) -> Option<usize> {
     let mut offset = text.find("```shell");
     if offset.is_none() {
         offset = text.find("```sh");
-    }
-    if offset.is_none() {
-        offset = text.find("~~~shell");
-    }
-    if offset.is_none() {
-        offset = text.find("~~~sh");
     }
     offset
 }
