@@ -104,6 +104,29 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
     }
 }
 
+pub fn get_manager_web_url(runner: &str) -> &'static str {
+    match runner {
+        "maven" => "https://maven.apache.org",
+        "gradle" => "https://gradle.org",
+        "sbt" => "https://www.scala-sbt.org",
+        "npm" => "https://nodejs.org",
+        "cargo" => "https://doc.rust-lang.org/cargo/",
+        "cmake" => "https://cmake.org/",
+        "composer" => "https://getcomposer.org",
+        "go" => "https://go.dev/ref/mod",
+        "swift" => "https://www.swift.org/package-manager/",
+        "bundle" => "https://bundler.io/",
+        "bazel" => "https://bazel.build/",
+        "poetry" => "https://python-poetry.org",
+        "lein" => "https://leiningen.org",
+        "rebar3" => "https://rebar3.org",
+        "mix" => "https://hexdocs.pm/mix/Mix.html",
+        "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
+        "pipenv" => "https://pipenv.pypa.io",
+        _ => "unknown",
+    }
+}
+
 pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
     match runner {
         "maven" => maven::get_task_command_map(),
