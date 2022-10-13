@@ -58,7 +58,9 @@ fn main() {
                 RUNNERS.iter().for_each(|runner| {
                     if let Some(tasks) = tasks_hashmap.get(*runner) {
                         if !tasks.is_empty() {
-                            println!("{}", format!("  {}: {}", runner, runners::get_runner_file_name(runner)).bold().blue());
+                            println!("{}", format!("  {}: {} - {}", runner,
+                                                   runners::get_runner_file_name(runner),
+                                                   runners::get_runner_web_url(runner)).bold().blue());
                             tasks.iter().for_each(|task| {
                                 if task.description.is_empty() {
                                     println!("    -- {}", task.name.bold());
@@ -79,9 +81,13 @@ fn main() {
                 if manager_name == "npm" {
                     let package_json = common::parse_package_json().unwrap();
                     let package_command = common::get_package_command(&package_json);
-                    println!("{}", format!("  {}: {}", package_command, managers::get_manager_file_name(&manager_name)).bold().blue());
+                    println!("{}", format!("  {}: {} - {}", package_command,
+                                           managers::get_manager_file_name(&manager_name),
+                                           managers::get_manager_web_url(&manager_name)).bold().blue());
                 } else {
-                    println!("{}", format!("  {}: {}", manager_name, managers::get_manager_file_name(&manager_name)).bold().blue());
+                    println!("{}", format!("  {}: {} - {}", manager_name,
+                                           managers::get_manager_file_name(&manager_name),
+                                           managers::get_manager_web_url(&manager_name)).bold().blue());
                 }
                 let task_command_map = managers::get_manager_command_map(&manager_name);
                 if !task_command_map.is_empty() {
