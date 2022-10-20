@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2022-10-20
+
+### Add
+
+- JavaScript/TypeScript code block in Markdown supported now: you can assign `.deno` or `.node` as js engine.
+
+~~~markdown
+```javascript {#task_name .deno}
+console.log("hello world");
+```
+~~~
+
 ## [0.7.1] - 2022-10-11
 
 ### Fixed
