@@ -1,10 +1,13 @@
 #[macro_export]
 macro_rules! task {
     ($name:expr, $runner:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), description: "".to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: "".to_owned()}
     };
     ($name:expr, $runner:expr, $description:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), description: $description.to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: $description.to_owned()}
+    };
+    ($name:expr, $runner:expr, $runner2:expr, $description:expr) => {
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: $runner.to_owned(), description: $description.to_owned()}
     };
 }
 
@@ -12,6 +15,7 @@ macro_rules! task {
 pub struct Task {
     pub name: String,
     pub runner: String,
+    pub runner2: Option<String>,
     pub description: String,
 }
 
