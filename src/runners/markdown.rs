@@ -3,7 +3,7 @@ use std::process::{Output};
 use error_stack::{IntoReport, Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command_line};
+use crate::command_utils::{run_command_line, run_command_line_from_stdin};
 use crate::task;
 
 pub fn is_available() -> bool {
@@ -31,16 +31,30 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         let language_and_attributes: &str = readme_md.get(offset_num..line_break_offset).unwrap().trim();
         if language_and_attributes.contains('{') && language_and_attributes.ends_with('}') && language_and_attributes.contains('#') {
             // format as {#name first=second} {#name}
+            let language = language_and_attributes.split('{').next().unwrap().trim();
             let attributes = language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
-            let parts = attributes[1..(attributes.len() - 1)].split(' ')
+            let task_id = attributes[1..(attributes.len() - 1)].split(' ')
                 .into_iter()
                 .filter(|x| x.starts_with('#'))
                 .collect::<Vec<&str>>();
-            if parts.len() == 1 {
-                let name = parts[0][1..].to_owned();
+            let code_runner = attributes[1..(attributes.len() - 1)].split(' ')
+                .into_iter()
+                .filter(|x| x.starts_with('.'))
+                .collect::<Vec<&str>>();
+            if task_id.len() == 1 {
+                let name = task_id[0][1..].to_owned();
                 let code = readme_md.get((line_break_offset + 1)..end_num).unwrap().trim();
                 if !code.is_empty() {
-                    tasks.push(parse_task_from_code_block(&name, code));
+                    if language == "javascript" || language == "typescript" {
+                        let runner2 = if code_runner.len() == 1 {
+                            code_runner[0][1..].to_owned()
+                        } else {
+                            "node".to_owned()
+                        };
+                        tasks.push(parse_task_from_code_block(&name, code, &runner2));
+                    } else if language == "shell" {
+                        tasks.push(parse_task_from_code_block(&name, code, "sh"));
+                    }
                 }
             }
         }
@@ -55,10 +69,16 @@ fn find_shell_code_offset(text: &str) -> Option<usize> {
     if offset.is_none() {
         offset = text.find("```sh");
     }
+    if offset.is_none() {
+        offset = text.find("```javascript");
+    }
+    if offset.is_none() {
+        offset = text.find("```typescript");
+    }
     offset
 }
 
-fn parse_task_from_code_block(task_name: &str, code_block: &str) -> Task {
+fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str) -> Task {
     let lines = BufReader::new(code_block.as_bytes())
         .lines()
         .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
@@ -88,7 +108,7 @@ fn parse_task_from_code_block(task_name: &str, code_block: &str) -> Task {
             line_escape = line.ends_with("\\");
         });
     let description = command_lines.join("\n");
-    task!(task_name, "markdown", description)
+    task!(task_name, "markdown", runner2, description)
 }
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
@@ -96,13 +116,20 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
     let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
         KeeperError::TaskNotFound(task.to_string())
     })?;
-    BufReader::new(task.description.as_bytes())
-        .lines()
-        .map(|line| {
-            run_command_line(&line.unwrap(), verbose)
-        })
-        .last()
-        .unwrap()
+    let runner2 = task.runner2.clone().unwrap_or("sh".to_owned());
+    if runner2 == "node" {
+        run_command_line_from_stdin("node -", &task.description, verbose)
+    } else if runner2 == "deno" {
+        run_command_line_from_stdin("deno run -", &task.description, verbose)
+    } else {
+        BufReader::new(task.description.as_bytes())
+            .lines()
+            .map(|line| {
+                run_command_line(&line.unwrap(), verbose)
+            })
+            .last()
+            .unwrap()
+    }
 }
 
 #[cfg(test)]
@@ -113,6 +140,14 @@ mod tests {
     fn test_parse() {
         if let Ok(tasks) = list_tasks() {
             println!("{:?}", tasks);
+        }
+    }
+
+    #[test]
+    fn test_run_js() {
+        if let Ok(output) = run_task("js2", &[], &[], true) {
+            let status_code = output.status.code().unwrap_or(0);
+            println!("exit code: {}", status_code);
         }
     }
 
