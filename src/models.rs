@@ -7,7 +7,7 @@ macro_rules! task {
        Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: $description.to_owned()}
     };
     ($name:expr, $runner:expr, $runner2:expr, $description:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: $runner.to_owned(), description: $description.to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: Some($runner2.to_owned()), description: $description.to_owned()}
     };
 }
 
