@@ -42,7 +42,7 @@ pub fn run_command_line_from_stdin(command_line: &str, input: &str, verbose: boo
         println!("[tk] command line:  {:?}", command_line);
     }
     if is_command_available(&command_name) {
-        let mut child = Command::new("deno")
+        let mut child = Command::new(command_name)
             .args(&args)
             .stdin(Stdio::piped())
             .stdout(Stdio::inherit())
