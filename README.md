@@ -236,7 +236,15 @@ curl https://httpbin.org/ip
 ```
 ~~~
 
-Now only `shell` and `sh` are supported.
+Now only `shell`, `sh`, `javascript` and `typescript` are supported.
+
+Run JavaScript/TypeScript by `node` or `deno`:
+
+~~~markdown
+```javascript {#task_name .deno}
+console.log("hello world");
+```
+~~~
 
 # Task options/params and global options
 
@@ -301,4 +309,9 @@ curl https://httpbin.org/ip \
     --user-agent "Task Keeper/0.1.0" \
     --silent
 curl https://httpbin.org/headers
+```
+
+```typescript {#js2 .deno}
+let name: string = "linux_china";
+console.log(name);
 ```
