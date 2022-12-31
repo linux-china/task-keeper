@@ -8,12 +8,15 @@
 
 - Add `java`, `jshelllanguage`, `groovy`, `kotlin` support in README.md, example as following:
 
+~~~markdown
 ```kotlin {#k1}
 fun main() {
     println("Hello world!")
 }
 ```
+~~~
 
+~~~markdown
 ```java {#j1}
 public class Demo {
     public static void main(String[] args) {
@@ -21,10 +24,13 @@ public class Demo {
     }
 }
 ```
+~~~
 
+~~~markdown
 ```groovy {#g1}
 println "hello"
 ```
+~~~
 
 **Note**: Please install [JBang](https://www.jbang.dev/) first.
 
