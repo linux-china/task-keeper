@@ -130,7 +130,6 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
 
 #[cfg(test)]
 mod tests {
-    use std::io::Write;
     use super::*;
 
     #[test]
