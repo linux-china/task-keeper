@@ -26,6 +26,8 @@ public class Demo {
 println "hello"
 ```
 
+**Note**: Please install [JBang](https://www.jbang.dev/) first.
+
 ## [0.8.0] - 2022-10-20
 
 ### Add
