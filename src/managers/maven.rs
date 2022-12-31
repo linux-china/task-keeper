@@ -55,7 +55,8 @@ fn get_start_command_line() -> String {
         .map(|dir| dir.join("pom.xml"))
         .map(|path| std::fs::read_to_string(path).unwrap())
         .unwrap_or("<project></project>".to_owned());
-    return if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>") {
+    return if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>")
+        || pom_xml.contains("<artifactId>spring-boot-starter-webflux</artifactId>") {
         format!("{} spring-boot:run", get_mvn_command())
     } else if pom_xml.contains("<artifactId>quarkus-maven-plugin</artifactId>") {
         format!("{} quarkus:dev", get_mvn_command())
