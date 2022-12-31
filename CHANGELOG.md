@@ -4,6 +4,28 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2022-12-31
+
+- Add `java`, `jshelllanguage`, `groovy`, `kotlin` support in README.md, example as following:
+
+```kotlin {#k1}
+fun main() {
+    println("Hello world!")
+}
+```
+
+```java {#j1}
+public class Demo {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}
+```
+
+```groovy {#g1}
+println "hello"
+```
+
 ## [0.8.0] - 2022-10-20
 
 ### Add
