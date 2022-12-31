@@ -151,6 +151,7 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
         let file_path = temp_dir().join(&file_name);
         let mut file = File::create(file_path.as_path()).unwrap();
         file.write_all(task.description.as_bytes()).unwrap();
+        file.sync_all().unwrap();
         let command_line = format!("jbang run {}", file_path.to_str().unwrap());
         run_command_line(&command_line, verbose)
     } else {
