@@ -1,6 +1,10 @@
 use std::io::{BufRead, BufReader};
 use std::process::{Output};
+use std::env::temp_dir;
+use std::fs::File;
+use std::io::prelude::*;
 use error_stack::{IntoReport, Result, ResultExt};
+use uuid::Uuid;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command_line, run_command_line_from_stdin};
@@ -54,6 +58,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                         tasks.push(parse_task_from_code_block(&name, code, &runner2));
                     } else if language == "shell" {
                         tasks.push(parse_task_from_code_block(&name, code, "sh"));
+                    } else if language == "java" || language == "jshelllanguage" {
+                        tasks.push(parse_task_from_code_block(&name, code, "java"));
+                    } else if language == "kotlin" {
+                        tasks.push(parse_task_from_code_block(&name, code, "kt"));
+                    } else if language == "groovy" {
+                        tasks.push(parse_task_from_code_block(&name, code, "groovy"));
                     }
                 }
             }
@@ -75,6 +85,19 @@ fn find_shell_code_offset(text: &str) -> Option<usize> {
     if offset.is_none() {
         offset = text.find("```typescript");
     }
+    if offset.is_none() {
+        offset = text.find("```java");
+    }
+    if offset.is_none() {
+        offset = text.find("```kotlin");
+    }
+    if offset.is_none() {
+        offset = text.find("```groovy");
+    }
+    if offset.is_none() {
+        offset = text.find("```jshelllanguage");
+    }
+
     offset
 }
 
@@ -121,6 +144,15 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
         run_command_line_from_stdin("node -", &task.description, verbose)
     } else if runner2 == "deno" {
         run_command_line_from_stdin("deno run -", &task.description, verbose)
+    } else if runner2 == "java" {
+        run_command_line_from_stdin("jbang run -", &task.description, verbose)
+    } else if runner2 == "groovy" || runner2 == "kt" {
+        let file_name = format!("{}.{}", Uuid::new_v4(), runner2);
+        let file_path = temp_dir().join(&file_name);
+        let mut file = File::create(file_path.as_path()).unwrap();
+        file.write_all(task.description.as_bytes()).unwrap();
+        let command_line = format!("jbang run {}", file_path.to_str().unwrap());
+        run_command_line(&command_line, verbose)
     } else {
         BufReader::new(task.description.as_bytes())
             .lines()
