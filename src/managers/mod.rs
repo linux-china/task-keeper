@@ -175,7 +175,9 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
     }
     if npm::is_available() {
         if npm::is_command_available() {
-            queue.insert("npm", npm::run_task);
+            if npm::get_task_command_map().contains_key(task_name) {
+                queue.insert("npm", npm::run_task);
+            }
         } else {
             println!("{}", format!("[tk] npm(https://nodejs.org/) command not available for package.json").bold().red());
         }
@@ -189,7 +191,9 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
     }
     if composer::is_available() {
         if composer::is_command_available() {
-            queue.insert("composer", composer::run_task);
+            if composer::get_task_command_map().contains_key(task_name) {
+                queue.insert("composer", composer::run_task);
+            }
         } else {
             println!("{}", format!("[tk] gradle(https://gradle.org/) command not available for composer.json").bold().red());
         }
