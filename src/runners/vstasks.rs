@@ -80,5 +80,9 @@ mod tests {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }
+        if let Ok(output) = run_task("node-version", &[], &[], true) {
+            let status_code = output.status.code().unwrap_or(0);
+            println!("exit code: {}", status_code);
+        }
     }
 }
