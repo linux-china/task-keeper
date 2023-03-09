@@ -47,4 +47,6 @@ pub enum KeeperError {
 
     #[error("TK-300001: failed to read pom.xml")]
     InvalidPomXml,
+    #[error("TK-301001: failed to parse package.json")]
+    InvalidTasksJson,
 }
