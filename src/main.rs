@@ -171,6 +171,13 @@ fn main() {
             let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
             make_file.write_all(include_bytes!("./templates/jbang-catalog.json")).unwrap();
             println!("{}", "jbang-catalog.json created".bold().green());
+        } else if runner_name == "vscode" {
+            if !Path::new(".vscode").exists() {
+                std::fs::create_dir(".vscode")?;
+            }
+            let mut tasks_file = std::fs::File::create(".vscode/tasks.json").unwrap();
+            tasks_file.write_all(include_bytes!("./templates/tasks.json")).unwrap();
+            println!("{}", ".vscode/tasks.json created".bold().green());
         } else if runner_name == "pipenv" {
             let mut make_file = std::fs::File::create("Pipfile").unwrap();
             make_file.write_all(include_bytes!("./templates/Pipfile")).unwrap();
