@@ -260,6 +260,7 @@ console.log("hello world");
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
 * code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
+* VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 
 # Package Managers
 
