@@ -19,7 +19,7 @@ use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "markdown"];
+pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -77,6 +77,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "deno" => "https://deno.land",
         "composer" => "https://getcomposer.org",
         "fleet" => "https://www.jetbrains.com/fleet/",
+        "vscode" => "https://code.visualstudio.com/docs/editor/tasks",
         "shell" => "https://www.gnu.org/software/bash/",
         "markdown" => "https://github.com/linux-china/task-keeper#tasks-from-readmemd",
         "jbang" => "https://www.jbang.dev/",
