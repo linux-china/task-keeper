@@ -73,6 +73,13 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::vstasks::is_available() {
+        if let Ok(runner_tasks) = runners::vstasks::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("vscode".to_string(), runner_tasks);
+            }
+        }
+    }
     if runners::procfile::is_available() {
         if let Ok(runner_tasks) = runners::procfile::list_tasks() {
             if !runner_tasks.is_empty() {
