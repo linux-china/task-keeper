@@ -2,7 +2,7 @@ use std::process::{Output};
 use crate::errors::KeeperError;
 use error_stack::{Result};
 use crate::models::Task;
-use crate::command_utils::{run_command_by_shell};
+use crate::command_utils::{run_command_by_shell, run_command_line};
 use crate::task;
 use serde::{Deserialize, Serialize};
 
@@ -30,7 +30,11 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(parse_run_json().tasks
         .map(|tasks| {
             tasks.into_iter().map(|task| {
-                task!(&task.label.clone().unwrap(), "vscode", &task.command.clone().unwrap())
+                if task.task_type == "shell" {
+                    task!(&task.label.clone().unwrap(), "vscode", "shell", &task.command.clone().unwrap())
+                } else {
+                    task!(&task.label.clone().unwrap(), "vscode", &task.command.clone().unwrap())
+                }
             }).collect()
         })
         .unwrap_or_else(|| vec![])
@@ -51,7 +55,11 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
     let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
         KeeperError::TaskNotFound(task.to_string())
     })?;
-    run_command_by_shell(&task.description, verbose)
+    if let Some(_runner2) = &task.runner2 {
+        run_command_by_shell(&task.description, verbose)
+    } else {
+        run_command_line(&task.description, verbose)
+    }
 }
 
 #[cfg(test)]
