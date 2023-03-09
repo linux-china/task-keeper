@@ -12,6 +12,7 @@ pub mod markdown;
 pub mod taskshell;
 pub mod composer;
 pub mod jbang;
+pub mod vstasks;
 
 use std::process::{Output};
 use colored::Colorize;
@@ -26,6 +27,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "npm" => packagejson::run_task(task_name, task_args, global_args, verbose),
         "just" => justfile::run_task(task_name, task_args, global_args, verbose),
         "fleet" => fleet::run_task(task_name, task_args, global_args, verbose),
+        "vscode" => vstasks::run_task(task_name, task_args, global_args, verbose),
         "deno" => denojson::run_task(task_name, task_args, global_args, verbose),
         "make" => makefile::run_task(task_name, task_args, global_args, verbose),
         "rake" => rakefile::run_task(task_name, task_args, global_args, verbose),
@@ -54,6 +56,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "deno" => "deno.json",
         "composer" => "composer.json",
         "fleet" => ".fleet/run.json",
+        "vscode" => ".vscode/tasks.json",
         "shell" => "task.sh",
         "markdown" => "README.md",
         "jbang" => "jbang-catalog.json",
