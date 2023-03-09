@@ -55,6 +55,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
+* VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 
 **Tips**:
 
@@ -258,9 +259,7 @@ console.log("hello world");
 
 * Apache Ant(build.xml): https://ant.apache.org/
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
-* code(.vscode/launch.json): https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
-* VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 
 # Package Managers
 
