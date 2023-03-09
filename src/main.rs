@@ -173,7 +173,7 @@ fn main() {
             println!("{}", "jbang-catalog.json created".bold().green());
         } else if runner_name == "vscode" {
             if !Path::new(".vscode").exists() {
-                std::fs::create_dir(".vscode")?;
+                std::fs::create_dir(".vscode").unwrap();
             }
             let mut tasks_file = std::fs::File::create(".vscode/tasks.json").unwrap();
             tasks_file.write_all(include_bytes!("./templates/tasks.json")).unwrap();
