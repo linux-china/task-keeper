@@ -1,7 +1,6 @@
-use std::io::{BufRead};
 use std::process::{Output};
 use crate::errors::KeeperError;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result};
 use crate::models::Task;
 use crate::command_utils::{run_command_by_shell};
 use crate::task;
