@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2023-03-08
+
+- Add task validation for npm and composer when executing tasks from manager
+- Add VS Code `.vscode/tasks.json` support
+
 ## [0.9.0] - 2022-12-31
 
 - Add `java`, `jshelllanguage`, `groovy`, `kotlin` support in README.md, example as following:
