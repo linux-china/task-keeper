@@ -7,6 +7,10 @@
     <property name="build" location="build"/>
     <property name="dist" location="dist"/>
 
+    <target name="hello-ant">
+        <echo>Hello Apache Ant</echo>
+    </target>
+
     <target name="init">
        <echo>init</echo>
     </target>
