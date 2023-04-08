@@ -13,17 +13,19 @@ pub mod taskshell;
 pub mod composer;
 pub mod jbang;
 pub mod vstasks;
+pub mod ant;
 
 use std::process::{Output};
 use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown"];
+pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
     match runner {
+        "ant" => ant::run_task(task_name, task_args, global_args, verbose),
         "npm" => packagejson::run_task(task_name, task_args, global_args, verbose),
         "just" => justfile::run_task(task_name, task_args, global_args, verbose),
         "fleet" => fleet::run_task(task_name, task_args, global_args, verbose),
@@ -45,6 +47,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
 
 pub fn get_runner_file_name(runner: &str) -> &'static str {
     match runner {
+        "ant" => "build.xml",
         "rake" => "Rakefile",
         "invoke" => "tasks.py",
         "task" => "Taskfile.yml",
@@ -66,6 +69,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
 
 pub fn get_runner_web_url(runner: &str) -> &'static str {
     match runner {
+        "ant" => "https://ant.apache.org/",
         "rake" => "https://ruby.github.io/rake/",
         "invoke" => "https://www.pyinvoke.org",
         "task" => "https://taskfile.dev",
