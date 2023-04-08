@@ -258,7 +258,6 @@ console.log("hello world");
 
 ## Task Runners
 
-* Apache Ant(build.xml): https://ant.apache.org/
 * jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
 
