@@ -66,6 +66,19 @@ pub fn run_manager_task(runner: &str, task_name: &str, task_args: &[&str], globa
 
 pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<Task>>, KeeperError> {
     let mut all_tasks = HashMap::new();
+    if runners::ant::is_available() {
+        if runners::ant::is_command_available() {
+            if let Ok(runner_tasks) = runners::ant::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("ant".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", format!("[tk] ant(https://ant.apache.org/) command not available for build.xml").bold().red());
+            }
+        }
+    }
     if runners::fleet::is_available() {
         if let Ok(runner_tasks) = runners::fleet::list_tasks() {
             if !runner_tasks.is_empty() {
