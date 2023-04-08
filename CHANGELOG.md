@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2023-04-08
+
+- Add Apache Ant support
+
 ## [0.10.0] - 2023-03-08
 
 - Add task validation for npm and composer when executing tasks from manager
