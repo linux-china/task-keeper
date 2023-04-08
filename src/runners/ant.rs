@@ -5,6 +5,8 @@ use crate::models::Task;
 use crate::command_utils::{run_command};
 use crate::task;
 use serde::{Deserialize};
+use which::which;
+
 
 #[derive(Deserialize, Debug, Default)]
 struct Project {
@@ -23,6 +25,10 @@ pub fn is_available() -> bool {
     std::env::current_dir()
         .map(|dir| dir.join("build.xml").exists())
         .unwrap_or(false)
+}
+
+pub fn is_command_available() -> bool {
+    which("ant").is_ok()
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
