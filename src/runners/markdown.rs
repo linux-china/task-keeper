@@ -9,6 +9,8 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command_line, run_command_line_from_stdin};
 use crate::task;
+use std::collections::HashMap;
+use regex::Regex;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -36,34 +38,29 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         if language_and_attributes.contains('{') && language_and_attributes.ends_with('}') && language_and_attributes.contains('#') {
             // format as {#name first=second} {#name}
             let language = language_and_attributes.split('{').next().unwrap().trim();
-            let attributes = language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
-            let task_id = attributes[1..(attributes.len() - 1)].split(' ')
-                .into_iter()
-                .filter(|x| x.starts_with('#'))
-                .collect::<Vec<&str>>();
-            let code_runner = attributes[1..(attributes.len() - 1)].split(' ')
-                .into_iter()
-                .filter(|x| x.starts_with('.'))
-                .collect::<Vec<&str>>();
-            if task_id.len() == 1 {
-                let name = task_id[0][1..].to_owned();
+            let markdown_attributes = language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
+            let attributes = parse_markdown_attributes(markdown_attributes);
+            if attributes.contains_key("id") {
+                let name = attributes.get("id").unwrap();
+                let code_runner = attributes.get("class").cloned().unwrap_or("".to_string());
+                let description = attributes.get("desc").cloned().unwrap_or("".to_string());
                 let code = readme_md.get((line_break_offset + 1)..end_num).unwrap().trim();
                 if !code.is_empty() {
                     if language == "javascript" || language == "typescript" {
-                        let runner2 = if code_runner.len() == 1 {
-                            code_runner[0][1..].to_owned()
+                        let runner2 = if code_runner.is_empty() {
+                            code_runner.split(' ').next().unwrap().to_owned()
                         } else {
                             "node".to_owned()
                         };
-                        tasks.push(parse_task_from_code_block(&name, code, &runner2));
+                        tasks.push(parse_task_from_code_block(&name, code, &runner2, &description));
                     } else if language == "shell" {
-                        tasks.push(parse_task_from_code_block(&name, code, "sh"));
+                        tasks.push(parse_task_from_code_block(&name, code, "sh", &description));
                     } else if language == "java" || language == "jshelllanguage" {
-                        tasks.push(parse_task_from_code_block(&name, code, "java"));
+                        tasks.push(parse_task_from_code_block(&name, code, "java", &description));
                     } else if language == "kotlin" {
-                        tasks.push(parse_task_from_code_block(&name, code, "kt"));
+                        tasks.push(parse_task_from_code_block(&name, code, "kt", &description));
                     } else if language == "groovy" {
-                        tasks.push(parse_task_from_code_block(&name, code, "groovy"));
+                        tasks.push(parse_task_from_code_block(&name, code, "groovy", &description));
                     }
                 }
             }
@@ -101,7 +98,7 @@ fn find_shell_code_offset(text: &str) -> Option<usize> {
     offset
 }
 
-fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str) -> Task {
+fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str, description: &str) -> Task {
     let lines = BufReader::new(code_block.as_bytes())
         .lines()
         .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
@@ -130,8 +127,12 @@ fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str) 
             }
             line_escape = line.ends_with("\\");
         });
-    let description = command_lines.join("\n");
-    task!(task_name, "markdown", runner2, description)
+    let task_desc = if description.is_empty() {
+        command_lines.join("\n")
+    } else {
+        description.to_string()
+    };
+    task!(task_name, "markdown", runner2, task_desc)
 }
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
@@ -165,9 +166,52 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
     }
 }
 
+fn parse_markdown_attributes(markdown_attributes: &str) -> HashMap<String, String> {
+    let mut attributes = HashMap::new();
+    let mut classes = vec![];
+    let pairs_text = if markdown_attributes.starts_with('{') {
+        &markdown_attributes[1..markdown_attributes.len() - 1]
+    } else {
+        markdown_attributes
+    };
+    let re_id = Regex::new(r"#([a-zA-Z0-9-_]+)\b").unwrap();
+    let re_class = Regex::new(r"\.([a-zA-Z0-9-_]+)\b").unwrap();
+    let re_pair1 = Regex::new(r#"([a-zA-Z0-9-_]+)=([^\s"]+)"#).unwrap();
+    let re_pair2 = Regex::new(r#"([a-zA-Z0-9-_]+)="([^"]+)""#).unwrap();
+    re_id.find(pairs_text).map(|m| {
+        attributes.insert("id".to_string(), m.as_str()[1..].to_string());
+    });
+    re_class.find_iter(pairs_text).into_iter().for_each(|m| {
+        classes.push(m.as_str()[1..].to_string());
+    });
+    re_pair1.find_iter(pairs_text).into_iter().for_each(|m| {
+        let pair = m.as_str();
+        let offset = pair.find('=').unwrap();
+        attributes.insert(pair[..offset].to_string(), pair[offset + 1..].to_string());
+    });
+    re_pair2.find_iter(pairs_text).into_iter().for_each(|m| {
+        let pair = m.as_str();
+        let offset = pair.find('=').unwrap();
+        let value = pair[offset + 2..pair.len() - 1].to_string();
+        attributes.insert(pair[..offset].to_string(), value);
+    });
+    if classes.len() > 0 {
+        attributes.insert("class".to_string(), classes.join(" "));
+    }
+    return attributes;
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_parse_markdown_attributes() {
+        let text = r#"{#hello .node .js key1=value1 key2="good morning"}"#;
+        let attributes = parse_markdown_attributes(text);
+        println!("{:?}", attributes);
+    }
 
     #[test]
     fn test_parse() {
