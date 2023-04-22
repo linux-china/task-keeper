@@ -47,100 +47,6 @@ fn main() {
         diagnose();
         return;
     }
-    // list tasks
-    if matches.get_flag("list") {
-        let mut task_found = false;
-        let all_tasks = list_all_runner_tasks(true);
-        if let Ok(tasks_hashmap) = all_tasks {
-            if !tasks_hashmap.is_empty() {
-                task_found = true;
-                println!("{}", "Available task runners:".bold().green());
-                RUNNERS.iter().for_each(|runner| {
-                    if let Some(tasks) = tasks_hashmap.get(*runner) {
-                        if !tasks.is_empty() {
-                            println!("{}", format!("  {}: {} - {}", runner,
-                                                   runners::get_runner_file_name(runner),
-                                                   runners::get_runner_web_url(runner)).bold().blue());
-                            tasks.iter().for_each(|task| {
-                                if task.description.is_empty() {
-                                    println!("    -- {}", task.name.bold());
-                                } else {
-                                    println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        }
-        let managers = managers::get_available_managers();
-        if !managers.is_empty() {
-            task_found = true;
-            println!("{}", "Available project/package management tools:".bold().green());
-            managers.into_iter().for_each(|manager_name| {
-                if manager_name == "npm" {
-                    let package_json = common::parse_package_json().unwrap();
-                    let package_command = common::get_package_command(&package_json);
-                    println!("{}", format!("  {}: {} - {}", package_command,
-                                           managers::get_manager_file_name(&manager_name),
-                                           managers::get_manager_web_url(&manager_name)).bold().blue());
-                } else {
-                    println!("{}", format!("  {}: {} - {}", manager_name,
-                                           managers::get_manager_file_name(&manager_name),
-                                           managers::get_manager_web_url(&manager_name)).bold().blue());
-                }
-                let task_command_map = managers::get_manager_command_map(&manager_name);
-                if !task_command_map.is_empty() {
-                    task_command_map.into_iter().for_each(|(task_name, command_line)| {
-                        if &task_name != "init" {
-                            println!("    -- {} : {}", task_name.bold(), command_line);
-                        }
-                    });
-                }
-            });
-        }
-        if !task_found {
-            println!("{}", "No task runner or project management tool found!".bold().red());
-        }
-        return;
-    }
-    /*// display runner help and tasks
-    if matches.contains_id("runner") && !matches.contains_id("tasks") {
-        let runner = matches.get_one::<String>("runner").unwrap();
-        let mut intro = "";
-        let mut usage = "";
-        println!("{}", format!("{}: ", runner).bold().blue());
-        println!("{}", format!("{}: ", runner).bold().blue());
-        // match item in runners
-        let tasks = match runner {
-            "npm" => {
-                runners::packagejson::list_tasks()
-            }
-            "just" => { runners::justfile::list_tasks() }
-            "fleet" => { runners::fleet::list_tasks() }
-            "deno" => { runners::denojson::list_tasks() }
-            "make" => { runners::makefile::list_tasks() }
-            "rake" => { runners::rakefile::list_tasks() }
-            "task" => { runners::taskfileyml::list_tasks() }
-            "invoke" => { runners::taskspy::list_tasks() }
-            "cargo-make" => { runners::makefiletoml::list_tasks() }
-            "procfile" => { runners::procfile::list_tasks() }
-            "composer" => { runners::composer::list_tasks() }
-            "markdown" => { runners::markdown::list_tasks() }
-            "shell" => { runners::taskshell::list_tasks() }
-            "mave" => { runners::taskshell::list_tasks() }
-            "gradle" => { runners::taskshell::list_tasks() }
-            "sbt" => { runners::taskshell::list_tasks() }
-            "cargo" => {
-                intro = "Rust's package manager";
-                usage = "cargo [+toolchain] [OPTIONS] [SUBCOMMAND]";
-                runners::taskshell::list_tasks()
-            }
-            "bundle" => { runners::taskshell::list_tasks() }
-            _ => vec![]
-        };
-    }*/
-
     // migrate tasks
     if matches.contains_id("from") && matches.contains_id("to") {
         println!("{}", "Task migration has not yet been implemented!".bold().red());
@@ -193,6 +99,69 @@ fn main() {
         }
         return;
     }
+    // runner
+    let task_runner = matches.get_one::<String>("runner");
+    // list tasks
+    if matches.get_flag("list") {
+        let mut task_found = false;
+        let all_tasks = list_all_runner_tasks(true);
+        if let Ok(tasks_hashmap) = all_tasks {
+            if !tasks_hashmap.is_empty() {
+                task_found = true;
+                println!("{}", "Available task runners:".bold().green());
+                RUNNERS.iter().for_each(|runner| {
+                    if task_runner.is_none() || task_runner.unwrap() == *runner {
+                        if let Some(tasks) = tasks_hashmap.get(*runner) {
+                            if !tasks.is_empty() {
+                                println!("{}", format!("  {}: {} - {}", runner,
+                                                       runners::get_runner_file_name(runner),
+                                                       runners::get_runner_web_url(runner)).bold().blue());
+                                tasks.iter().for_each(|task| {
+                                    if task.description.is_empty() {
+                                        println!("    -- {}", task.name.bold());
+                                    } else {
+                                        println!("    -- {} : {}", task.name.bold(), format_description(&task.description));
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        let managers = managers::get_available_managers();
+        if !managers.is_empty() {
+            task_found = true;
+            println!("{}", "Available project/package management tools:".bold().green());
+            managers.into_iter().for_each(|manager_name| {
+                if task_runner.is_none() || task_runner.unwrap() == &manager_name {
+                    if manager_name == "npm" {
+                        let package_json = common::parse_package_json().unwrap();
+                        let package_command = common::get_package_command(&package_json);
+                        println!("{}", format!("  {}: {} - {}", package_command,
+                                               managers::get_manager_file_name(&manager_name),
+                                               managers::get_manager_web_url(&manager_name)).bold().blue());
+                    } else {
+                        println!("{}", format!("  {}: {} - {}", manager_name,
+                                               managers::get_manager_file_name(&manager_name),
+                                               managers::get_manager_web_url(&manager_name)).bold().blue());
+                    }
+                    let task_command_map = managers::get_manager_command_map(&manager_name);
+                    if !task_command_map.is_empty() {
+                        task_command_map.into_iter().for_each(|(task_name, command_line)| {
+                            if &task_name != "init" {
+                                println!("    -- {} : {}", task_name.bold(), command_line);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        if !task_found {
+            println!("{}", "No task runner or project management tool found!".bold().red());
+        }
+        return;
+    }
     // run tasks
     if matches.contains_id("tasks") {
         // load .env for tasks
@@ -221,7 +190,7 @@ fn main() {
         let task_args = &task_context.task_options;
         let global_args = &task_context.global_options;
         let default_runner = "".to_owned();
-        let runner = matches.get_one::<String>("runner").unwrap_or(&default_runner);
+        let runner = task_runner.unwrap_or(&default_runner);
         let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
         if task_count == 0 { // no tasks executed
             println!("{}", "[tk] no tasks found".bold().red());
