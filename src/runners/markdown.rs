@@ -10,7 +10,7 @@ use crate::models::Task;
 use crate::command_utils::{run_command_line, run_command_line_from_stdin};
 use crate::task;
 use std::collections::HashMap;
-use regex::Regex;
+use logos::Logos;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -47,7 +47,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 let code = readme_md.get((line_break_offset + 1)..end_num).unwrap().trim();
                 if !code.is_empty() {
                     if language == "javascript" || language == "typescript" {
-                        let runner2 = if code_runner.is_empty() {
+                        let runner2 = if !code_runner.is_empty() {
                             code_runner.split(' ').next().unwrap().to_owned()
                         } else {
                             "node".to_owned()
@@ -166,35 +166,57 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
     }
 }
 
+#[derive(Logos, Debug, PartialEq)]
+#[logos(skip r"[ \t\n\f]+")] // Ignore this regex pattern between tokens
+enum MarkdownAttribute<'a> {
+    // Tokens can be literal strings, of any length.
+    #[token("{")]
+    LBRACE,
+    // Tokens can be literal strings, of any length.
+    #[token("}")]
+    RBRACE,
+    #[regex(r"#([a-zA-Z0-9]+)")]
+    ID(&'a str),
+    #[regex(r"\.([a-zA-Z0-9]+)")]
+    CLASS(&'a str),
+    #[regex(r"([a-zA-Z0-9]+)")]
+    BooleanKey(&'a str),
+    #[regex(r#"([a-zA-Z0-9-_:@.]+)=([^\s"]+)"#)]
+    KV(&'a str),
+    #[regex(r#"([a-zA-Z0-9-_:@.]+)="([^"]+)""#)]
+    KV2(&'a str),
+}
+
 fn parse_markdown_attributes(markdown_attributes: &str) -> HashMap<String, String> {
     let mut attributes = HashMap::new();
     let mut classes = vec![];
-    let pairs_text = if markdown_attributes.starts_with('{') {
-        &markdown_attributes[1..markdown_attributes.len() - 1]
-    } else {
-        markdown_attributes
-    };
-    let re_id = Regex::new(r"#([a-zA-Z0-9-_]+)\b").unwrap();
-    let re_class = Regex::new(r"\.([a-zA-Z0-9-_:.]+)\b").unwrap();
-    let re_pair1 = Regex::new(r#"([a-zA-Z0-9-_:@.]+)=([^\s"]+)"#).unwrap();
-    let re_pair2 = Regex::new(r#"([a-zA-Z0-9-_:@.]+)="([^"]+)""#).unwrap();
-    re_id.find(pairs_text).map(|m| {
-        attributes.insert("id".to_string(), m.as_str()[1..].to_string());
-    });
-    re_class.find_iter(pairs_text).into_iter().for_each(|m| {
-        classes.push(m.as_str()[1..].to_string());
-    });
-    re_pair1.find_iter(pairs_text).into_iter().for_each(|m| {
-        let pair = m.as_str();
-        let offset = pair.find('=').unwrap();
-        attributes.insert(pair[..offset].to_string(), pair[offset + 1..].to_string());
-    });
-    re_pair2.find_iter(pairs_text).into_iter().for_each(|m| {
-        let pair = m.as_str();
-        let offset = pair.find('=').unwrap();
-        let value = pair[offset + 2..pair.len() - 1].to_string();
-        attributes.insert(pair[..offset].to_string(), value);
-    });
+    let lex = MarkdownAttribute::lexer(markdown_attributes);
+    for token in lex.into_iter() {
+        if let Ok(attribute) = token {
+            // match for Attribute
+            match attribute {
+                MarkdownAttribute::ID(id) => {
+                    attributes.insert("id".to_string(), id[1..].to_string());
+                }
+                MarkdownAttribute::CLASS(class) => {
+                    classes.push(class[1..].to_string());
+                }
+                MarkdownAttribute::BooleanKey(key) => {
+                    attributes.insert(key.to_string(), "true".to_string());
+                }
+                MarkdownAttribute::KV(kv) => {
+                    let offset = kv.find('=').unwrap();
+                    attributes.insert(kv[..offset].to_string(), kv[offset + 1..].to_string());
+                }
+                MarkdownAttribute::KV2(kv2) => {
+                    let offset = kv2.find('=').unwrap();
+                    let value = kv2[offset + 2..kv2.len() - 1].to_string();
+                    attributes.insert(kv2[..offset].to_string(), value);
+                }
+                _ => {}
+            }
+        }
+    }
     if classes.len() > 0 {
         attributes.insert("class".to_string(), classes.join(" "));
     }
@@ -208,7 +230,7 @@ mod tests {
 
     #[test]
     fn test_parse_markdown_attributes() {
-        let text = r#"{#hello .node .js key1=value1 key2="good morning" x-on:click="count++" @click="open = ! open"  @click.outside="open = false"}"#;
+        let text = r#"{#hello .node .js defer key1=value1 key2="good morning" x-on:click="count++" @click="open = ! open"  @click.outside="open = false"}"#;
         let attributes = parse_markdown_attributes(text);
         println!("{:?}", attributes);
     }
