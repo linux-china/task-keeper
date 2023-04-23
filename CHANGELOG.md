@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.11.2] - 2023-04-23
+
+- Introduce Logos to parse Markdown Attributes
+
 ## [0.11.1] - 2023-04-22
 
 - Adjust Markdown Attribute parse to support `{#id desc="description"}` format
