@@ -175,9 +175,9 @@ fn parse_markdown_attributes(markdown_attributes: &str) -> HashMap<String, Strin
         markdown_attributes
     };
     let re_id = Regex::new(r"#([a-zA-Z0-9-_]+)\b").unwrap();
-    let re_class = Regex::new(r"\.([a-zA-Z0-9-_]+)\b").unwrap();
-    let re_pair1 = Regex::new(r#"([a-zA-Z0-9-_]+)=([^\s"]+)"#).unwrap();
-    let re_pair2 = Regex::new(r#"([a-zA-Z0-9-_]+)="([^"]+)""#).unwrap();
+    let re_class = Regex::new(r"\.([a-zA-Z0-9-_:.]+)\b").unwrap();
+    let re_pair1 = Regex::new(r#"([a-zA-Z0-9-_:@.]+)=([^\s"]+)"#).unwrap();
+    let re_pair2 = Regex::new(r#"([a-zA-Z0-9-_:@.]+)="([^"]+)""#).unwrap();
     re_id.find(pairs_text).map(|m| {
         attributes.insert("id".to_string(), m.as_str()[1..].to_string());
     });
@@ -208,7 +208,7 @@ mod tests {
 
     #[test]
     fn test_parse_markdown_attributes() {
-        let text = r#"{#hello .node .js key1=value1 key2="good morning"}"#;
+        let text = r#"{#hello .node .js key1=value1 key2="good morning" x-on:click="count++" @click="open = ! open"  @click.outside="open = false"}"#;
         let attributes = parse_markdown_attributes(text);
         println!("{:?}", attributes);
     }
