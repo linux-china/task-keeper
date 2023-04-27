@@ -19,7 +19,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("install".to_string(), "rye sync".to_string());
     task_command_map.insert("deps".to_string(), "rye show --installed-deps".to_string());
-    task_command_map.insert("outdated".to_string(), "pip3 list --outdated".to_string());
+    task_command_map.insert("outdated".to_string(), "rye run pip3 list --outdated".to_string());
     task_command_map.insert("update".to_string(), "rye sync --update-all".to_string());
     task_command_map.insert("build".to_string(), "rye build".to_string());
     task_command_map
