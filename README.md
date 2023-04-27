@@ -57,6 +57,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
+* rye: https://github.com/mitsuhiko/rye#scripts
 
 **Tips**:
 
@@ -201,7 +202,7 @@ Available.
 
 Available with following tools:
 
-* [rye](https://github.com/mitsuhiko/rye): please install pip3 with `python3 -m ensurepip`
+* [rye](https://github.com/mitsuhiko/rye): please commit `requirements.lock` to git
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
