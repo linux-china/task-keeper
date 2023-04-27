@@ -212,7 +212,7 @@ fn main() {
 fn reset_path_env() {
     let current_dir = env::current_dir().unwrap();
     let mut new_path = env::var("PATH").unwrap_or_else(|_| "".to_string());
-    for dir in ["bin", ".bin", "node_modules/.bin", "venv/bin"].iter() {
+    for dir in ["bin", ".bin", "node_modules/.bin", "venv/bin", ".venv/bin"].iter() {
         let bin_path = current_dir.join(dir);
         if bin_path.exists() {
             new_path = format!("{}{}{}", bin_path.to_string_lossy().to_string(), PATH_SEPARATOR, new_path);
