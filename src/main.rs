@@ -286,6 +286,12 @@ fn diagnose() {
             println!("{} jbang(https://www.jbang.dev/) command not available for jbang-catalog.json", "Warning:".bold().yellow());
         }
     }
+    if runners::rye::is_available() {
+        if !runners::rye::is_command_available() {
+            problems_count += 1;
+            println!("{} rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock", "Warning:".bold().yellow());
+        }
+    }
     // ==========package managers============
     if managers::maven::is_available() {
         if !managers::maven::is_command_available() {
@@ -393,12 +399,6 @@ fn diagnose() {
         if !managers::requirements::is_command_available() {
             problems_count += 1;
             println!("{} pip(https://pypi.org/project/pip/) command not available for requirements.txt", "Warning:".bold().yellow());
-        }
-    }
-    if managers::rye::is_available() {
-        if !managers::rye::is_command_available() {
-            problems_count += 1;
-            println!("{} rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock", "Warning:".bold().yellow());
         }
     }
     if managers::rebar3::is_available() {
