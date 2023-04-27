@@ -6,8 +6,8 @@
 
 ## [0.12.0] - 2023-04-28
 
-- Add [rye](https://github.com/mitsuhiko/rye) support
-- Add [rye scripts](https://github.com/mitsuhiko/rye#scripts) support
+- Add [Rye](https://github.com/mitsuhiko/rye) support
+- Add [Rye scripts](https://github.com/mitsuhiko/rye#scripts) support
 - Add `.venv/bin` in PATH
 
 ## [0.11.2] - 2023-04-23
