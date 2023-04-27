@@ -7,7 +7,11 @@ use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("pyproject.toml").exists())
+        .map(|dir| {
+            let pyproject_file = dir.join("pyproject.toml");
+            pyproject_file.exists()
+                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains("[tool.poetry]")
+        })
         .unwrap_or(false)
 }
 
