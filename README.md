@@ -83,7 +83,7 @@ Task Keeper uses `.java-version`, `.node-version`  files to detect language vers
 To make task runner run tasks smoothly, Task Keeper will append following directories to `PATH` automatically:
 
 * `node-modules/.bin`
-* `venv/bin`
+* `venv/bin` or `.venv/bin`
 * `vendor/bin`
 * `bin`
 * `.bin`
@@ -201,8 +201,9 @@ Available.
 
 Available with following tools:
 
-* Poetry
-* pipenv
+* [rye](https://github.com/mitsuhiko/rye): python3 -m ensurepip
+* [Poetry](https://python-poetry.org/)
+* [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
 
 ### Lein
