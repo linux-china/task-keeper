@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.12.0] - 2023-04-28
+
+- Add [rye](https://github.com/mitsuhiko/rye) support
+
 ## [0.11.2] - 2023-04-23
 
 - Introduce Logos to parse Markdown Attributes
