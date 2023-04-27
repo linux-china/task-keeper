@@ -21,9 +21,10 @@ pub mod rebar3;
 pub mod mix;
 pub mod requirements;
 pub mod pipenv;
+pub mod rye;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "lein", "rebar3", "mix"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -69,6 +70,9 @@ pub fn get_available_managers() -> Vec<String> {
     if requirements::is_available() {
         managers.push("pip".to_string());
     }
+    if rye::is_available() {
+        managers.push("rye".to_string());
+    }
     if lein::is_available() {
         managers.push("lein".to_string());
     }
@@ -99,6 +103,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "rebar3" => "rebar.config",
         "mix" => "mix.exs",
         "pip" => "requirements.txt",
+        "rye" => "requirements.lock",
         "pipenv" => "Pipfile",
         _ => "unknown",
     }
@@ -123,6 +128,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "mix" => "https://hexdocs.pm/mix/Mix.html",
         "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
         "pipenv" => "https://pipenv.pypa.io",
+        "rye" => "https://github.com/mitsuhiko/rye",
         _ => "unknown",
     }
 }
@@ -146,6 +152,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "mix" => mix::get_task_command_map(),
         "pip" => requirements::get_task_command_map(),
         "pipenv" => pipenv::get_task_command_map(),
+        "rye" => rye::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -245,6 +252,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("pipenv", pipenv::run_task);
         } else {
             println!("{}", format!("[tk] pipenv(https://pipenv.pypa.io/en/latest/) command not available for Pipfile").bold().red());
+        }
+    }
+    if rye::is_available() {
+        if rye::is_command_available() {
+            queue.insert("rye", rye::run_task);
+        } else {
+            println!("{}", format!("[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock").bold().red());
         }
     }
     if requirements::is_available() {
