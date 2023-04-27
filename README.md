@@ -201,7 +201,7 @@ Available.
 
 Available with following tools:
 
-* [rye](https://github.com/mitsuhiko/rye): python3 -m ensurepip
+* [rye](https://github.com/mitsuhiko/rye): please install pip3 with `python3 -m ensurepip`
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
