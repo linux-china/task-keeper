@@ -49,4 +49,6 @@ pub enum KeeperError {
     InvalidPomXml,
     #[error("TK-301001: failed to parse package.json")]
     InvalidTasksJson,
+    #[error("TK-303001: failed to list rye tasks")]
+    InvalidRyeTasks,
 }
