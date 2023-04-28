@@ -3,16 +3,11 @@ use std::process::Output;
 use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::run_command_line;
+use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
-    std::env::current_dir()
-        .map(|dir| {
-            let pyproject_file = dir.join("pyproject.toml");
-            pyproject_file.exists()
-                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains("[tool.poetry]")
-        })
-        .unwrap_or(false)
+    pyproject_toml_has_tool("poetry")
 }
 
 pub fn is_command_available() -> bool {
