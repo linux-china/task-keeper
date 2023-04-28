@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.12.1] - 2023-04-30
+
+- `.python-version` support: find Python from Rye and pyenv
+
 ## [0.12.0] - 2023-04-28
 
 - Add [Rye](https://github.com/mitsuhiko/rye) support
