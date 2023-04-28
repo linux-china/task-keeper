@@ -5,10 +5,11 @@ use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result};
 use which::which;
+use crate::common::pyproject_toml_has_tool;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("requirements.lock").exists())
+        .map(|dir| dir.join("requirements.lock").exists() || pyproject_toml_has_tool("rye"))
         .unwrap_or(false)
 }
 
