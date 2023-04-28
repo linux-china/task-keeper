@@ -7,6 +7,7 @@
 ## [0.12.1] - 2023-04-30
 
 - `.python-version` support: find Python from Rye and pyenv
+- Rye detection: `requirements.lock` or `[tool.rye]` in `pyproject.toml`
 
 ## [0.12.0] - 2023-04-28
 
