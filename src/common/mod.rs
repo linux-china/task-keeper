@@ -33,3 +33,13 @@ pub fn get_package_command(package_json: &PackageJson) -> &'static str {
     }
     "npm"
 }
+
+pub fn pyproject_toml_has_tool(tool_name: &str) -> bool {
+    std::env::current_dir()
+        .map(|dir| {
+            let pyproject_file = dir.join("pyproject.toml");
+            pyproject_file.exists()
+                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains(&format!("[tool.{}]", tool_name))
+        })
+        .unwrap_or(false)
+}
