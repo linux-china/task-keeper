@@ -1,5 +1,6 @@
 pub mod java;
 pub mod node;
+pub mod python;
 
 cfg_if::cfg_if! {
     if #[cfg(target_os = "windows")] {
@@ -15,5 +16,8 @@ pub fn inject_languages() {
     }
     if node::is_available() {
         node::init_env();
+    }
+    if python::is_available() {
+        python::init_env();
     }
 }
