@@ -5,6 +5,7 @@ use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result};
 use which::which;
+use crate::common::pyproject::PyProjectToml;
 use crate::common::pyproject_toml_has_tool;
 
 pub fn is_available() -> bool {
@@ -18,17 +19,14 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let tasks_text = capture_command_output("rye", &["run", "-l"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("".to_owned())
-        })?;
     let mut tasks = vec![];
-    for line in tasks_text.lines() {
-        if line.contains("(") && line.ends_with(")") {
-            let offset = line.find("(").unwrap();
-            let name = line[..offset].trim();
-            let description = line[offset + 1..line.len() - 1].trim();
-            tasks.push(task!(name, "rye", description));
+    if let Ok(pyproject) = PyProjectToml::get_default_project() {
+        if pyproject.rye_available() {
+            if let Some(scripts) = pyproject.get_rye_scripts() {
+                scripts.iter().for_each(|(name, description)| {
+                    tasks.push(task!(name, "rye", description));
+                });
+            }
         }
     }
     Ok(tasks)
