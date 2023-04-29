@@ -244,6 +244,19 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::poetry::is_available() {
+        if runners::poetry::is_command_available() {
+            if let Ok(runner_tasks) = runners::poetry::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("poetry".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+            }
+        }
+    }
     if runners::rye::is_available() {
         if runners::rye::is_command_available() {
             if let Ok(runner_tasks) = runners::rye::list_tasks() {
