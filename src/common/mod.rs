@@ -1,8 +1,11 @@
+pub mod pyproject;
+
 use std::collections::HashMap;
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use error_stack::{Result};
+use crate::common::pyproject::PyProjectToml;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
@@ -39,7 +42,7 @@ pub fn pyproject_toml_has_tool(tool_name: &str) -> bool {
         .map(|dir| {
             let pyproject_file = dir.join("pyproject.toml");
             pyproject_file.exists()
-                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains(&format!("[tool.{}]", tool_name))
+                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains(&format!("[tool.{}", tool_name))
         })
         .unwrap_or(false)
 }
