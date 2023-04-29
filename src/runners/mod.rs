@@ -15,13 +15,14 @@ pub mod jbang;
 pub mod vstasks;
 pub mod ant;
 pub mod rye;
+pub mod poetry;
 
 use std::process::{Output};
 use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown", "rye"];
+pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown", "rye", "poetry"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -43,6 +44,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "shell" => taskshell::run_task(task_name, task_args, global_args, verbose),
         "jbang" => jbang::run_task(task_name, task_args, global_args, verbose),
         "rye" => rye::run_task(task_name, task_args, global_args, verbose),
+        "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
     }
 }
@@ -66,6 +68,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "markdown" => "README.md",
         "jbang" => "jbang-catalog.json",
         "rye" => "requirements.lock",
+        "poetry" => "pyproject.toml",
         _ => "unknown",
     }
 }
@@ -89,6 +92,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "markdown" => "https://github.com/linux-china/task-keeper#tasks-from-readmemd",
         "jbang" => "https://www.jbang.dev/",
         "rye" => "https://github.com/mitsuhiko/rye",
+        "poetry" => "https://python-poetry.org",
         _ => "unknown",
     }
 }
