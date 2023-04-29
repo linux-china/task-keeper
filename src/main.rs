@@ -286,6 +286,12 @@ fn diagnose() {
             println!("{} jbang(https://www.jbang.dev/) command not available for jbang-catalog.json", "Warning:".bold().yellow());
         }
     }
+    if runners::poetry::is_available() {
+        if !runners::poetry::is_command_available() {
+            problems_count += 1;
+            println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
+        }
+    }
     if runners::rye::is_available() {
         if !runners::rye::is_command_available() {
             problems_count += 1;
@@ -381,12 +387,6 @@ fn diagnose() {
         if !managers::bazel::is_command_available() {
             problems_count += 1;
             println!("{} bazel(https://bazel.build/) command not available for WORKSPACE", "Warning:".bold().yellow());
-        }
-    }
-    if managers::poetry::is_available() {
-        if !managers::poetry::is_command_available() {
-            problems_count += 1;
-            println!("{} poetry(https://python-poetry.org/) command not available for pyproject.toml", "Warning:".bold().yellow());
         }
     }
     if managers::pipenv::is_available() {
