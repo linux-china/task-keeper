@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.12.2] - 2023-04-30
+
+- Introduce PyProjectToml struct for Rye and Poetry
+
 ## [0.12.1] - 2023-04-30
 
 - `.python-version` support: find Python from Rye and pyenv
