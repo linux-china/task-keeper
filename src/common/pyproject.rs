@@ -18,7 +18,22 @@ pub struct Tool {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct ToolRye {
-    scripts: Option<HashMap<String, String>>,
+    scripts: Option<HashMap<String, toml::Value>>,
+}
+
+impl ToolRye {
+    pub fn get_scripts(&self) -> Option<HashMap<String, String>> {
+        self.scripts.as_ref().map(|scripts| {
+            scripts.iter().map(|(key, value)| {
+                let description: String = match value {
+                    toml::Value::String(value) => value.to_string(),
+                    toml::Value::Table(table) => table.get("cmd").unwrap_or(&toml::Value::String("".to_owned())).to_string(),
+                    _ => "".to_owned()
+                };
+                return (key.clone(), description);
+            }).collect()
+        })
+    }
 }
 
 
@@ -65,7 +80,7 @@ impl PyProjectToml {
     }
 
     pub fn get_rye_scripts(&self) -> Option<HashMap<String, String>> {
-        self.tool.as_ref().and_then(|tool| tool.rye.as_ref()).and_then(|rye| rye.scripts.clone())
+        self.tool.as_ref().and_then(|tool| tool.rye.as_ref()).and_then(|rye| rye.get_scripts().clone())
     }
 
     pub fn get_poetry_scripts(&self) -> Option<HashMap<String, String>> {
