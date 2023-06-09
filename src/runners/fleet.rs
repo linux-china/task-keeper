@@ -26,7 +26,6 @@ pub struct Configuration {
     pub environment: Option<HashMap<String, String>>,
     pub args: Option<Vec<String>>,
     pub tasks: Option<Vec<String>>,
-    pub python_executable_path: Option<String>,
     pub script_path: Option<String>,
     pub arguments: Option<Vec<String>>,
     pub parameters: Option<Vec<String>>,
@@ -131,14 +130,16 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
     }
 }
 
-//todo: add support for other types
+//todo: add support for other types: node, npm
 fn get_command_name(configuration: &Configuration) -> String {
     match configuration.type_value.as_str() {
         "cargo" => "cargo".to_owned(),
         "maven" | "maven-run" => "mvn".to_owned(),
         "gradle" => "./gradlew".to_owned(),
         "docker-run" => "docker".to_owned(),
-        "python" => configuration.python_executable_path.clone().unwrap_or("python".to_owned()),
+        "python" => "python".to_owned(),
+        "node" => "node".to_owned(),
+        "npm" => "npm".to_owned(),
         "go" => configuration.go_exec_path.clone().unwrap_or("go".to_owned()),
         "command" => configuration.program.clone().unwrap_or_default(),
         _ => "".to_owned(),
@@ -174,6 +175,8 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
         }
         "python" => configuration.python_full_args().clone(),
         "go" => configuration.params.clone().unwrap_or_default(),
+        "node" => configuration.params.clone().unwrap_or_default(),
+        "npm" => configuration.params.clone().unwrap_or_default(),
         _ => vec![],
     }
 }
