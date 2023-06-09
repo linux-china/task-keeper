@@ -137,7 +137,7 @@ fn main() {
                 if task_runner.is_none() || task_runner.unwrap() == &manager_name {
                     if manager_name == "npm" {
                         let package_json = common::parse_package_json().unwrap();
-                        let package_command = common::get_package_command(&package_json);
+                        let package_command = common::get_npm_command(&package_json);
                         println!("{}", format!("  {}: {} - {}", package_command,
                                                managers::get_manager_file_name(&manager_name),
                                                managers::get_manager_web_url(&manager_name)).bold().blue());

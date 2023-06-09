@@ -3,7 +3,7 @@ use std::process::Output;
 use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::{run_command_line};
-use crate::common::{get_package_command, parse_package_json};
+use crate::common::{get_npm_command, parse_package_json};
 use crate::errors::KeeperError;
 
 pub fn is_available() -> bool {
@@ -14,7 +14,7 @@ pub fn is_available() -> bool {
 
 pub fn is_command_available() -> bool {
     let package_json = parse_package_json().unwrap();
-    let package_manager = get_package_command(&package_json);
+    let package_manager = get_npm_command(&package_json);
     which(package_manager).is_ok()
 }
 
