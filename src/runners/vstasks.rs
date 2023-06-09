@@ -46,7 +46,9 @@ fn parse_run_json() -> TasksJson {
     std::env::current_dir()
         .map(|dir| dir.join(".vscode").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_jsonrc::from_str::<TasksJson>(&data).unwrap())
+        .map(|data| serde_jsonrc::from_str::<TasksJson>(&data).expect(".vscode/tasks.json format"))
+        // ! serde_jsonrc has a bug with trailing commas inside objects (but the repo has no issues enabled). - the above fails with `Error("key must be a string", line: 123, column: 123)`
+        // Would need some investigation into the code around here: https://github.com/serde-rs/json/commit/e34885f6ec5218c721ce33b5f27eaf8bfac9649d
         .unwrap()
 }
 
