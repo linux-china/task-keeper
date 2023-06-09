@@ -31,11 +31,11 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|tasks| {
             tasks.into_iter().map(|task| {
                 if task.task_type == "shell" {
-                    task!(&task.label.clone().unwrap(), "vscode", "shell", &task.command.clone().unwrap())
-                } else {
-                    task!(&task.label.clone().unwrap(), "vscode", &task.command.clone().unwrap())
-                }
-            }).collect()
+                    Some(task!(&task.label.clone().unwrap(), "vscode", "shell", &task.command.clone().unwrap()))
+                } else if let Some(cmd) = task.command {
+                    Some(task!(&task.label.clone().unwrap(), "vscode", &cmd))
+                } else {None}
+            }).flatten().collect()
         })
         .unwrap_or_else(|| vec![])
     )
