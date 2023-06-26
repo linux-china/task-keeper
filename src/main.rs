@@ -429,6 +429,9 @@ fn diagnose() {
                      polyglot::node::get_default_version().unwrap());
         }
     }
+    if polyglot::sdkman::is_available() {
+        problems_count += polyglot::sdkman::diagnose();
+    }
     if problems_count > 0 {
         println!("{} {} problems found!", "Warning:".bold().yellow(), problems_count);
     } else {
