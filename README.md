@@ -280,6 +280,9 @@ Task Keeper will detect version configuration file and adjust the environment va
 
 Task Keeper will try to find Java from `$HOME/.jbang/cache/jdks` or `$HOME/.sdkman/candidates/java/`.
 
+`.sdkmanrc` support, and set HOME and PATH environment variables automatically. Please refer https://sdkman.io/usage#env
+for detail.
+
 ### Node.js
 
 `.node-version` is used for Node.js version management, and values as following:
