@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.12.3] - 2023-08-29
+
+- Fix to add envs for Command
+
 ## [0.12.2] - 2023-04-30
 
 - Introduce PyProjectToml struct for Rye and Poetry
