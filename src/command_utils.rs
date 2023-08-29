@@ -44,6 +44,7 @@ pub fn run_command_line_from_stdin(command_line: &str, input: &str, verbose: boo
     if is_command_available(&command_name) {
         let mut child = Command::new(command_name)
             .args(&args)
+            .envs(std::env::vars())
             .stdin(Stdio::piped())
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
@@ -79,6 +80,7 @@ pub fn run_command_with_env_vars(command_name: &str, args: &[&str], working_dir:
         println!("[tk] command line:  {:?}", command);
     }
     let output = command
+        .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -104,6 +106,7 @@ pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output,
         println!("[tk] command line:  {:?}", command);
     }
     let output = command
+        .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -119,6 +122,7 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
         command.args(args);
     }
     let output = command
+        .envs(std::env::vars())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
