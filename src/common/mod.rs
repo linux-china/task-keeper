@@ -1,11 +1,11 @@
 pub mod pyproject;
 
-use std::collections::HashMap;
+use crate::common::pyproject::PyProjectToml;
+use crate::errors::KeeperError;
+use error_stack::Result;
 use error_stack::{IntoReport, ResultExt};
 use serde::{Deserialize, Serialize};
-use crate::errors::KeeperError;
-use error_stack::{Result};
-use crate::common::pyproject::PyProjectToml;
+use std::{collections::HashMap, path::Path};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
@@ -24,7 +24,7 @@ pub fn parse_package_json() -> Result<PackageJson, KeeperError> {
         .change_context(KeeperError::InvalidPackageJson)
 }
 
-pub fn get_package_command(package_json: &PackageJson) -> &'static str {
+pub fn get_npm_command(package_json: &PackageJson) -> &'static str {
     if let Some(package_manager) = &package_json.package_manager {
         return if package_manager.starts_with("yarn") {
             "yarn"
@@ -33,6 +33,14 @@ pub fn get_package_command(package_json: &PackageJson) -> &'static str {
         } else {
             "npm"
         };
+    } else {
+        if let Ok(dir) = std::env::current_dir() {
+            if dir.join("pnpm-lock.yaml").exists() {
+                return "pnpm"
+            } else if dir.join("yarn.lock").exists() {
+                return "yarn"
+            }
+        }
     }
     "npm"
 }
@@ -42,7 +50,9 @@ pub fn pyproject_toml_has_tool(tool_name: &str) -> bool {
         .map(|dir| {
             let pyproject_file = dir.join("pyproject.toml");
             pyproject_file.exists()
-                && std::fs::read_to_string(pyproject_file).unwrap_or("".to_owned()).contains(&format!("[tool.{}", tool_name))
+                && std::fs::read_to_string(pyproject_file)
+                    .unwrap_or("".to_owned())
+                    .contains(&format!("[tool.{}", tool_name))
         })
         .unwrap_or(false)
 }

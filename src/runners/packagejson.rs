@@ -5,7 +5,7 @@ use crate::models::Task;
 use crate::command_utils::run_command;
 use crate::task;
 use which::which;
-use crate::common::{get_package_command, parse_package_json};
+use crate::common::{get_npm_command, parse_package_json};
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -15,7 +15,7 @@ pub fn is_available() -> bool {
 
 pub fn is_command_available() -> bool {
     let package_json = parse_package_json().unwrap();
-    let package_manager = get_package_command(&package_json);
+    let package_manager = get_npm_command(&package_json);
     which(package_manager).is_ok()
 }
 
@@ -35,7 +35,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
 
 pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     let package_json = parse_package_json()?;
-    let command_name = get_package_command(&package_json);
+    let command_name = get_npm_command(&package_json);
     let mut args = vec![];
     args.extend(global_args);
     args.push("run");
