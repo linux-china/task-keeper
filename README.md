@@ -298,6 +298,7 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
   Gemfile.lock: https://blog.saeloun.com/2022/08/16/understanding_gemfile_and_gemfile_lock
 * Your Makefiles are wrong: https://tech.davis-hansson.com/p/make/
 * Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
+* Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
 
 # Task scripts in Markdown
 
