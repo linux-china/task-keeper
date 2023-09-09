@@ -30,7 +30,9 @@ pub fn get_npm_command(package_json: &PackageJson) -> &'static str {
             "yarn"
         } else if package_manager.starts_with("pnpm") {
             "pnpm"
-        } else {
+        } else if package_manager.starts_with("bun") {
+            "bun"
+        }else {
             "npm"
         };
     } else {
