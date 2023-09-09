@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.12.4] - 2023-09-09
+
+- Add Bun support if `bun.lockb` detected.
+
 ## [0.12.3] - 2023-08-29
 
 - Fix to add envs for Command
