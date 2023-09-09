@@ -1,6 +1,6 @@
 [package]
 name = "task-keeper"
-version = "0.12.3"
+version = "0.12.4"
 edition = "2021"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
@@ -34,7 +34,7 @@ regex = "1"
 dirs = "5"
 which = "4"
 thiserror = "1"
-error-stack = "0.4"
+error-stack = "0.4.1"
 dotenv = "0.15"
 shlex = "1"
 cfg-if ="1"
