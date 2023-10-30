@@ -231,6 +231,10 @@ Available.
 
 Available.
 
+### Dart package manager
+
+Available.
+
 ### Tasks from README.md
 
 Task keeper will parse README.md and extract tasks with following code block format:
