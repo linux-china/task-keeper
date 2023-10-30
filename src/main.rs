@@ -413,6 +413,12 @@ fn diagnose() {
             println!("{} mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs", "Warning:".bold().yellow());
         }
     }
+    if managers::dart::is_available() {
+        if !managers::dart::is_command_available() {
+            problems_count += 1;
+            println!("{} dart(https://dart.dev/guides/packages) command not available for pubspec.yaml", "Warning:".bold().yellow());
+        }
+    }
     if polyglot::java::is_available() {
         if polyglot::java::find_sdk_home().is_none() {
             problems_count += 1;
