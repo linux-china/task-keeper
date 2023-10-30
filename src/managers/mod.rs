@@ -22,9 +22,10 @@ pub mod mix;
 pub mod requirements;
 pub mod pipenv;
 pub mod rye;
+pub mod dart;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix","dart"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -82,6 +83,9 @@ pub fn get_available_managers() -> Vec<String> {
     if mix::is_available() {
         managers.push("mix".to_string());
     }
+    if dart::is_available() {
+        managers.push("dart".to_string());
+    }
     managers
 }
 
@@ -105,6 +109,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "pip" => "requirements.txt",
         "rye" => "requirements.lock",
         "pipenv" => "Pipfile",
+        "dart" => "pubspec.yaml",
         _ => "unknown",
     }
 }
@@ -129,6 +134,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
         "pipenv" => "https://pipenv.pypa.io",
         "rye" => "https://github.com/mitsuhiko/rye",
+        "dart" => "https://dart.dev/guides/packages",
         _ => "unknown",
     }
 }
@@ -153,6 +159,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "pip" => requirements::get_task_command_map(),
         "pipenv" => pipenv::get_task_command_map(),
         "rye" => rye::get_task_command_map(),
+        "dart" => dart::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -287,6 +294,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("mix", mix::run_task);
         } else {
             println!("{}", format!("[tk] mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs").bold().red());
+        }
+    }
+    if dart::is_available() {
+        if dart::is_command_available() {
+            queue.insert("dart", dart::run_task);
+        } else {
+            println!("{}", format!("[tk] dart(https://dart.dev/guides/packages) command not available for pubspec.yaml").bold().red());
         }
     }
     if queue.is_empty() { // no manager found
