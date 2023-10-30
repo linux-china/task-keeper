@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.13.0] - 2023-10-30
+
+- Add Dart package support if `pubspec.yaml` detected.
+
 ## [0.12.4] - 2023-09-09
 
 - Add Bun support if `bun.lockb` detected.
