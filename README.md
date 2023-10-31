@@ -312,7 +312,7 @@ $ curl https://httpbin.org/get
 $ curl -X POST https://httpbin.org/post
 ```
 
-```shell {#myip desc="Get my ip address"}
+```shell {#myip desc="get my internet ip address"}
 curl --silent https://httpbin.org/ip | jq '.origin'
 ```
 
