@@ -4,9 +4,9 @@
 
 ## [Unreleased]
 
-## [0.13.0] - 2023-10-30
+## [0.13.1] - 2023-10-30
 
-- Add Dart package support if `pubspec.yaml` detected.
+- Fix to run task in README.md
 
 ## [0.12.4] - 2023-09-09
 
