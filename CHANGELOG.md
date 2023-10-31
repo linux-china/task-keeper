@@ -7,6 +7,7 @@
 ## [0.13.1] - 2023-10-30
 
 - Fix to run task in README.md
+- Add Dart's pubspec.yaml support
 
 ## [0.12.4] - 2023-09-09
 
