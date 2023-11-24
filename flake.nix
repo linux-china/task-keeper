@@ -39,6 +39,8 @@
           task-keeper = naerskLib.buildPackage {
             # https://crane.dev/getting-started.html
             src = ./.;
+            # set binary name for nix run (tries `task-keeper`) - https://github.com/nix-community/naersk/issues/127
+            meta.mainProgram = "tk";
 
             # CARGO_BUILD_TARGET = "wasm-unknown-unknown";
             CARGO_BUILD_TARGET = "x86_64-unknown-linux-musl";
