@@ -1,0 +1,4 @@
+# Enable auto-env through the sdkman_auto_env config
+# Add name=version pairs of SDKs to use below
+java=17.0.4-tem
+jbang=0.108.0

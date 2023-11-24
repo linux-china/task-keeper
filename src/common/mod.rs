@@ -30,15 +30,19 @@ pub fn get_npm_command(package_json: &PackageJson) -> &'static str {
             "yarn"
         } else if package_manager.starts_with("pnpm") {
             "pnpm"
-        } else {
+        } else if package_manager.starts_with("bun") {
+            "bun"
+        }else {
             "npm"
         };
     } else {
         if let Ok(dir) = std::env::current_dir() {
-            if dir.join("pnpm-lock.yaml").exists() {
-                return "pnpm"
+            if dir.join("bun.lockb").exists() {
+                return "bun";
+            } else if dir.join("pnpm-lock.yaml").exists() {
+                return "pnpm";
             } else if dir.join("yarn.lock").exists() {
-                return "yarn"
+                return "yarn";
             }
         }
     }
@@ -51,8 +55,8 @@ pub fn pyproject_toml_has_tool(tool_name: &str) -> bool {
             let pyproject_file = dir.join("pyproject.toml");
             pyproject_file.exists()
                 && std::fs::read_to_string(pyproject_file)
-                    .unwrap_or("".to_owned())
-                    .contains(&format!("[tool.{}", tool_name))
+                .unwrap_or("".to_owned())
+                .contains(&format!("[tool.{}", tool_name))
         })
         .unwrap_or(false)
 }

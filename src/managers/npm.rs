@@ -20,12 +20,8 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let package_json = parse_package_json().unwrap();
-    let package_manager_raw = package_json.package_manager.unwrap_or("npm".to_owned());
-    let package_manager = if package_manager_raw.contains("@") {
-        package_manager_raw.split("@").collect::<Vec<&str>>()[0]
-    } else {
-        &package_manager_raw
-    };
+    let package_manager_raw = package_json.package_manager.clone().unwrap_or("npm".to_owned());
+    let package_manager = get_npm_command(&package_json);
     let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
     task_command_map.insert("init".to_string(), format!("{} init", package_manager));

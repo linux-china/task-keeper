@@ -132,7 +132,8 @@ fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str, 
     } else {
         description.to_string()
     };
-    task!(task_name, "markdown", runner2, task_desc)
+    let code_block = command_lines.join("\n");
+    task!(task_name, "markdown", runner2, task_desc, Some(code_block))
 }
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
@@ -141,22 +142,23 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
         KeeperError::TaskNotFound(task.to_string())
     })?;
     let runner2 = task.runner2.clone().unwrap_or("sh".to_owned());
+    let code_block = task.code_block.clone().unwrap_or("".to_string());
     if runner2 == "node" {
-        run_command_line_from_stdin("node -", &task.description, verbose)
+        run_command_line_from_stdin("node -", &code_block, verbose)
     } else if runner2 == "deno" {
-        run_command_line_from_stdin("deno run -", &task.description, verbose)
+        run_command_line_from_stdin("deno run -", &code_block, verbose)
     } else if runner2 == "java" {
-        run_command_line_from_stdin("jbang run -", &task.description, verbose)
+        run_command_line_from_stdin("jbang run -", &code_block, verbose)
     } else if runner2 == "groovy" || runner2 == "kt" {
         let file_name = format!("{}.{}", Uuid::new_v4(), runner2);
         let file_path = temp_dir().join(&file_name);
         let mut file = File::create(file_path.as_path()).unwrap();
-        file.write_all(task.description.as_bytes()).unwrap();
+        file.write_all(code_block.as_bytes()).unwrap();
         file.sync_all().unwrap();
         let command_line = format!("jbang run {}", file_path.to_str().unwrap());
         run_command_line(&command_line, verbose)
     } else {
-        BufReader::new(task.description.as_bytes())
+        BufReader::new(code_block.as_bytes())
             .lines()
             .map(|line| {
                 run_command_line(&line.unwrap(), verbose)
@@ -244,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_run_js() {
-        if let Ok(output) = run_task("js2", &[], &[], true) {
+        if let Ok(output) = run_task("myip", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

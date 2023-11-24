@@ -4,6 +4,19 @@
 
 ## [Unreleased]
 
+## [0.13.1] - 2023-10-30
+
+- Fix to run task in README.md
+- Add Dart's pubspec.yaml support
+
+## [0.12.4] - 2023-09-09
+
+- Add Bun support if `bun.lockb` detected.
+
+## [0.12.3] - 2023-08-29
+
+- Fix to add envs for Command
+
 ## [0.12.2] - 2023-04-30
 
 - Introduce PyProjectToml struct for Rye and Poetry

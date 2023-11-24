@@ -1,13 +1,16 @@
 #[macro_export]
 macro_rules! task {
     ($name:expr, $runner:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: "".to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: "".to_owned(), code_block: None}
     };
     ($name:expr, $runner:expr, $description:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: $description.to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: None, description: $description.to_owned(), code_block: None}
     };
     ($name:expr, $runner:expr, $runner2:expr, $description:expr) => {
-       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: Some($runner2.to_owned()), description: $description.to_owned()}
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: Some($runner2.to_owned()), description: $description.to_owned(), code_block: None}
+    };
+    ($name:expr, $runner:expr, $runner2:expr, $description:expr, $code_block:expr) => {
+       Task { name: $name.to_owned(), runner: $runner.to_owned(), runner2: Some($runner2.to_owned()), description: $description.to_owned(), code_block: $code_block.to_owned()}
     };
 }
 
@@ -17,6 +20,7 @@ pub struct Task {
     pub runner: String,
     pub runner2: Option<String>,
     pub description: String,
+    pub code_block: Option<String>
 }
 
 #[derive(Debug)]

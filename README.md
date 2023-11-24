@@ -167,6 +167,7 @@ addDependencyTreePlugin
 Available
 
 * If `npm-check` command available, `npm-check -u` will be used as `outdated` task.
+* `yarn`, `pnpm`, `bun` support
 
 ### Cargo
 
@@ -230,6 +231,10 @@ Available.
 
 Available.
 
+### Dart package manager
+
+Available.
+
 ### Tasks from README.md
 
 Task keeper will parse README.md and extract tasks with following code block format:
@@ -280,6 +285,9 @@ Task Keeper will detect version configuration file and adjust the environment va
 
 Task Keeper will try to find Java from `$HOME/.jbang/cache/jdks` or `$HOME/.sdkman/candidates/java/`.
 
+`.sdkmanrc` support, and set HOME and PATH environment variables automatically. Please refer https://sdkman.io/usage#env
+for detail.
+
 ### Node.js
 
 `.node-version` is used for Node.js version management, and values as following:
@@ -294,6 +302,8 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
 * The Ultimate Guide to Gemfile and
   Gemfile.lock: https://blog.saeloun.com/2022/08/16/understanding_gemfile_and_gemfile_lock
 * Your Makefiles are wrong: https://tech.davis-hansson.com/p/make/
+* Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
+* Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
 
 # Task scripts in Markdown
 
@@ -302,7 +312,7 @@ $ curl https://httpbin.org/get
 $ curl -X POST https://httpbin.org/post
 ```
 
-```shell {#myip desc="Get my ip address"}
+```shell {#myip desc="get my internet ip address"}
 curl --silent https://httpbin.org/ip | jq '.origin'
 ```
 
