@@ -61,8 +61,8 @@ mod tests {
     #[test]
     fn test_init_env() {
         init_env();
-        println!("JAVA_HOME: {}", env::var("JAVA_HOME").unwrap());
-        println!("JBANG_HOME: {}", env::var("JBANG_HOME").unwrap());
-        println!("PATH: {}", env::var("PATH").unwrap());
+        println!("JAVA_HOME: {}", env::var("JAVA_HOME").expect("env: JAVA_HOME"));
+        println!("JBANG_HOME: {}", env::var("JBANG_HOME").expect("env: JBANG_HOME"));
+        println!("PATH: {}", env::var("PATH").expect("env: PATH"));
     }
 }

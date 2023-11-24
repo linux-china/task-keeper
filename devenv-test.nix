@@ -22,6 +22,7 @@
     sbt
     go-task
     cargo-make
+    jbang
 
     #handled by `languages` above:
     # python3
@@ -32,5 +33,6 @@
   env = {
     NODE_HOME = "${pkgs.nodejs}";
     # JAVA_HOME = "${pkgs.adoptopenjdk-jre-bin.home}"; - seems to be handled by languages.java
+    JBANG_HOME = "${pkgs.jbang}/bin";
   };
 }
