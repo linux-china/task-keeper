@@ -101,8 +101,58 @@ fn main() {
     }
     // runner
     let task_runner = matches.get_one::<String>("runner");
-    // list tasks
-    if matches.get_flag("list") {
+    // run tasks
+    if matches.contains_id("tasks") {
+        // load .env for tasks
+        if !no_dotenv {
+            dotenv().ok();
+        }
+        // inject polyglot for tasks
+        polyglot::inject_languages();
+        // setup path
+        reset_path_env();
+        // check to execute command directly
+        let tk_args = env::args().skip(1).collect::<Vec<String>>();
+        if tk_args[0] == "--" && tk_args.len() > 1 { // execute command line after double dash
+            let command = &tk_args[1];
+            let args = tk_args.iter().skip(2).map(|arg| arg.as_str()).collect::<Vec<&str>>();
+            command_utils::run_command(command, &args, false).unwrap();
+            return;
+        }
+        let tasks_options = matches.get_many::<String>("tasks")
+            .into_iter()
+            .flatten()
+            .map(|s| s as &str)
+            .collect::<Vec<_>>();
+        let task_context = TaskContext::new(tasks_options);
+        let tasks = task_context.names;
+        let task_args = &task_context.task_options;
+        let global_args = &task_context.global_options;
+        let default_runner = "".to_owned();
+        let runner = task_runner.unwrap_or(&default_runner);
+        let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
+        if task_count == 0 { // no tasks executed
+            println!("{}", "[tk] no tasks found".bold().red());
+            /*if runners::makefile::is_available() { // try Makefile
+                for task in tasks {
+                    runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
+                }
+            } else {
+                println!("{}", "[tk] no tasks found".bold().red());
+            }*/
+        }
+        return;
+    }
+
+    // No flag/arg? - list tasks by default
+    list_tasks(task_runner);
+    if !matches.get_flag("list") {
+        println!("\nTip: run tk --help for usage info");
+    }
+    return;
+}
+
+fn list_tasks(task_runner: Option<&String>) {
         let mut task_found = false;
         let all_tasks = list_all_runner_tasks(true);
         if let Ok(tasks_hashmap) = all_tasks {
@@ -160,53 +210,6 @@ fn main() {
         if !task_found {
             println!("{}", "No task runner or project management tool found!".bold().red());
         }
-        return;
-    }
-    // run tasks
-    if matches.contains_id("tasks") {
-        // load .env for tasks
-        if !no_dotenv {
-            dotenv().ok();
-        }
-        // inject polyglot for tasks
-        polyglot::inject_languages();
-        // setup path
-        reset_path_env();
-        // check to execute command directly
-        let tk_args = env::args().skip(1).collect::<Vec<String>>();
-        if tk_args[0] == "--" && tk_args.len() > 1 { // execute command line after double dash
-            let command = &tk_args[1];
-            let args = tk_args.iter().skip(2).map(|arg| arg.as_str()).collect::<Vec<&str>>();
-            command_utils::run_command(command, &args, false).unwrap();
-            return;
-        }
-        let tasks_options = matches.get_many::<String>("tasks")
-            .into_iter()
-            .flatten()
-            .map(|s| s as &str)
-            .collect::<Vec<_>>();
-        let task_context = TaskContext::new(tasks_options);
-        let tasks = task_context.names;
-        let task_args = &task_context.task_options;
-        let global_args = &task_context.global_options;
-        let default_runner = "".to_owned();
-        let runner = task_runner.unwrap_or(&default_runner);
-        let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
-        if task_count == 0 { // no tasks executed
-            println!("{}", "[tk] no tasks found".bold().red());
-            /*if runners::makefile::is_available() { // try Makefile
-                for task in tasks {
-                    runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
-                }
-            } else {
-                println!("{}", "[tk] no tasks found".bold().red());
-            }*/
-        }
-        return;
-    }
-
-    // display help message
-    build_app().print_help().unwrap();
 }
 
 fn reset_path_env() {
