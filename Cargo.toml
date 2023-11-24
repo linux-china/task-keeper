@@ -37,7 +37,7 @@ thiserror = "1"
 error-stack = "0.4.1"
 dotenv = "0.15"
 shlex = "1"
-cfg-if ="1"
+cfg-if = "1"
 uuid = { version = "1", features = ["v4"] }
 logos = "0.13.0"
 update-informer = { version = "1.1.0", default_features = false, features = ["github"] }
