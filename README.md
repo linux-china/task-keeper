@@ -235,6 +235,21 @@ Available.
 
 Available.
 
+### task - Taskfile.yml
+
+if you use JetBrains IDE to edit Taskfile.yml, please add `$schema` comment on top of Taskfile.yml for completion.
+
+```yaml
+# $schema: https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+```
+
 ### Tasks from README.md
 
 Task keeper will parse README.md and extract tasks with following code block format:
