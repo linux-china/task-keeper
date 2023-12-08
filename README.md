@@ -291,6 +291,10 @@ console.log("hello world");
 
 Task Keeper will detect version configuration file and adjust the environment variables to run tasks.
 
+### Python
+
+`.python-version` is used for version management for [pyenv](https://github.com/pyenv/pyenv). 
+
 ### Java
 
 `.java-version` is used for version management, and values as following:
