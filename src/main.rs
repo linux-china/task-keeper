@@ -177,7 +177,10 @@ fn main() {
         if tk_args[0] == "--" && tk_args.len() > 1 { // execute command line after double dash
             let command = &tk_args[1];
             let args = tk_args.iter().skip(2).map(|arg| arg.as_str()).collect::<Vec<&str>>();
-            command_utils::run_command(command, &args, false).unwrap();
+            if let Err(err) = command_utils::run_command(command, &args, false) {
+                eprintln!("{}", err.to_string());
+                std::process::exit(1);
+            }
             return;
         }
         let tasks_options = matches.get_many::<String>("tasks")
@@ -191,16 +194,24 @@ fn main() {
         let global_args = &task_context.global_options;
         let default_runner = "".to_owned();
         let runner = task_runner.unwrap_or(&default_runner);
-        let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
-        if task_count == 0 { // no tasks executed
-            println!("{}", "[tk] no tasks found".bold().red());
-            /*if runners::makefile::is_available() { // try Makefile
-                for task in tasks {
-                    runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
+        match run_tasks(runner, &tasks, task_args, global_args, verbose) {
+            Ok(task_count) => {
+                if task_count == 0 { // no tasks executed
+                    eprintln!("{}", "[tk] no tasks found".bold().red());
+                    std::process::exit(1);
+                    /*if runners::makefile::is_available() { // try Makefile
+                        for task in tasks {
+                            runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
+                        }
+                    } else {
+                        println!("{}", "[tk] no tasks found".bold().red());
+                    }*/
                 }
-            } else {
-                println!("{}", "[tk] no tasks found".bold().red());
-            }*/
+            }
+            Err(err) => {
+                eprintln!("{}", err.to_string());
+                std::process::exit(1);
+            }
         }
         return;
     }
