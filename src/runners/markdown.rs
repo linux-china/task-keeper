@@ -177,7 +177,7 @@ enum MarkdownAttribute<'a> {
     // Tokens can be literal strings, of any length.
     #[token("}")]
     RBRACE,
-    #[regex(r"#([a-zA-Z0-9]+)")]
+    #[regex(r"#([a-zA-Z0-9_-]+)")]
     ID(&'a str),
     #[regex(r"\.([a-zA-Z0-9]+)")]
     CLASS(&'a str),
