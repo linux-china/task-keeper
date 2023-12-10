@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.13.2] - 2023-12-10
+
+- Fix bug to parse ID in Markdown Attributes
+- Docs: add `.python-version` support
+- Docs: add `task - Taskfile.yml`
+
 ## [0.13.1] - 2023-10-30
 
 - Fix to run task in README.md
