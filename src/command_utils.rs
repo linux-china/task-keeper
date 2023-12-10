@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::process::{Command, Output, Stdio};
 use colored::Colorize;
-use error_stack::{IntoReport, report, Result, ResultExt};
+use error_stack::{report, Result, ResultExt};
 use crate::errors::KeeperError;
 use which::which;
 
@@ -49,13 +49,12 @@ pub fn run_command_line_from_stdin(command_line: &str, input: &str, verbose: boo
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .spawn()
-            .into_report()
             .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command_name)))?;
         child.stdin
             .as_mut()
             .ok_or("Child process stdin has not been captured!").unwrap()
             .write_all(input.as_bytes()).unwrap();
-        child.wait_with_output().into_report()
+        child.wait_with_output()
             .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command_name)))
     } else {
         println!("{}", format!("{} is not available to run '{}'", command_name, command_line).bold().red());
@@ -85,7 +84,6 @@ pub fn run_command_with_env_vars(command_name: &str, args: &[&str], working_dir:
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }
@@ -111,7 +109,6 @@ pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output,
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }
@@ -127,7 +124,6 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
-        .into_report()
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
     Ok(output)
 }

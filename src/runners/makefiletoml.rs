@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::process::Output;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use toml::Value;
 use crate::errors::KeeperError;
@@ -48,7 +48,6 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .into_report()
         .change_context(KeeperError::InvalidMakefileToml)
 }
 
@@ -75,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("my-ip2", &[], &[],true) {
+        if let Ok(output) = run_task("my-ip2", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

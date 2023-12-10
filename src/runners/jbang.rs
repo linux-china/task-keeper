@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::process::Output;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -52,7 +52,6 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .into_report()
         .change_context(KeeperError::InvalidJBangCatalogJson)
 }
 

@@ -4,7 +4,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use which::which;
 
@@ -44,7 +44,6 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 .map(|(name, recipe)| task!(name, "just", &recipe.doc.clone().unwrap_or("".to_owned())))
                 .collect()
         })
-        .into_report()
         .change_context(KeeperError::InvalidJustfile)
 }
 

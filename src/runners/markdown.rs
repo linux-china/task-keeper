@@ -3,7 +3,7 @@ use std::process::{Output};
 use std::env::temp_dir;
 use std::fs::File;
 use std::io::prelude::*;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use uuid::Uuid;
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -22,7 +22,6 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let readme_md = std::env::current_dir()
         .map(|dir| dir.join("README.md"))
         .map(|path| std::fs::read_to_string(path).unwrap())
-        .into_report()
         .change_context(KeeperError::InvalidProcfile)?;
     let mut tasks: Vec<Task> = vec![];
     let mut offset = find_shell_code_offset(&readme_md);
