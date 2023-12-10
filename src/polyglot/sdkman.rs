@@ -12,7 +12,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn init_env() {
-    let mut sdkmanrc_file = File::open(".sdkmanrc").unwrap();
+    let sdkmanrc_file = File::open(".sdkmanrc").unwrap();
     let sdkman_map = java_properties::read(BufReader::new(sdkmanrc_file)).unwrap();
     let candidates_home = dirs::home_dir().unwrap().join(".sdkman").join("candidates");
     //iterate over the sdkman_map
@@ -37,7 +37,7 @@ pub fn init_env() {
 }
 
 pub fn diagnose() -> i32 {
-    let mut sdkmanrc_file = File::open(".sdkmanrc").unwrap();
+    let sdkmanrc_file = File::open(".sdkmanrc").unwrap();
     let sdkman_map = java_properties::read(BufReader::new(sdkmanrc_file)).unwrap();
     let candidates_home = dirs::home_dir().unwrap().join(".sdkman").join("candidates");
     let mut problems_count = 0;
