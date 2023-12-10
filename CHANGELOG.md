@@ -7,6 +7,7 @@
 ## [0.13.2] - 2023-12-10
 
 - Fix bug to parse ID in Markdown Attributes
+- Add exit code to run tasks #9
 - Docs: add `.python-version` support
 - Docs: add `task - Taskfile.yml`
 
