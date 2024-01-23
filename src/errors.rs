@@ -45,6 +45,9 @@ pub enum KeeperError {
     #[error("TK-209001: failed to read jbang-catalog.json")]
     InvalidJBangCatalogJson,
 
+    #[error("TK-210001: failed to read Taskfile.ts")]
+    InvalidTaskFileTs,
+
     #[error("TK-300001: failed to read pom.xml")]
     InvalidPomXml,
     #[error("TK-301001: failed to parse package.json")]
