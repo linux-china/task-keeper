@@ -21,7 +21,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let taskfile_text = std::env::current_dir()
         .map(|dir| dir.join("Taskfile.ts"))
         .map(|path| std::fs::read_to_string(path).unwrap())
-        .change_context(KeeperError::InvalidTaskTsFile)?;
+        .change_context(KeeperError::InvalidTaskFileTs)?;
     let tasks: Vec<Task> = BufReader::new(taskfile_text.as_bytes())
         .lines()
         .filter(|line| {
