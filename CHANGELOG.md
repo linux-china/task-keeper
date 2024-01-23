@@ -4,6 +4,23 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2024-01-23
+
+- Add [Bun Shell](https://bun.sh/docs/runtime/shell) support: create a `Taskfile.ts` with following code:
+
+```typescript
+import {$} from "bun";
+
+export async function hello() {
+    await $`echo Hello World!`;
+}
+export async function list_js() {
+    await $`ls *.js`;
+}
+```
+
+Then run `tk hello` to run task with Bun Shell.
+
 ## [0.13.2] - 2023-12-10
 
 - Fix bug to parse ID in Markdown Attributes
