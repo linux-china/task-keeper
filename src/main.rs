@@ -279,6 +279,12 @@ fn diagnose() {
             println!("{} cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml", "Warning:".bold().yellow());
         }
     }
+    if runners::bun_shell::is_available() {
+        if !runners::bun_shell::is_command_available() {
+            problems_count += 1;
+            println!("{} bun(https://bun.sh/docs/runtime/shell) command not available for Taskfile.ts", "Warning:".bold().yellow());
+        }
+    }
     if runners::taskspy::is_available() {
         if !runners::taskspy::is_command_available() {
             problems_count += 1;
