@@ -54,6 +54,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
 * JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
+* Bun Shell(Taskfile.ts): https://bun.sh/docs/runtime/shell
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
@@ -62,6 +63,25 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 **Tips**:
 
 * Deno: please refer https://github.com/ije/esm.sh/releases/tag/v91 for npm packages manager
+
+### Bun Shell - Taskfile.ts
+
+[Bun Shell](https://bun.sh/docs/runtime/shell) is a nice feature from Bun to make shell scripting with JavaScript & TypeScript fun.
+
+Now Task Keeper support `Taskfile.ts` with Bun Shell, and you can use following code to run tasks:
+
+```typescript
+import {$} from "bun";
+
+  export async function hello() {
+  await $`echo Hello World!`;
+}
+  export async function list_js() {
+  await $`ls *.js`;
+}
+```
+
+Then `tk hello` to run task with Bun Shell.
 
 ### Fleet Run configurations
 
@@ -234,6 +254,7 @@ Available.
 ### Dart package manager
 
 Available.
+
 
 ### task - Taskfile.yml
 
