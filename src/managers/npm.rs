@@ -46,7 +46,11 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     }
     if package_manager == "bun" {
         task_command_map.insert("deps".to_string(), format!("npm list"));
-        task_command_map.insert("outdated".to_string(), format!("npm outdated"));
+        if which::which("npm-check").is_ok() {
+            task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
+        } else {
+            task_command_map.insert("outdated".to_string(), format!("npm outdated"));
+        }
     } else {
         task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
         task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
