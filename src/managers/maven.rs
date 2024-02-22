@@ -28,6 +28,9 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("doc".to_string(), format!("{} javadoc:javadoc", mvn_command));
     task_command_map.insert("clean".to_string(), format!("{}  clean", mvn_command));
     task_command_map.insert("outdated".to_string(), format!("{} versions:display-dependency-updates", mvn_command));
+    if std::env::current_dir().map(|dir| dir.join(".mvn/wrapper").exists()).unwrap_or(false) {
+        task_command_map.insert("self_update".to_string(), format!("{} wrapper:wrapper -Dmaven=3.9.6", mvn_command));
+    }
     task_command_map
 }
 
