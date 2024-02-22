@@ -20,10 +20,18 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("install".to_string(), "pip install -r requirements.txt".to_string());
+    let mut command = "pip".to_owned();
+    let uv_env = std::env::current_dir()
+        .map(|dir| dir.join("requirements.txt").exists()
+            && dir.join(".venv").exists()
+        ).unwrap_or(false);
+    if uv_env && which("uv").is_ok() {
+        command = "uv pip".to_string();
+    }
+    task_command_map.insert("install".to_string(), format!("{} install -r requirements.txt", command));
     task_command_map.insert("deps".to_string(), "deptree".to_string());
     task_command_map.insert("outdated".to_string(), "pip list --outdated".to_string());
-    task_command_map.insert("update".to_string(), "pip install -U -r requirements.txt".to_string());
+    task_command_map.insert("update".to_string(), format!("{}  install -U -r requirements.txt", command));
     task_command_map
 }
 
