@@ -32,14 +32,14 @@ clap_complete = "4"
 chrono = "0.4"
 regex = "1"
 dirs = "5"
-which = "5"
+which = "6"
 thiserror = "1"
 error-stack = "0.4.1"
 dotenv = "0.15"
 shlex = "1"
 cfg-if ="1"
 uuid = { version = "1", features = ["v4"] }
-logos = "0.13.0"
+logos = "0.14.0"
 update-informer = { version = "1.1.0", default_features = false, features = ["github"] }
 
 [profile.release]
