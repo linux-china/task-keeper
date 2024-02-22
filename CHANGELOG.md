@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.15.0] - 2024-02-22
+
+- Add `self_update` for Maven/Gradle wrapper
+- Add [uv](https://github.com/astral-sh/uv) support if uv command detected
+
 ## [0.14.0] - 2024-01-23
 
 - Add [Bun Shell](https://bun.sh/docs/runtime/shell) support: create a `Taskfile.ts` with following code:
@@ -14,6 +19,7 @@ import {$} from "bun";
 export async function hello() {
     await $`echo Hello World!`;
 }
+
 export async function list_js() {
     await $`ls *.js`;
 }
