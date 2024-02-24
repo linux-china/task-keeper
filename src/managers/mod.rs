@@ -24,7 +24,7 @@ pub mod pipenv;
 pub mod rye;
 pub mod dart;
 
-pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
+pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update","self-update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix","dart"];
 
 pub fn get_available_managers() -> Vec<String> {
