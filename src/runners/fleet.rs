@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::process::Output;
-use clap::arg;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
