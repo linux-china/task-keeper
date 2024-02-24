@@ -346,7 +346,7 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
 * Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
 * Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
 
-# Task scripts in Markdown
+# Task scripts demo in Markdown
 
 ```shell {#demo}
 $ curl https://httpbin.org/get
