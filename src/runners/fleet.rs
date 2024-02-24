@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::process::Output;
+use clap::arg;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
@@ -38,6 +39,9 @@ pub struct Configuration {
     // docker
     pub image_id_or_name: Option<String>,
     pub run_options: Option<String>,
+    // fastapi
+    pub module: Option<String>,
+    pub application: Option<String>,
 }
 
 impl Configuration {
@@ -130,7 +134,7 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
     }
 }
 
-//todo: add support for other types: node, npm
+//todo: add support for other types: spring-boot
 fn get_command_name(configuration: &Configuration) -> String {
     match configuration.type_value.as_str() {
         "cargo" => "cargo".to_owned(),
@@ -138,8 +142,11 @@ fn get_command_name(configuration: &Configuration) -> String {
         "gradle" => "./gradlew".to_owned(),
         "docker-run" => "docker".to_owned(),
         "python" => "python".to_owned(),
+        "flask" => "python".to_owned(),
+        "fastapi" => "python".to_owned(),
         "node" => "node".to_owned(),
         "npm" => "npm".to_owned(),
+        "php" => "php".to_owned(),
         "go" => configuration.go_exec_path.clone().unwrap_or("go".to_owned()),
         "command" => configuration.program.clone().unwrap_or_default(),
         _ => "".to_owned(),
@@ -174,6 +181,25 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
             }
         }
         "python" => configuration.python_full_args().clone(),
+        "flask" => {
+            let mut args = vec!["-m".to_owned(), "flask".to_owned(), "run".to_owned()];
+            args.extend(configuration.arguments.clone().unwrap_or_default());
+            args
+        }
+        "fastapi" => {
+            let module_and_app = format!("{}{}", &configuration.module.clone().unwrap_or("".to_owned()), &configuration.application.clone().unwrap_or("".to_owned()));
+            let mut args = vec!["-m".to_owned(), "unicorn".to_owned(), module_and_app];
+            args.extend(configuration.arguments.clone().unwrap_or_default());
+            args
+        }
+        "php" => {
+            let mut args = vec![];
+            if let Some(file) = &configuration.file {
+                args.push(file.clone());
+            }
+            args.extend(configuration.arguments.clone().unwrap_or_default());
+            args
+        }
         "go" => configuration.params.clone().unwrap_or_default(),
         "node" => configuration.params.clone().unwrap_or_default(),
         "npm" => configuration.params.clone().unwrap_or_default(),
