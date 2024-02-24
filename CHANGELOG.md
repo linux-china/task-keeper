@@ -9,6 +9,7 @@
 - Rename `self_update` to `self-update` for Maven/Gradle wrapper
 - Add version lasted or not for for Maven/Gradle wrapper
 - Add `php`,`flask` and `fastapi` type for Fleet `run.json` support
+- Add `start` for Gradle project if `springframework.boot` or `quarkus` detected
 
 ## [0.15.0] - 2024-02-22
 
