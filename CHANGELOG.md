@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.15.1] - 2024-02-24
+
+- Rename `self_update` to `self-update` for Maven/Gradle wrapper
+- Add version lasted or not for for Maven/Gradle wrapper
+
 ## [0.15.0] - 2024-02-22
 
 - Add `self_update` for Maven/Gradle wrapper
