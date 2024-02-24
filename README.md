@@ -224,6 +224,7 @@ Available.
 Available with following tools:
 
 * [Rye](https://github.com/mitsuhiko/rye): please commit `requirements.lock` to git
+* [uv](https://github.com/astral-sh/uv): if uv command detected
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
