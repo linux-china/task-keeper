@@ -93,6 +93,13 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::zed::is_available() {
+        if let Ok(runner_tasks) = runners::zed::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("zed".to_string(), runner_tasks);
+            }
+        }
+    }
     if runners::procfile::is_available() {
         if let Ok(runner_tasks) = runners::procfile::list_tasks() {
             if !runner_tasks.is_empty() {
