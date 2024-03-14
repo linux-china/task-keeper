@@ -47,7 +47,6 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * deno(deno.json): https://deno.land/manual/tools/task_runner
 * composer(composer.json): https://getcomposer.org/doc/articles/scripts.md
 * just(justfile): https://github.com/casey/just
-* fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * Rakefile(rake): https://ruby.github.io/rake/
 * invoke(tasks.py): https://www.pyinvoke.org/
 * task(Taskfile.yml): https://github.com/go-task/task  https://www.sobyte.net/post/2022-04/taskfile/
@@ -57,7 +56,9 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * Bun Shell(Taskfile.ts): https://bun.sh/docs/runtime/shell
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
+* fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
+* zed Tasks: https://zed.dev/docs/tasks
 * Rye: https://github.com/mitsuhiko/rye#scripts
 
 
