@@ -38,14 +38,14 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json().iter()
+    Ok(parse_tasks_json().iter()
         .map(|configuration| {
             task!(&configuration.label, "zed", configuration.command.clone())
         })
         .collect())
 }
 
-fn parse_run_json() -> Vec<Configuration> {
+fn parse_tasks_json() -> Vec<Configuration> {
     std::env::current_dir()
         .map(|dir| dir.join(".zed").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("[]".to_owned()))
@@ -54,7 +54,7 @@ fn parse_run_json() -> Vec<Configuration> {
 }
 
 pub fn run_task(task_name: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    let configurations = parse_run_json();
+    let configurations = parse_tasks_json();
     let result = configurations
         .iter()
         .find(|configuration| configuration.label == task_name);
