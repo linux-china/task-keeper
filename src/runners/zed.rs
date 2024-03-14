@@ -1,0 +1,104 @@
+use std::collections::HashMap;
+use std::process::Output;
+use colored::Colorize;
+use serde::{Deserialize, Serialize};
+use crate::errors::KeeperError;
+use crate::models::Task;
+use crate::task;
+use error_stack::{report, Result};
+use crate::command_utils::{is_command_available, run_command_with_env_vars};
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Configuration {
+    pub label: String,
+    pub command: String,
+    pub args: Option<Vec<String>>,
+    pub env: Option<HashMap<String, String>>,
+    pub use_new_terminal: Option<bool>,
+    pub allow_concurrent_runs: Option<bool>,
+}
+
+impl Configuration {
+    #[allow(dead_code)]
+    pub fn new_command(label: &str, command: &str, args: &[String]) -> Self {
+       Configuration {
+            label: label.to_string(),
+            command: command.to_string(),
+            args: Some(args.to_vec()),
+            ..Default::default()
+        }
+    }
+}
+
+pub fn is_available() -> bool {
+    std::env::current_dir()
+        .map(|dir| dir.join(".zed").join("tasks.json").exists())
+        .unwrap_or(false)
+}
+
+pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+    Ok(parse_run_json().iter()
+        .map(|configuration| {
+            task!(&configuration.label, "zed", configuration.command.clone())
+        })
+        .collect())
+}
+
+fn parse_run_json() -> Vec<Configuration> {
+    std::env::current_dir()
+        .map(|dir| dir.join(".zed").join("tasks.json"))
+        .map(|path| std::fs::read_to_string(path).unwrap_or("[]".to_owned()))
+        .map(|data| serde_jsonrc::from_str::<Vec<Configuration>>(&data).unwrap())
+        .unwrap()
+}
+
+pub fn run_task(task_name: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+    let configurations = parse_run_json();
+    let result = configurations
+        .iter()
+        .find(|configuration| configuration.label == task_name);
+    if let Some(configuration) = result {
+        run_configuration(configuration, verbose)
+    } else {
+        Err(report!(KeeperError::TaskNotFound(task_name.to_owned())))
+    }
+}
+
+fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Output, KeeperError> {
+    let command_name = &configuration.command;
+    let args = configuration.args.clone().unwrap_or_default();
+    let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+    if is_command_available(&command_name) {
+        Ok(run_command_with_env_vars(&command_name, &args, &None, &configuration.env, verbose).unwrap())
+    } else {
+        println!("{}", format!("{} is not available", command_name).bold().red());
+        Err(report!(KeeperError::CommandNotFound(command_name.clone())))
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse() {
+        println!("exits: {}", is_available());
+        if let Ok(tasks) = list_tasks() {
+            println!("{:?}", tasks);
+        }
+    }
+
+    #[test]
+    fn test_run() {
+        run_task("bash echo", &[], &[], false).unwrap();
+    }
+
+    #[test]
+    fn test_run_configuration() {
+        let configuration = Configuration::new_command("my-ip", "curl", &["https://httpbin.org/ip".to_owned()]);
+        run_configuration(&configuration, true).unwrap();
+    }
+}
