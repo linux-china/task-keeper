@@ -1,4 +1,6 @@
 pub mod fleet;
+
+pub mod zed;
 pub mod justfile;
 pub mod packagejson;
 pub mod denojson;
@@ -23,7 +25,7 @@ use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "markdown", "rye", "poetry","bun-shell"];
+pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poetry","bun-shell"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -33,6 +35,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "just" => justfile::run_task(task_name, task_args, global_args, verbose),
         "fleet" => fleet::run_task(task_name, task_args, global_args, verbose),
         "vscode" => vstasks::run_task(task_name, task_args, global_args, verbose),
+        "zed" => zed::run_task(task_name, task_args, global_args, verbose),
         "deno" => denojson::run_task(task_name, task_args, global_args, verbose),
         "make" => makefile::run_task(task_name, task_args, global_args, verbose),
         "rake" => rakefile::run_task(task_name, task_args, global_args, verbose),
@@ -66,6 +69,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "composer" => "composer.json",
         "fleet" => ".fleet/run.json",
         "vscode" => ".vscode/tasks.json",
+        "zed" => ".zed/tasks.json",
         "shell" => "task.sh",
         "markdown" => "README.md",
         "jbang" => "jbang-catalog.json",
@@ -91,6 +95,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "composer" => "https://getcomposer.org",
         "fleet" => "https://www.jetbrains.com/fleet/",
         "vscode" => "https://code.visualstudio.com/docs/editor/tasks",
+        "zed" => "https://zed.dev/docs/tasks",
         "shell" => "https://www.gnu.org/software/bash/",
         "markdown" => "https://github.com/linux-china/task-keeper#tasks-from-readmemd",
         "jbang" => "https://www.jbang.dev/",
