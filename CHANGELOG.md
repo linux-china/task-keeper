@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.16.0] - 2024-03-14
+
+- Add `.zed/tasks.json` support: https://zed.dev/docs/tasks
+
 ## [0.15.1] - 2024-02-24
 
 - Rename `self_update` to `self-update` for Maven/Gradle wrapper
