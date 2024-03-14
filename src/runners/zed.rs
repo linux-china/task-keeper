@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::process::Output;
 use colored::Colorize;
@@ -22,11 +23,22 @@ pub struct Configuration {
 impl Configuration {
     #[allow(dead_code)]
     pub fn new_command(label: &str, command: &str, args: &[String]) -> Self {
-       Configuration {
+        Configuration {
             label: label.to_string(),
             command: command.to_string(),
             args: Some(args.to_vec()),
             ..Default::default()
+        }
+    }
+
+    pub fn command_line(&self) -> String {
+        if self.args.is_none() {
+            return self.command.clone();
+        } else {
+            let args = self.args.clone().unwrap().iter().map(|s| {
+                shell_escape::escape(Cow::from(s)).to_string()
+            }).collect::<Vec<String>>();
+            format!("{} {}", self.command, args.join(" "))
         }
     }
 }
@@ -40,7 +52,7 @@ pub fn is_available() -> bool {
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(parse_tasks_json().iter()
         .map(|configuration| {
-            task!(&configuration.label, "zed", configuration.command.clone())
+            task!(&configuration.label, "zed", configuration.command_line())
         })
         .collect())
 }
@@ -76,7 +88,6 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
         Err(report!(KeeperError::CommandNotFound(command_name.clone())))
     }
 }
-
 
 
 #[cfg(test)]
