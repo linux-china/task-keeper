@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.17.0] - 2024-03-19
+
+- Add Zig Build System `build.zig` support: https://ziglang.org/learn/build-system/
+
 ## [0.16.0] - 2024-03-14
 
 - Add `.zed/tasks.json` support: https://zed.dev/docs/tasks
