@@ -436,6 +436,12 @@ fn diagnose() {
             println!("{} dart(https://dart.dev/guides/packages) command not available for pubspec.yaml", "Warning:".bold().yellow());
         }
     }
+    if managers::zig::is_available() {
+        if !managers::zig::is_command_available() {
+            problems_count += 1;
+            println!("{} zig(https://ziglang.org/) command not available for build.zig", "Warning:".bold().yellow());
+        }
+    }
     if polyglot::java::is_available() {
         if polyglot::java::find_sdk_home().is_none() {
             problems_count += 1;
