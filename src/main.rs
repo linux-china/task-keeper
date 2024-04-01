@@ -166,7 +166,7 @@ fn main() {
     if matches.contains_id("tasks") {
         // load .env for tasks
         if !no_dotenv {
-            dotenv().ok();
+            load_env();
         }
         // inject polyglot for tasks
         polyglot::inject_languages();
@@ -478,6 +478,16 @@ fn format_description(description: &str) -> String {
         short_desc = format!("{} ...", &short_desc[0..60]);
     }
     return short_desc;
+}
+
+fn load_env() {
+    dotenv().ok();
+    if env::current_dir().unwrap().join(".flaskenv").exists() {
+        dotenv::from_filename(".flaskenv").ok();
+    }
+    if let Some(node_env) = env::var("NODE_ENV") {
+        dotenv::from_filename(format!(".env.{}", node_env)).ok();
+    }
 }
 
 #[cfg(target_family = "unix")]
