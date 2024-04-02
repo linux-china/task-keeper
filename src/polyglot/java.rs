@@ -1,19 +1,31 @@
 use std::env;
 use std::path::PathBuf;
+use colored::Colorize;
 use crate::polyglot::PATH_SEPARATOR;
 
 pub fn is_available() -> bool {
-    env::current_dir()
-        .map(|dir| dir.join(".java-version").exists())
-        .unwrap_or(false)
+    let current_dir = env::current_dir().unwrap();
+    return current_dir.join(".java-version").exists()
+        || current_dir.join("pom.xml").exists();
 }
 
-pub fn get_default_version() -> std::io::Result<String> {
-    std::fs::read_to_string(".java-version").map(|text| text.trim().to_string())
+pub fn get_default_version() -> Option<String> {
+    if let Ok(text) = std::fs::read_to_string(".java-version") {
+        return Some(text.trim().to_string());
+    } else if let Ok(xml) = std::fs::read_to_string("pom.xml") {
+        if let Some(offset) = xml.find("<java.version>") {
+            let end = xml.find("</java.version").unwrap();
+            let java_version = xml[offset + 14..end].trim();
+            if str::parse::<u32>(java_version).is_ok() {
+                return Some(java_version.to_string());
+            }
+        }
+    }
+    None
 }
 
 pub fn find_sdk_home() -> Option<PathBuf> {
-    if let Ok(text) = get_default_version() {
+    if let Some(text) = get_default_version() {
         let java_version = text.trim();
         if let Some(java_home) = dirs::home_dir()
             .map(|dir| {
