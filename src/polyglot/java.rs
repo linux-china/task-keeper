@@ -6,19 +6,43 @@ use crate::polyglot::PATH_SEPARATOR;
 pub fn is_available() -> bool {
     let current_dir = env::current_dir().unwrap();
     return current_dir.join(".java-version").exists()
-        || current_dir.join("pom.xml").exists();
+        || current_dir.join("pom.xml").exists()
+        || current_dir.join("build.gradle.kts").exists()
+        || current_dir.join("build.gradle").exists();
 }
 
 pub fn get_default_version() -> Option<String> {
     if let Ok(text) = std::fs::read_to_string(".java-version") {
         return Some(text.trim().to_string());
     } else if let Ok(xml) = std::fs::read_to_string("pom.xml") {
-        if let Some(offset) = xml.find("<java.version>") {
-            let end = xml.find("</java.version").unwrap();
-            let java_version = xml[offset + 14..end].trim();
-            if str::parse::<u32>(java_version).is_ok() {
-                return Some(java_version.to_string());
-            }
+        return extract_java_version_from_pom(&xml);
+    } else if let Ok(code) = std::fs::read_to_string("build.gradle.kts") {
+        return extract_java_version_from_gradle(&code);
+    } else if let Ok(code) = std::fs::read_to_string("build.gradle") {
+        return extract_java_version_from_gradle(&code);
+    }
+    None
+}
+
+fn extract_java_version_from_pom(xml: &str) -> Option<String> {
+    if let Some(offset) = xml.find("<java.version>") {
+        let end = xml.find("</java.version").unwrap();
+        let java_version = xml[offset + 14..end].trim();
+        if str::parse::<u32>(java_version).is_ok() {
+            return Some(java_version.to_string());
+        }
+    }
+    None
+}
+
+
+fn extract_java_version_from_gradle(code: &str) -> Option<String> {
+    if let Some(offset) = code.find("JavaLanguageVersion.of(") {
+        let start = offset + 23;
+        let end = code[start..].find(")").unwrap();
+        let java_version = code[start..start + end].trim();
+        if str::parse::<u32>(java_version).is_ok() {
+            return Some(java_version.to_string());
         }
     }
     None
@@ -82,5 +106,32 @@ mod tests {
         init_env();
         println!("JAVA_HOME: {}", env::var("JAVA_HOME").unwrap());
         println!("PATH: {}", env::var("PATH").unwrap());
+    }
+
+    #[test]
+    fn test_extract_java_version_from_pom() {
+        let xml = r#"
+            <project>
+                <properties>
+                    <java.version>11</java.version>
+                </properties>
+            </project>
+            "#;
+        assert_eq!(Some("11".to_string()), extract_java_version_from_pom(xml));
+    }
+
+    #[test]
+    fn test_extract_java_version_from_gradle() {
+        let code = r#"
+            plugins {
+                id("java")
+            }
+            java {
+                toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(11))
+                }
+            }
+        "#;
+        assert_eq!(Some("11".to_string()), extract_java_version_from_gradle(code));
     }
 }
