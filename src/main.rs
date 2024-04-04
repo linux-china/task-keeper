@@ -485,7 +485,7 @@ fn load_env() {
     if env::current_dir().unwrap().join(".flaskenv").exists() {
         dotenv::from_filename(".flaskenv").ok();
     }
-    if let Some(node_env) = env::var("NODE_ENV") {
+    if let Ok(node_env) = env::var("NODE_ENV") {
         dotenv::from_filename(format!(".env.{}", node_env)).ok();
     }
 }
