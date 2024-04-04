@@ -194,7 +194,7 @@ Available
 
 ### Cargo
 
-Available
+Available. Please install `cargo-tree`, `cargo-outdated`.
 
 ### Composer
 
