@@ -1,6 +1,5 @@
 use std::env;
 use std::path::PathBuf;
-use colored::Colorize;
 use crate::polyglot::PATH_SEPARATOR;
 
 pub fn is_available() -> bool {
