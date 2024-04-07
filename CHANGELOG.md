@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.17.1] - 2024-04-07
+
+- Add [just module](https://github.com/casey/just?tab=readme-ov-file#modules1190) support
+- Auto detect java version from pom.xml, Gradle java toolchain.
+
 ## [0.17.0] - 2024-03-19
 
 - Add Zig Build System `build.zig` support: https://ziglang.org/learn/build-system/
