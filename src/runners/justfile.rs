@@ -56,7 +56,6 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                     tasks.extend(sub_tasks);
                 }
             }
-            println!("{:?}", tasks);
             tasks
         })
         .change_context(KeeperError::InvalidJustfile)
