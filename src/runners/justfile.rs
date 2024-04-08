@@ -25,7 +25,10 @@ pub struct JustRecipe {
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("justfile").exists() || dir.join("Justfile").exists())
+        .map(|dir| dir.join("justfile").exists()
+            || dir.join("Justfile").exists()
+            || dir.join(".justfile").exists()
+        )
         .unwrap_or(false)
 }
 
