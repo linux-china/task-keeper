@@ -36,7 +36,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("outdated".to_string(), format!("{} dependencyUpdates", gradle_command));
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
         if !code.contains("gradle-8.6") {
-            task_command_map.insert("self-update".to_string(), format!("{} wrapper --gradle-version=8.6", gradle_command));
+            task_command_map.insert("self-update".to_string(), format!("{} wrapper --gradle-version=8.7", gradle_command));
         }
     }
     task_command_map
