@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.17.2] - 2024-04-11
+
+- Add `.justfile` support
+- Update to Gradle 8.7
+- Add `$PORT` for procfile
+
 ## [0.17.1] - 2024-04-07
 
 - Add [just module](https://github.com/casey/just?tab=readme-ov-file#modules1190) support
