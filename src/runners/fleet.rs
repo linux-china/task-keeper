@@ -22,17 +22,22 @@ pub struct Configuration {
     #[serde(rename = "type")]
     pub type_value: String,
     pub program: Option<String>,
+    pub command: Option<String>,
+    pub scripts: Option<String>,
     pub working_dir: Option<String>,
     pub environment: Option<HashMap<String, String>>,
     pub args: Option<Vec<String>>,
     pub tasks: Option<Vec<String>>,
     pub script_path: Option<String>,
     pub arguments: Option<Vec<String>>,
+    pub command_arguments: Option<Vec<String>>,
     pub parameters: Option<Vec<String>>,
+    pub app_options: Option<Vec<String>>,
     pub cargo_args: Option<Vec<String>>,
     pub cargo_extra_args: Option<Vec<String>>,
     pub go_exec_path: Option<String>,
     pub params: Option<Vec<String>>,
+    pub build_params: Option<Vec<String>>,
     pub main_class: Option<String>,
     pub file: Option<String>,
     // docker
@@ -72,11 +77,11 @@ impl Configuration {
 
     pub fn python_full_args(&self) -> Vec<String> {
         let mut full_args = vec![];
-        if let Some(ref script_path) = self.script_path {
+        if let Some(ref script_path) = self.file {
             full_args.push(script_path.to_string());
         }
-        if let Some(ref parameters) = self.parameters {
-            full_args.extend(parameters.iter().cloned());
+        if let Some(ref arguments) = self.arguments {
+            full_args.extend(arguments.iter().cloned());
         }
         full_args
     }
@@ -199,9 +204,26 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
             args.extend(configuration.arguments.clone().unwrap_or_default());
             args
         }
-        "go" => configuration.params.clone().unwrap_or_default(),
-        "node" => configuration.params.clone().unwrap_or_default(),
-        "npm" => configuration.params.clone().unwrap_or_default(),
+        "go" => configuration.build_params.clone().unwrap_or_default(),
+        "node" => {
+                let mut args = vec![];
+                if let Some(file) = &configuration.file {
+                    args.push(file.clone());
+                }
+                args.extend(configuration.app_options.clone().unwrap_or_default());
+                args
+        },
+        "npm" => {
+            let mut args = vec![];
+            if let Some(command) = &configuration.command {
+                args.push(command.clone());
+                args.extend(configuration.command_arguments.clone().unwrap_or_default());
+            } else if let Some(scripts) = &configuration.scripts {
+                args.push("run".to_owned());
+                args.push(scripts.clone());
+            }
+            args
+        },
         _ => vec![],
     }
 }
