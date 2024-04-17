@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.18.0] - 2024-04-17
+
+- Add [argc](https://github.com/sigoden/argc) support
+- Some bug fix for fleet
+
 ## [0.17.2] - 2024-04-11
 
 - Add `.justfile` support
