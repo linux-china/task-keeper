@@ -48,6 +48,9 @@ pub enum KeeperError {
     #[error("TK-210001: failed to read Taskfile.ts")]
     InvalidTaskFileTs,
 
+    #[error("TK-211001: failed to read Argcfile.sh")]
+    InvalidArgcFile,
+
     #[error("TK-300001: failed to read pom.xml")]
     InvalidPomXml,
     #[error("TK-301001: failed to parse package.json")]
