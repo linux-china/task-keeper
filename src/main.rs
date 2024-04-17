@@ -7,6 +7,7 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::path::Path;
 use std::env;
+use std::fs::Permissions;
 use crate::models::TaskContext;
 use crate::polyglot::PATH_SEPARATOR;
 
@@ -94,6 +95,14 @@ fn main() {
             let mut import_map_file = std::fs::File::create("import_map.json").unwrap();
             import_map_file.write_all(include_bytes!("./templates/import_map.json")).unwrap();
             println!("{}", "deno.json and import_map.json created".bold().green());
+        } else if runner_name == "argc" {
+            let mut argc_file = std::fs::File::create("Argcfile.sh").unwrap();
+            argc_file.write_all(include_bytes!("./templates/Argcfile.sh")).unwrap();
+            println!("{}", "Argcfile.sh created".bold().green());
+            if cfg!(target_family = "unix") {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions("Argcfile.sh", Permissions::from_mode(0o755)).unwrap();
+            }
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
