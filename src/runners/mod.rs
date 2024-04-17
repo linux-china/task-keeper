@@ -19,13 +19,14 @@ pub mod ant;
 pub mod rye;
 pub mod poetry;
 pub mod bun_shell;
+pub mod argcfile;
 
 use std::process::{Output};
 use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poetry","bun-shell"];
+pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poetry","bun-shell","argc"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
