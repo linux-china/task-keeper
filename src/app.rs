@@ -41,7 +41,7 @@ pub fn build_app() -> Command {
             Arg::new("init")
                 .long("init")
                 .num_args(1)
-                .value_parser(["shell", "make", "jbang", "just"])
+                .value_parser(["shell", "make", "jbang", "just","vscode","pipenv","deno","argc"])
                 .help("Create a new task file by runner name")
                 .required(false),
         )
