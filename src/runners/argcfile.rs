@@ -45,7 +45,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             tasks.extend(sub_tasks);
             tasks
         })
-        .change_context(KeeperError::InvalidJustfile)
+        .change_context(KeeperError::InvalidArgcFile)
 }
 
 pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
