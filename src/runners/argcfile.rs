@@ -40,7 +40,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             // sub tasks
             let sub_tasks: Vec<Task> = argc_file_json.subcommands
                 .iter()
-                .map(|(sub_command)| task!(sub_command.name.clone(), "argc", &sub_command.describe.clone().unwrap_or("".to_owned())))
+                .map(|sub_command| task!(sub_command.name.clone(), "argc", &sub_command.describe.clone().unwrap_or("".to_owned())))
                 .collect();
             tasks.extend(sub_tasks);
             tasks
