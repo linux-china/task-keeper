@@ -60,6 +60,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 * zed Tasks: https://zed.dev/docs/tasks
 * Rye: https://github.com/mitsuhiko/rye#scripts
+* argc: https://github.com/sigoden/argc
 
 
 ### Bun Shell - Taskfile.ts
