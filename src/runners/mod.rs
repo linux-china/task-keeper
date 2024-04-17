@@ -50,6 +50,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "jbang" => jbang::run_task(task_name, task_args, global_args, verbose),
         "rye" => rye::run_task(task_name, task_args, global_args, verbose),
         "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
+        "argc" => argcfile::run_task(task_name, task_args, global_args, verbose),
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
     }
@@ -77,6 +78,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "rye" => "requirements.lock",
         "poetry" => "pyproject.toml",
         "bun-shell" => "Taskfile.ts",
+        "argc" => "Argcfile.sh",
         _ => "unknown",
     }
 }
@@ -103,6 +105,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "rye" => "https://github.com/mitsuhiko/rye",
         "poetry" => "https://python-poetry.org",
         "bun-shell" => "https://bun.sh/docs/runtime/shell",
+        "argc" => "https://github.com/sigoden/argc",
         _ => "unknown",
     }
 }
