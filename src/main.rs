@@ -315,6 +315,12 @@ fn diagnose() {
             println!("{} rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock", "Warning:".bold().yellow());
         }
     }
+    if runners::argcfile::is_available() {
+        if !runners::argcfile::is_command_available() {
+            problems_count += 1;
+            println!("{} argc(https://github.com/sigoden/argc) command not available for Argcfile.sh", "Warning:".bold().yellow());
+        }
+    }
     // ==========package managers============
     if managers::maven::is_available() {
         if !managers::maven::is_command_available() {

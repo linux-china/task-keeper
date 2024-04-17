@@ -290,6 +290,19 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::argcfile::is_available() {
+        if runners::argcfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::argcfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("argc".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] argc(https://github.com/sigoden/argc) command not available for Argcfile.sh".bold().red());
+            }
+        }
+    }
     /*all_tasks.iter().for_each(|(runner, tasks)| {
         println!("{}", format!("[tk] {} tasks:", runner).bold().green());
         tasks.iter().for_each(|task| {
