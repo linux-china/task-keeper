@@ -7,6 +7,14 @@ use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use which::which;
 
+const ARGC_SCRIPT_NAMES: [&str; 6] = [
+    "Argcfile.sh",
+    "Argcfile",
+    "argcfile.sh",
+    "argcfile",
+    "ARGCFILE.sh",
+    "ARGCFILE",
+];
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ArgcfileJson {
@@ -21,7 +29,9 @@ pub struct ArgcSubCommand {
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("Argcfile.sh").exists())
+        .map(|dir| {
+            ARGC_SCRIPT_NAMES.iter().any(|name| dir.join(name).exists())
+        })
         .unwrap_or(false)
 }
 
@@ -30,7 +40,13 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let json_text = capture_command_output("argc", &["--argc-export", "Argcfile.sh"])
+    let current_dir = std::env::current_dir().unwrap();
+    let argc_file = ARGC_SCRIPT_NAMES.iter()
+        .map(|name| current_dir.join(name))
+        .find(|path| path.exists())
+        .map(|path| path.to_str().unwrap_or("").to_owned())
+        .unwrap_or("".to_owned());
+    let json_text = capture_command_output("argc", &["--argc-export", &argc_file])
         .map(|output| {
             String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
         })?;
