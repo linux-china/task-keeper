@@ -32,7 +32,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         task_command_map.insert("deps".to_string(), "deptree".to_owned());
     }
     task_command_map.insert("install".to_string(), format!("{} install -r requirements.txt", command));
-    task_command_map.insert("outdated".to_string(), format!("{} list --outdated", command));
+    task_command_map.insert("outdated".to_string(), "pip list --no-python-version-warning --outdated".to_string());
     task_command_map.insert("update".to_string(), format!("{}  install -U -r requirements.txt", command));
     task_command_map
 }
