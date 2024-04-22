@@ -8,6 +8,11 @@ use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use which::which;
 
+const JUST_FILE_NAMES: [&str; 3] = [
+    "justfile",
+    "Justfile",
+    ".justfile"
+];
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -25,10 +30,9 @@ pub struct JustRecipe {
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("justfile").exists()
-            || dir.join("Justfile").exists()
-            || dir.join(".justfile").exists()
-        )
+        .map(|dir| {
+            JUST_FILE_NAMES.iter().any(|name| dir.join(name).exists())
+        })
         .unwrap_or(false)
 }
 
