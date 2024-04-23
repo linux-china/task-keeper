@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [0.19.0] - 2024-04-23
+
+- Add [cargo-xtask](https://github.com/linux-china/xtask-demo) support
+- Add [go-xtask](https://github.com/linux-china/xtask-go-demo) support
+- Add `tk --init=argc` to create `Argcfile.sh` file
+- Update to `maven-wrapper 3.3.0`
+
 ## [0.18.0] - 2024-04-17
 
 - Add [argc](https://github.com/sigoden/argc) support
