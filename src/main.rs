@@ -99,10 +99,7 @@ fn main() {
             let mut argc_file = std::fs::File::create("Argcfile.sh").unwrap();
             argc_file.write_all(include_bytes!("./templates/Argcfile.sh")).unwrap();
             println!("{}", "Argcfile.sh created".bold().green());
-            if cfg!(target_family = "unix") {
-                use std::os::unix::fs::PermissionsExt;
-                std::fs::set_permissions("Argcfile.sh", Permissions::from_mode(0o755)).unwrap();
-            }
+            set_executable("Argcfile.sh");
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
@@ -505,11 +502,11 @@ fn load_env() {
     }
 }
 
-#[cfg(target_family = "unix")]
+#[cfg(unix)]
 fn set_executable(path: &str) {
     use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::set_permissions(path, Permissions::from_mode(0o755)).unwrap();
 }
 
-#[cfg(not(target_family = "unix"))]
+#[cfg(not(unix))]
 fn set_executable(path: &str) {}
