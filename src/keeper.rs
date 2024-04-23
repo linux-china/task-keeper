@@ -310,6 +310,13 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::xtask_go::is_available() {
+        if let Ok(runner_tasks) = runners::xtask_go::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("xtask-go".to_string(), runner_tasks);
+            }
+        }
+    }
     /*all_tasks.iter().for_each(|(runner, tasks)| {
         println!("{}", format!("[tk] {} tasks:", runner).bold().green());
         tasks.iter().for_each(|task| {
