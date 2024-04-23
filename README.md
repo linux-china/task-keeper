@@ -61,7 +61,8 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * zed Tasks: https://zed.dev/docs/tasks
 * Rye: https://github.com/mitsuhiko/rye#scripts
 * argc: https://github.com/sigoden/argc
-
+* cargo-xtask: https://github.com/linux-china/xtask-demo
+* go-xtask: https://github.com/linux-china/xtask-go-demo
 
 ### Bun Shell - Taskfile.ts
 
@@ -278,6 +279,11 @@ tasks:
       - echo 'Hello World from Task!'
     silent: true
 ```
+
+### xtask for Rust and Golang
+
+* cargo-xtask: https://github.com/linux-china/xtask-demo
+* go-xtask: https://github.com/linux-china/xtask-go-demo
 
 ### Tasks from README.md
 
