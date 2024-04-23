@@ -20,13 +20,14 @@ pub mod rye;
 pub mod poetry;
 pub mod bun_shell;
 pub mod argcfile;
+pub mod xtask;
 
 use std::process::{Output};
 use colored::Colorize;
 use error_stack::{report, Result};
 use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poetry","bun-shell","argc"];
+pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poetry","bun-shell","argc","xtask"];
 
 pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -52,6 +53,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
         "argc" => argcfile::run_task(task_name, task_args, global_args, verbose),
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
+        "xtask" => xtask::run_task(task_name, task_args, global_args, verbose),
         _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
     }
 }
@@ -79,6 +81,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "poetry" => "pyproject.toml",
         "bun-shell" => "Taskfile.ts",
         "argc" => "Argcfile.sh",
+        "xtask" => "xtask/",
         _ => "unknown",
     }
 }
@@ -106,6 +109,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "poetry" => "https://python-poetry.org",
         "bun-shell" => "https://bun.sh/docs/runtime/shell",
         "argc" => "https://github.com/sigoden/argc",
+        "xtask" => "https://github.com/matklad/cargo-xtask",
         _ => "unknown",
     }
 }
