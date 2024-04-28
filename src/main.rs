@@ -100,6 +100,10 @@ fn main() {
             argc_file.write_all(include_bytes!("./templates/Argcfile.sh")).unwrap();
             println!("{}", "Argcfile.sh created".bold().green());
             set_executable("Argcfile.sh");
+        } else if runner_name == "nur" {
+            let mut argc_file = std::fs::File::create("nurfile").unwrap();
+            argc_file.write_all(include_bytes!("./templates/nurfile")).unwrap();
+            println!("{}", "nurfile created".bold().green());
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
