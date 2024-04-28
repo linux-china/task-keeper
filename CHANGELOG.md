@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Add [nur](https://github.com/ddanier/nur) support
+
 ## [0.19.0] - 2024-04-23
 
 - Add [cargo-xtask](https://github.com/linux-china/xtask-demo) support
