@@ -60,7 +60,8 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 * zed Tasks: https://zed.dev/docs/tasks
 * Rye: https://github.com/mitsuhiko/rye#scripts
-* argc: https://github.com/sigoden/argc
+* argc: a Bash-based command runner https://github.com/sigoden/argc
+* nur: a task runner based on nu shell https://github.com/sigoden/argc
 * cargo-xtask: https://github.com/linux-china/xtask-demo
 * go-xtask: https://github.com/linux-china/xtask-go-demo
 
