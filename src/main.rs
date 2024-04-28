@@ -331,6 +331,12 @@ fn diagnose() {
             println!("{} argc(https://github.com/sigoden/argc) command not available for Argcfile.sh", "Warning:".bold().yellow());
         }
     }
+    if runners::nurfile::is_available() {
+        if !runners::nurfile::is_command_available() {
+            problems_count += 1;
+            println!("{} nur(https://github.com/ddanier/nur) command not available for nurfile", "Warning:".bold().yellow());
+        }
+    }
     // ==========package managers============
     if managers::maven::is_available() {
         if !managers::maven::is_command_available() {

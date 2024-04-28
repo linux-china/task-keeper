@@ -303,6 +303,19 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         }
     }
+    if runners::nurfile::is_available() {
+        if runners::nurfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::nurfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("nur".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] nur(https://github.com/ddanier/nur) command not available for nurfile".bold().red());
+            }
+        }
+    }
     if runners::xtask::is_available() {
         if let Ok(runner_tasks) = runners::xtask::list_tasks() {
             if !runner_tasks.is_empty() {
