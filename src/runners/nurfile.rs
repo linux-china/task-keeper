@@ -41,7 +41,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let tasks: Vec<Task> = BufReader::new(nur_list.as_bytes())
         .lines()
         .map(|line| line.unwrap())
-        .filter(|line|  !line.is_empty() && line.starts_with(" ") )
+        .filter(|line|  !line.is_empty())
         .map(|line| {
             let name = line.trim();
             let command = format!("nur {}", name);
