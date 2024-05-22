@@ -347,7 +347,7 @@ fn diagnose() {
     if managers::gradle::is_available() {
         if !managers::gradle::is_command_available() {
             problems_count += 1;
-            println!("{} gradle(https://gradle.org/) command not available for {}", "Warning:".bold().yellow(), managers::gradle::get_gradle_build_file());
+            println!("{} amper(https://github.com/JetBrains/amper) command not available for {}", "Warning:".bold().yellow(), "module.yaml");
         } else {
             //global plugins for gradle $HOME/.gradle/init.d/plugins.gradle
             if !dirs::home_dir().unwrap().join(".gradle").join("init.d").join("plugins.gradle").exists() {
@@ -355,6 +355,11 @@ fn diagnose() {
                          "Suggestion:".bold().yellow(), "plugins.gradle".bold().blue(), "dependencyUpdates".bold().blue());
             }
         }
+    }
+    if managers::amper::is_available() {
+        if !managers::amper::is_command_available() {
+            problems_count += 1;
+            println!("{} amper(https://github.com/JetBrains/amper) command not available for module.yaml", "Warning:".bold().yellow());        }
     }
     if managers::sbt::is_available() {
         if !managers::sbt::is_command_available() {

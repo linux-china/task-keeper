@@ -24,9 +24,10 @@ pub mod pipenv;
 pub mod rye;
 pub mod dart;
 pub mod zig;
+pub mod amper;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -35,6 +36,9 @@ pub fn get_available_managers() -> Vec<String> {
     }
     if gradle::is_available() {
         managers.push("gradle".to_string());
+    }
+    if amper::is_available() {
+        managers.push("amper".to_string());
     }
     if sbt::is_available() {
         managers.push("sbt".to_string());
@@ -97,6 +101,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
     match runner {
         "maven" => "pom.xml",
         "gradle" => gradle::get_gradle_build_file(),
+        "amper" => "module.yaml",
         "sbt" => "build.sbt",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
@@ -123,6 +128,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
     match runner {
         "maven" => "https://maven.apache.org",
         "gradle" => "https://gradle.org",
+        "amper" => "https://github.com/JetBrains/amper",
         "sbt" => "https://www.scala-sbt.org",
         "npm" => "https://nodejs.org",
         "cargo" => "https://doc.rust-lang.org/cargo/",
@@ -149,6 +155,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
     match runner {
         "maven" => maven::get_task_command_map(),
         "gradle" => gradle::get_task_command_map(),
+        "amper" => amper::get_task_command_map(),
         "sbt" => sbt::get_task_command_map(),
         "npm" => npm::get_task_command_map(),
         "cargo" => cargo::get_task_command_map(),
@@ -185,6 +192,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("gradle", gradle::run_task);
         } else {
             println!("{}", "[tk] gradle(https://gradle.org/) command not available".bold().red());
+        }
+    }
+    if amper::is_available() {
+        if amper::is_command_available() {
+            queue.insert("amper", amper::run_task);
+        } else {
+            println!("{}", "[tk] amper(https://github.com/JetBrains/amper) command not available".bold().red());
         }
     }
     if sbt::is_available() {
