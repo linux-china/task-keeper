@@ -4,7 +4,14 @@
 
 ## [Unreleased]
 
+## [0.21.0] - 2024-05-23
+
+- Add [amper](https://github.com/JetBrains/amper) standalone support
+
+## [0.20.0] - 2024-05-09
+
 - Add [nur](https://github.com/ddanier/nur) support
+- Add [goreleaser](https://goreleaser.com/) support
 
 ## [0.19.0] - 2024-04-23
 
