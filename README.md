@@ -217,6 +217,10 @@ Only support [cmake-conan](https://github.com/conan-io/cmake-conan), and conanfi
 
 Default build directory is `cmake-build-debug`, and you override it by `CMAKE_BINARY_DIR=_build tk build`.
 
+### Meson
+
+Available
+
 ### Swift
 
 Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-outdated) for `outdated` operation.
