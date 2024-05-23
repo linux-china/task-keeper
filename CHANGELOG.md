@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Add [Meson Build](https://mesonbuild.com/) support
+
 ## [0.21.0] - 2024-05-23
 
 - Add [amper](https://github.com/JetBrains/amper) standalone support
