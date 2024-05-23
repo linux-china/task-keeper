@@ -421,6 +421,12 @@ fn diagnose() {
             println!("{} cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt", "Warning:".bold().yellow());
         }
     }
+    if managers::meson::is_available() {
+        if !managers::meson::is_command_available() {
+            problems_count += 1;
+            println!("{} meson(https://mesonbuild.com) command not available for meson.build", "Warning:".bold().yellow());
+        }
+    }
     if managers::swift::is_available() {
         if !managers::swift::is_command_available() {
             problems_count += 1;

@@ -25,9 +25,10 @@ pub mod rye;
 pub mod dart;
 pub mod zig;
 pub mod amper;
+pub mod meson;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -60,6 +61,9 @@ pub fn get_available_managers() -> Vec<String> {
     }
     if cmakeconan::is_available() {
         managers.push("cmake".to_string());
+    }
+    if meson::is_available() {
+        managers.push("meson".to_string());
     }
     if swift::is_available() {
         managers.push("swift".to_string());
@@ -106,6 +110,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
         "cmake" => "CMakeLists.txt, conanfile.txt",
+        "meson" => "meson.build",
         "composer" => "composer.json",
         "go" => "go.mod",
         "swift" => "Package.swift",
@@ -133,6 +138,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "npm" => "https://nodejs.org",
         "cargo" => "https://doc.rust-lang.org/cargo/",
         "cmake" => "https://cmake.org/",
+        "meson" => "https://mesonbuild.com/",
         "composer" => "https://getcomposer.org",
         "go" => "https://go.dev/ref/mod",
         "swift" => "https://www.swift.org/package-manager/",
@@ -162,6 +168,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "composer" => composer::get_task_command_map(),
         "go" => golang::get_task_command_map(),
         "cmake" => cmakeconan::get_task_command_map(),
+        "meson" => meson::get_task_command_map(),
         "bundle" => bundler::get_task_command_map(),
         "swift" => swift::get_task_command_map(),
         "bazel" => bazel::get_task_command_map(),
@@ -252,6 +259,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("cmake", cmakeconan::run_task);
         } else {
             println!("{}", "[tk] cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt".bold().red());
+        }
+    }
+    if meson::is_available() {
+        if meson::is_command_available() {
+            queue.insert("meson", meson::run_task);
+        } else {
+            println!("{}", "[tk] meson(https://mesonbuild.com) command not available for meson.build".bold().red());
         }
     }
     if swift::is_available() {
