@@ -26,9 +26,10 @@ pub mod dart;
 pub mod zig;
 pub mod amper;
 pub mod meson;
+pub mod xmake;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -98,6 +99,9 @@ pub fn get_available_managers() -> Vec<String> {
     if zig::is_available() {
         managers.push("zig".to_string());
     }
+    if xmake::is_available() {
+        managers.push("xmake".to_string());
+    }
     managers
 }
 
@@ -125,6 +129,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "pipenv" => "Pipfile",
         "dart" => "pubspec.yaml",
         "zig" => "build.zig",
+        "xmake" => "xmake.lua",
         _ => "unknown",
     }
 }
@@ -153,6 +158,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "rye" => "https://github.com/mitsuhiko/rye",
         "dart" => "https://dart.dev/guides/packages",
         "zig" => "https://ziglang.org/learn/build-system/",
+        "xmake" => "https://xmake.io",
         _ => "unknown",
     }
 }
@@ -181,6 +187,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "rye" => rye::get_task_command_map(),
         "dart" => dart::get_task_command_map(),
         "zig" => zig::get_task_command_map(),
+        "xmake" => xmake::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -343,6 +350,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("zig", zig::run_task);
         } else {
             println!("{}", "[tk] zig(https://ziglang.org/) command not available for build.zig".bold().red());
+        }
+    }
+    if xmake::is_available() {
+        if xmake::is_command_available() {
+            queue.insert("xmake", xmake::run_task);
+        } else {
+            println!("{}", "[tk] xmake(https://xmake.io/) command not available for xmake.lua".bold().red());
         }
     }
     if queue.is_empty() { // no manager found
