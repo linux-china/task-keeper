@@ -4,7 +4,10 @@
 
 ## [Unreleased]
 
+## [0.22.0] - 2024-06-09
+
 - Add [Meson Build](https://mesonbuild.com/) support
+- Add [xmake](https://xmake.io/) support
 
 ## [0.21.0] - 2024-05-23
 
