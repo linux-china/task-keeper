@@ -20,6 +20,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let cmake_binary_dir = get_build_dir();
     task_command_map.insert("compile".to_string(), format!("cmake -B {} -DCMAKE_BUILD_TYPE=Debug", cmake_binary_dir));
     task_command_map.insert("build".to_string(), format!("cmake --build {}", cmake_binary_dir));
+    task_command_map.insert("release".to_string(), format!("cmake -DCMAKE_BUILD_TYPE=Release --build {}", cmake_binary_dir));
     task_command_map.insert("clean".to_string(), format!("cmake --build {} --target clean", cmake_binary_dir));
     if std::env::current_dir().map(|dir| dir.join("CMakeLists.txt").exists()).unwrap_or(false) {
         task_command_map.insert("install".to_string(), format!("conan install . -s build_type=Debug --install-folder={}", cmake_binary_dir));
