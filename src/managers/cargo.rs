@@ -21,6 +21,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "cargo build".to_string());
     task_command_map.insert("compile".to_string(), "cargo build".to_string());
     task_command_map.insert("build".to_string(), "cargo build".to_string());
+    task_command_map.insert("release".to_string(), "cargo build --release".to_string());
     task_command_map.insert("test".to_string(), "cargo test".to_string());
     task_command_map.insert("deps".to_string(), "cargo tree".to_string());
     task_command_map.insert("doc".to_string(), "cargo doc".to_string());
