@@ -20,6 +20,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("install".to_string(), "zig build install".to_string());
     task_command_map.insert("compile".to_string(), "zig build".to_string());
     task_command_map.insert("build".to_string(), "zig build".to_string());
+    task_command_map.insert("release".to_string(), "zig build -Drelease-safe".to_string());
     task_command_map.insert("start".to_string(), "zig build run".to_string());
     task_command_map.insert("test".to_string(), "zig build test".to_string());
     task_command_map.insert("clean".to_string(), "zig build uninstall".to_string());

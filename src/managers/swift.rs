@@ -18,6 +18,7 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("build".to_string(), "swift build".to_string());
+    task_command_map.insert("release".to_string(), "swift build -c release".to_string());
     task_command_map.insert("start".to_string(), "swift run".to_string());
     task_command_map.insert("test".to_string(), "swift test".to_string());
     task_command_map.insert("deps".to_string(), "swift package show-dependencies".to_string());
