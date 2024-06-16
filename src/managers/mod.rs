@@ -28,7 +28,7 @@ pub mod amper;
 pub mod meson;
 pub mod xmake;
 
-pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
+pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
