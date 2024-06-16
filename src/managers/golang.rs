@@ -23,6 +23,8 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("build".to_string(), "go build".to_string());
     if std::env::current_dir().map(|dir| dir.join(".goreleaser.yaml").exists()).is_ok() {
         task_command_map.insert("release".to_string(), "goreleaser release --clean".to_string());
+    } else {
+        task_command_map.insert("release".to_string(), "go build -ldflags '-s -w'".to_string());
     }
     if std::env::current_dir().map(|dir| dir.join("main.go").exists()).is_ok() {
         task_command_map.insert("start".to_string(), "go run main.go".to_string());
