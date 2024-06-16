@@ -22,7 +22,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("init".to_string(), "mix new {name}".to_string());
     task_command_map.insert("install".to_string(), "mix deps.get".to_string());
     task_command_map.insert("compile".to_string(), "mix compile".to_string());
-    task_command_map.insert("build".to_string(), "hex.build".to_string());
+    task_command_map.insert("build".to_string(), "mix hex.build".to_string());
     task_command_map.insert("deps".to_string(), "mix deps.tree".to_string());
     task_command_map.insert("doc".to_string(), "mix docs".to_string());
     task_command_map.insert("clean".to_string(), "mix clean".to_string());
