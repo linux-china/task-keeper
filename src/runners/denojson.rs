@@ -46,6 +46,7 @@ pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: b
     args.push("task");
     args.push(task);
     args.extend(task_args);
+    std::env::set_var("DENO_FUTURE", "1");
     run_command("deno", &args, verbose)
 }
 
