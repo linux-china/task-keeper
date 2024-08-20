@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.22.2] - 2024-08-20
+
+- Update to Gradle 8.10
+- Update to Maven 3.9.9
+
+## [0.22.1] - 2024-06-16
+
+- Add release for cargo, cmake, zig etc
+
 ## [0.22.0] - 2024-06-09
 
 - Add [Meson Build](https://mesonbuild.com/) support
