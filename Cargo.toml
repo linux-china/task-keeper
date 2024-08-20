@@ -39,7 +39,7 @@ dotenv = "0.15"
 shlex = "1"
 cfg-if ="1"
 uuid = { version = "1", features = ["v4"] }
-logos = "0.14.0"
+logos = "0.14"
 shell-escape ="0.1"
 update-informer = { version = "1.1.0", default_features = false, features = ["github"] }
 
