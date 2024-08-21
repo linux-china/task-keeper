@@ -5,7 +5,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result, ResultExt};
+use error_stack::{Result};
 use serde::{Deserialize, Serialize};
 use which::which;
 
