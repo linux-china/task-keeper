@@ -59,7 +59,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 * zed Tasks: https://zed.dev/docs/tasks
-* Rye: https://github.com/mitsuhiko/rye#scripts
+* Rye: https://rye.astral.sh/guide/pyproject/#projectscripts
 * argc: a Bash-based command runner https://github.com/sigoden/argc
 * nur: a task runner based on nu shell https://github.com/ddanier/nur
 * cargo-xtask: https://github.com/linux-china/xtask-demo
@@ -233,8 +233,8 @@ Available.
 
 Available with following tools:
 
-* [Rye](https://github.com/mitsuhiko/rye): please commit `requirements.lock` to git
-* [uv](https://github.com/astral-sh/uv): if uv command detected
+* [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected
+* [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
