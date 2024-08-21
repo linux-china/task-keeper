@@ -1,6 +1,6 @@
 [package]
 name = "task-keeper"
-version = "0.22.2"
+version = "0.23.0"
 edition = "2021"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
@@ -41,7 +41,7 @@ cfg-if ="1"
 uuid = { version = "1", features = ["v4"] }
 logos = "0.14"
 shell-escape ="0.1"
-update-informer = { version = "1.1.0", default_features = false, features = ["github"] }
+update-informer = { version = "1.1.0", default-features = false, features = ["github"] }
 
 [profile.release]
 strip = true
