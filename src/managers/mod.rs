@@ -27,9 +27,10 @@ pub mod zig;
 pub mod amper;
 pub mod meson;
 pub mod xmake;
+pub mod uv;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix", "dart", "zig","xmake"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -84,6 +85,9 @@ pub fn get_available_managers() -> Vec<String> {
     if rye::is_available() {
         managers.push("rye".to_string());
     }
+    if uv::is_available() {
+        managers.push("uv".to_string());
+    }
     if lein::is_available() {
         managers.push("lein".to_string());
     }
@@ -126,6 +130,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "mix" => "mix.exs",
         "pip" => "requirements.txt",
         "rye" => "requirements.lock",
+        "uv" => "uv.lock",
         "pipenv" => "Pipfile",
         "dart" => "pubspec.yaml",
         "zig" => "build.zig",
@@ -156,6 +161,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
         "pipenv" => "https://pipenv.pypa.io",
         "rye" => "https://github.com/mitsuhiko/rye",
+        "uv" => "https://github.com/astral-sh/uv",
         "dart" => "https://dart.dev/guides/packages",
         "zig" => "https://ziglang.org/learn/build-system/",
         "xmake" => "https://xmake.io",
@@ -185,6 +191,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "pip" => requirements::get_task_command_map(),
         "pipenv" => pipenv::get_task_command_map(),
         "rye" => rye::get_task_command_map(),
+        "uv" => uv::get_task_command_map(),
         "dart" => dart::get_task_command_map(),
         "zig" => zig::get_task_command_map(),
         "xmake" => xmake::get_task_command_map(),
@@ -308,6 +315,13 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
             queue.insert("rye", rye::run_task);
         } else {
             println!("{}", "[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock".bold().red());
+        }
+    }
+    if uv::is_available() {
+        if uv::is_command_available() {
+            queue.insert("uv", uv::run_task);
+        } else {
+            println!("{}", "[uv] uv(https://github.com/astral-sh/uv) command not available for uv.lock".bold().red());
         }
     }
     if requirements::is_available() {
