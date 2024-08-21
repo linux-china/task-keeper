@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.23.0] - 2024-08-21
+
+- Add uv 0.3 support
+
 ## [0.22.2] - 2024-08-20
 
 - Update to Gradle 8.10
