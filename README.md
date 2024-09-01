@@ -188,6 +188,12 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
 addDependencyTreePlugin
 ```
 
+### bld
+
+Available. 
+
+[bld](https://rife2.com/bld) is a new build system that allows you to write your build logic in pure Java. 
+
 ### npm
 
 Available
