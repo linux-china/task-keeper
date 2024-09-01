@@ -28,9 +28,10 @@ pub mod amper;
 pub mod meson;
 pub mod xmake;
 pub mod uv;
+pub mod bld;
 
 pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein", "rebar3", "mix", "dart", "zig","xmake"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -45,6 +46,9 @@ pub fn get_available_managers() -> Vec<String> {
     }
     if sbt::is_available() {
         managers.push("sbt".to_string());
+    }
+    if bld::is_available() {
+        managers.push("bld".to_string());
     }
     if npm::is_available() {
         managers.push("npm".to_string());
@@ -115,6 +119,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "gradle" => gradle::get_gradle_build_file(),
         "amper" => "module.yaml",
         "sbt" => "build.sbt",
+        "bld" => "bld",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
         "cmake" => "CMakeLists.txt, conanfile.txt",
@@ -145,6 +150,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "gradle" => "https://gradle.org",
         "amper" => "https://github.com/JetBrains/amper",
         "sbt" => "https://www.scala-sbt.org",
+        "bld" => "https://rife2.com/bld",
         "npm" => "https://nodejs.org",
         "cargo" => "https://doc.rust-lang.org/cargo/",
         "cmake" => "https://cmake.org/",
@@ -175,6 +181,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "gradle" => gradle::get_task_command_map(),
         "amper" => amper::get_task_command_map(),
         "sbt" => sbt::get_task_command_map(),
+        "bld" => bld::get_task_command_map(),
         "npm" => npm::get_task_command_map(),
         "cargo" => cargo::get_task_command_map(),
         "composer" => composer::get_task_command_map(),
@@ -228,6 +235,9 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         } else {
             println!("{}", "[tk] sbt(https://www.scala-sbt.org/) command not available for build.sbt".bold().red());
         }
+    }
+    if bld::is_available() {
+        queue.insert("bld", bld::run_task);
     }
     if npm::is_available() {
         if npm::is_command_available() {
