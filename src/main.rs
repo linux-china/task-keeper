@@ -359,7 +359,8 @@ fn diagnose() {
     if managers::amper::is_available() {
         if !managers::amper::is_command_available() {
             problems_count += 1;
-            println!("{} amper(https://github.com/JetBrains/amper) command not available for module.yaml", "Warning:".bold().yellow());        }
+            println!("{} amper(https://github.com/JetBrains/amper) command not available for module.yaml", "Warning:".bold().yellow());
+        }
     }
     if managers::sbt::is_available() {
         if !managers::sbt::is_command_available() {
