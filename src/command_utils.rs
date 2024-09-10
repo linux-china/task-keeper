@@ -78,14 +78,13 @@ pub fn run_command_with_env_vars(command_name: &str, args: &[&str], working_dir:
     if verbose {
         println!("[tk] command line:  {:?}", command);
     }
-    let output = command
+     command
         .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
-    Ok(output)
+        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
 }
 
 pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output, KeeperError> {
@@ -103,14 +102,13 @@ pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<Output,
     if verbose {
         println!("[tk] command line:  {:?}", command);
     }
-    let output = command
+     command
         .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
-        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))?;
-    Ok(output)
+        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
 }
 
 pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, KeeperError> {
