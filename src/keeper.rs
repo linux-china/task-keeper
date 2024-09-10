@@ -26,7 +26,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                         task_count += 1;
-                        run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
+                        run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose)?;
                     }
                 }
             }
@@ -48,7 +48,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str
                 // execute package manager task
                 if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                     task_count += 1;
-                    run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
+                    run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose)?;
                 }
             }
         }
