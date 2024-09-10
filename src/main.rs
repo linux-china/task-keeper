@@ -511,7 +511,7 @@ fn format_description(description: &str) -> String {
     if short_desc.len() > 60 {
         short_desc = format!("{} ...", &short_desc[0..60]);
     }
-    return short_desc;
+    short_desc
 }
 
 fn load_env() {
