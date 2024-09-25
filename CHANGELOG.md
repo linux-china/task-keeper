@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Update to gradle 8.10.1
+
 ## [0.23.0] - 2024-08-21
 
 - Add uv 0.3 support
