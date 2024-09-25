@@ -36,7 +36,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             if task_name.starts_with("* ") {
                 task_name = task_name.split_off(2);
             }
-            let mut description = parts.next().unwrap_or("").trim().to_owned();
+            let description = parts.next().unwrap_or("").trim().to_owned();
             let mut tasks: Vec<Task> = vec![];
             if description.contains("(aliases:") {
                 let offset = description.find("(aliases:").unwrap();
