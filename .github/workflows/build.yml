@@ -3,6 +3,9 @@ name: Rust
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '**.rs'
+      - 'Cargo.toml'
   pull_request:
     branches: [ "master" ]
 
@@ -13,13 +16,13 @@ jobs:
   build-unbuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: cargo build --verbose
 
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: cargo build --verbose
