@@ -525,10 +525,10 @@ fn load_env() {
 }
 
 #[cfg(unix)]
-fn set_executable(path: &str) {
+fn set_executable<P: AsRef<Path>>(path: P) {
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(path, Permissions::from_mode(0o755)).unwrap();
 }
 
 #[cfg(not(unix))]
-fn set_executable(path: &str) {}
+fn set_executable<P: AsRef<Path>>(path: P) {}
