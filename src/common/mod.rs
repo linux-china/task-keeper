@@ -30,12 +30,12 @@ pub fn get_npm_command(package_json: &PackageJson) -> &'static str {
             "pnpm"
         } else if package_manager.starts_with("bun") {
             "bun"
-        }else {
+        } else {
             "npm"
         };
     } else {
         if let Ok(dir) = std::env::current_dir() {
-            if dir.join("bun.lockb").exists() {
+            if dir.join("bun.lockb").exists() || dir.join("bun.lock").exists() {
                 return "bun";
             } else if dir.join("pnpm-lock.yaml").exists() {
                 return "pnpm";
