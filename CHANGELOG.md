@@ -2,9 +2,11 @@
 
 # Task Keeper Changelog
 
-## [Unreleased]
+## [0.24.1] - 2024-10-05
 
 - Update to gradle 8.10.1
+- Add `bun.lock` support
+- Remove `init` from project manager
 
 ## [0.23.0] - 2024-08-21
 
