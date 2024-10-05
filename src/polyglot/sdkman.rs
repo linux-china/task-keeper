@@ -50,7 +50,7 @@ pub fn diagnose() -> i32 {
                      key, key, value);
         }
     }
-    return problems_count;
+    problems_count
 }
 
 
