@@ -5,6 +5,7 @@ use crate::polyglot::PATH_SEPARATOR;
 pub fn is_available() -> bool {
     let current_dir = env::current_dir().unwrap();
     return current_dir.join(".java-version").exists()
+        || current_dir.join(".sdkmanrc").exists()
         || current_dir.join("pom.xml").exists()
         || current_dir.join("build.gradle.kts").exists()
         || current_dir.join("build.gradle").exists();
@@ -13,6 +14,9 @@ pub fn is_available() -> bool {
 pub fn get_default_version() -> Option<String> {
     if let Ok(text) = std::fs::read_to_string(".java-version") {
         return Some(text.trim().to_string());
+    } else if let Ok(text) = std::fs::read_to_string(".sdkmanrc") {
+        let map = java_properties::read(text.as_bytes()).unwrap();
+        return map.get("java").map(|version| version.to_string());
     } else if let Ok(xml) = std::fs::read_to_string("pom.xml") {
         return extract_java_version_from_pom(&xml);
     } else if let Ok(code) = std::fs::read_to_string("build.gradle.kts") {
