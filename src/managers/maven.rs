@@ -18,7 +18,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let mvn_command = get_mvn_command();
-    task_command_map.insert("init".to_string(), format!("{} archetype:generate", mvn_command));
     task_command_map.insert("install".to_string(), format!("{} -U dependency:resolve", mvn_command));
     task_command_map.insert("compile".to_string(), format!("{} compile test-compile", mvn_command));
     task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));

@@ -30,7 +30,7 @@ pub mod xmake;
 pub mod uv;
 pub mod bld;
 
-pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
+pub const COMMANDS: &'static [&'static str] = &["sync", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
 pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
@@ -394,7 +394,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         }
     } else { // run task by all available managers
         match task_name {
-            "init" => {}
+            "sync" => {}
             /*"start" => { // only execute start task once
                 if queue.len() == 1 {
                     queue.iter().for_each(|(runner_name, task)| {

@@ -24,7 +24,6 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let package_manager = get_npm_command(&package_json);
     let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), format!("{} init", package_manager));
     task_command_map.insert("install".to_string(), format!("{} install", package_manager));
     if scripts.contains_key("compile") {
         task_command_map.insert("compile".to_string(), format!("{} run compile", package_manager));

@@ -17,7 +17,6 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "lein new app {name}".to_string());
     task_command_map.insert("install".to_string(), "lein deps".to_string());
     task_command_map.insert("compile".to_string(), "lein compile".to_string());
     task_command_map.insert("build".to_string(), "lein uberjar".to_string());

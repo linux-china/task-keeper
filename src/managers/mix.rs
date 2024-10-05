@@ -19,7 +19,6 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     // https://hexdocs.pm/mix/1.13/Mix.html
     // https://hexdocs.pm/hex/Mix.Tasks.Hex.html
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "mix new {name}".to_string());
     task_command_map.insert("install".to_string(), "mix deps.get".to_string());
     task_command_map.insert("compile".to_string(), "mix compile".to_string());
     task_command_map.insert("build".to_string(), "mix hex.build".to_string());

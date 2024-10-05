@@ -19,7 +19,7 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let build_dir = get_build_dir();
-    task_command_map.insert("init".to_string(), "meson setup builddir".to_string());
+    task_command_map.insert("sync".to_string(), "meson setup builddir".to_string());
     task_command_map.insert("compile".to_string(), format!("meson compile -C {}", &build_dir));
     task_command_map.insert("build".to_string(), format!("meson dist -C {}", &build_dir));
     task_command_map.insert("test".to_string(), format!("build_dir test -C {}", &build_dir));
@@ -28,7 +28,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
 
 pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
-        if task != "init" {
+        if task != "sync" {
             let build_dir = get_build_dir();
             if !PathBuf::from(&build_dir).join(&build_dir).exists() {
                 let _ = run_command_line(&format!("meson setup {}", build_dir), verbose);

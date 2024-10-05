@@ -18,7 +18,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let amper_command = get_amper_command();
-    task_command_map.insert("init".to_string(), "amper init".to_string());
     task_command_map.insert("compile".to_string(), format!("{} build", amper_command));
     task_command_map.insert("build".to_string(), format!("{} build", amper_command));
     task_command_map.insert("start".to_string(), format!("{} run", amper_command));

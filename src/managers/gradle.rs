@@ -22,7 +22,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let gradle_command = get_gradle_command();
-    task_command_map.insert("init".to_string(), "gradle init".to_string());
     task_command_map.insert("install".to_string(), format!("{} --refresh-dependencies classes dependencies", gradle_command));
     task_command_map.insert("compile".to_string(), format!("{} classes testClasses", gradle_command));
     task_command_map.insert("build".to_string(), format!("{} assemble", gradle_command));
