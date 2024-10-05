@@ -4,11 +4,11 @@ use crate::polyglot::PATH_SEPARATOR;
 
 pub fn is_available() -> bool {
     let current_dir = env::current_dir().unwrap();
-    return current_dir.join(".java-version").exists()
+    current_dir.join(".java-version").exists()
         || current_dir.join(".sdkmanrc").exists()
         || current_dir.join("pom.xml").exists()
         || current_dir.join("build.gradle.kts").exists()
-        || current_dir.join("build.gradle").exists();
+        || current_dir.join("build.gradle").exists()
 }
 
 pub fn get_default_version() -> Option<String> {
