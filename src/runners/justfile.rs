@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use std::io::Write;
 use std::process::Output;
+use colored::Colorize;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command, capture_command_output};
@@ -75,6 +77,33 @@ pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: b
     args.push(task);
     args.extend(task_args);
     run_command("just", &args, verbose)
+}
+
+pub fn init_justfile() {
+    let current_dir = std::env::current_dir().unwrap();
+    let content = if current_dir.join("build.zig").exists() {
+        include_bytes!("../templates/just/zig.just")
+    } else if current_dir.join("Cargo.toml").exists() {
+        include_bytes!("../templates/just/cargo.just")
+    } else if current_dir.join("gradlew").exists() {
+        include_bytes!("../templates/just/gradle.just")
+    } else if current_dir.join("uv.lock").exists() {
+        include_bytes!("../templates/just/uv.just")
+    } else if current_dir.join("requirements.txt").exists() {
+        include_bytes!("../templates/just/python-venv.just")
+    } else if current_dir.join("pom.xml").exists() {
+        let pom_xml_code = std::fs::read_to_string("pom.xml").unwrap();
+        if pom_xml_code.contains("spring-boot-starter") {
+            include_bytes!("../templates/just/maven-sb.just")
+        } else {
+            include_bytes!("../templates/just/maven.just")
+        }
+    } else {
+        include_bytes!("../templates/just/justfile")
+    };
+    let mut make_file = std::fs::File::create("justfile").unwrap();
+    make_file.write_all(content).unwrap();
+    println!("{}", "justfile created".bold().green());
 }
 
 #[cfg(test)]
