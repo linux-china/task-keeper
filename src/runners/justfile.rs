@@ -85,19 +85,10 @@ pub fn init_justfile() {
         include_bytes!("../templates/just/zig.just")
     } else if current_dir.join("Cargo.toml").exists() {
         include_bytes!("../templates/just/cargo.just")
-    } else if current_dir.join("gradlew").exists() {
-        include_bytes!("../templates/just/gradle.just")
     } else if current_dir.join("uv.lock").exists() {
         include_bytes!("../templates/just/uv.just")
     } else if current_dir.join("requirements.txt").exists() {
         include_bytes!("../templates/just/python-venv.just")
-    } else if current_dir.join("pom.xml").exists() {
-        let pom_xml_code = std::fs::read_to_string("pom.xml").unwrap();
-        if pom_xml_code.contains("spring-boot-starter") {
-            include_bytes!("../templates/just/maven-sb.just")
-        } else {
-            include_bytes!("../templates/just/maven.just")
-        }
     } else {
         include_bytes!("../templates/just/justfile")
     };
