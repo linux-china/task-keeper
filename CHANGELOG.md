@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.24.3] - 2024-10-10
+
+- Create justfile by project type: Maven, Gradle, Cargo, Zig, uv etc.
+
 ## [0.24.2] - 2024-10-05
 
 - Update to gradle 8.10.1
