@@ -10,6 +10,7 @@ use std::env;
 use std::fs::Permissions;
 use crate::models::TaskContext;
 use crate::polyglot::PATH_SEPARATOR;
+use crate::runners::justfile::init_justfile;
 
 mod app;
 mod keeper;
@@ -71,9 +72,8 @@ fn main() {
             make_file.write_all(include_bytes!("./templates/Makefile")).unwrap();
             println!("{}", "Makefile created".bold().green());
         } else if runner_name == "just" {
-            let mut make_file = std::fs::File::create("justfile").unwrap();
-            make_file.write_all(include_bytes!("./templates/justfile")).unwrap();
-            println!("{}", "justfile created".bold().green());
+            init_justfile();
+            set_executable("justfile");
         } else if runner_name == "jbang" {
             let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
             make_file.write_all(include_bytes!("./templates/jbang-catalog.json")).unwrap();
