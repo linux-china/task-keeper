@@ -82,18 +82,18 @@ pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: b
 pub fn init_justfile() {
     let current_dir = std::env::current_dir().unwrap();
     let content = if current_dir.join("build.zig").exists() {
-        include_bytes!("../templates/just/zig.just")
+        include_str!("../templates/just/zig.just")
     } else if current_dir.join("Cargo.toml").exists() {
-        include_bytes!("../templates/just/cargo.just")
+        include_str!("../templates/just/cargo.just")
     } else if current_dir.join("uv.lock").exists() {
-        include_bytes!("../templates/just/uv.just")
+        include_str!("../templates/just/uv.just")
     } else if current_dir.join("requirements.txt").exists() {
-        include_bytes!("../templates/just/python-venv.just")
+        include_str!("../templates/just/python-venv.just")
     } else {
-        include_bytes!("../templates/just/justfile")
+        include_str!("../templates/just/justfile")
     };
     let mut make_file = std::fs::File::create("justfile").unwrap();
-    make_file.write_all(content).unwrap();
+    make_file.write_all(content.as_bytes()).unwrap();
     println!("{}", "justfile created".bold().green());
 }
 
