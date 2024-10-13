@@ -1,20 +1,23 @@
 use std::io::{BufRead, BufReader, Stdin, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Stdio};
-use clap::{Command, Arg, ArgAction, ArgMatches};
+use clap::{Command, Arg, ArgAction, ArgMatches, arg};
 use colored::Colorize;
 use just::summary::Summary;
 
 pub const VERSION: &str = "0.1.0";
 
-const SUB_COMMANDS: [&str; 3] = ["list", "add", "edit"];
+const SUB_COMMANDS: [&str; 5] = ["list", "add", "edit", "completion","help"];
 
 fn main() {
     let args = Vec::from_iter(std::env::args());
-    if args.len() >= 2 && !SUB_COMMANDS.contains(&args[1].as_str()) {
-        let args = args.iter().map(|v| v.as_ref()).collect::<Vec<_>>();
-        run_snippet(&args);
-        return;
+    if args.len() >= 2 {
+        let arg_1 = args[1].as_str();
+        if !arg_1.starts_with("-") && SUB_COMMANDS.contains(&arg_1) {
+            let args = args.iter().map(|v| v.as_ref()).collect::<Vec<_>>();
+            run_snippet(&args);
+            return;
+        }
     }
     let app = build_sq_app();
     let matches = app.get_matches();
