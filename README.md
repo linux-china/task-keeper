@@ -1,9 +1,11 @@
 Task Keeper
 =================
 tk(Task Keeper) is a tool to manage tasks from different task files,
-such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc,
+such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc.,
 and call tasks from different project management tools,
 such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
+
+**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets. 
 
 ![Task Keeper](./screenshot.png)
 
@@ -361,6 +363,16 @@ for detail.
 * 16.16.0: match version of Node.js
 
 Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.volta/tools/image/node`.
+
+# sq(Squirrel)
+
+sq is a command-line snippets keeper to manage cli snippets, and it's based on Just command runner.
+
+- Add snippet: `sq add snippet_name`
+- Edit snippet: `sq edit snippet_name`. sq uses `EDITOR` environment variable to open snippets justfile.
+- Run snippet: `sq snippet_name`
+
+Snippets justfile: `$HOME/.sk/snippets.just`. 
 
 # References
 
