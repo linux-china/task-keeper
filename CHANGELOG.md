@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.25.0] - 2024-10-13
+
+- Add `sq(Squirrel)` command-line snippets keeper: https://github.com/linux-china/task-keeper#sqsquirrel
+
 ## [0.24.3] - 2024-10-10
 
 - Create justfile by project type: Cargo, Zig, uv etc.
