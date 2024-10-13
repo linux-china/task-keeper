@@ -28,6 +28,9 @@ fn main() {
         Some(("edit", edit_matches)) => {
             edit_snippet(edit_matches);
         }
+        Some(("completion", completion_matches)) => {
+            complete_shell(completion_matches);
+        }
         _ => {
             println!("Unknown command");
         }
@@ -204,6 +207,26 @@ pub fn count_lines<P: AsRef<Path>>(file_path: P) -> Result<usize, std::io::Error
     Ok(count)
 }
 
+fn complete_shell(matches: &ArgMatches) {
+    if matches.get_flag("zsh") {
+        println!("{}", include_str!("templates/completion/sq-completion.zsh"));
+    } else if matches.get_flag("oh-my-zsh") {
+        let seq_plugin_dir = dirs::home_dir().unwrap().join(".oh-my-zsh")
+            .join("custom").join("plugins").join("sq");
+        if !seq_plugin_dir.exists() {
+            std::fs::create_dir_all(&seq_plugin_dir).unwrap();
+        }
+        let sq_plugin_file = seq_plugin_dir.join("_sq");
+        // write completion script to file
+        std::fs::write(&sq_plugin_file,
+                       include_bytes!("templates/completion/sq-completion.zsh")).unwrap();
+        println!("Completion script has been written to {}", sq_plugin_file.to_str().unwrap());
+        println!("Please add sq to plugins in your .zshrc file.");
+    } else {
+        println!("Only zsh and oh-my-zsh support now.")
+    }
+}
+
 pub fn build_sq_app() -> Command {
     Command::new("sq")
         .version(VERSION)
@@ -256,6 +279,26 @@ pub fn build_sq_app() -> Command {
                         .num_args(1)
                         .index(1)
                         .required(false)
+                )
+        )
+        .subcommand(
+            Command::new("completion")
+                .about("Generate shell completion")
+                .arg(
+                    Arg::new("zsh")
+                        .long("zsh")
+                        .help("Generation zsh completion")
+                        .num_args(0)
+                        .action(ArgAction::SetTrue)
+                        .required(false),
+                )
+                .arg(
+                    Arg::new("zsh")
+                        .long("oh-my-zsh")
+                        .help("Generation oh-my-zsh completion")
+                        .num_args(0)
+                        .action(ArgAction::SetTrue)
+                        .required(false),
                 )
         )
 }
