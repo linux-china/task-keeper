@@ -22,8 +22,8 @@ fn main() {
         Some(("list", _)) => {
             list_snippets();
         }
-        Some(("add", _)) => {
-            add_snippet();
+        Some(("add", add_matches)) => {
+            add_snippet(add_matches);
         }
         Some(("edit", edit_matches)) => {
             edit_snippet(edit_matches);
@@ -64,13 +64,15 @@ fn list_snippets() {
     }
 }
 
-fn add_snippet() {
-    let snippets_file_path = get_snippets_file();
-    let code = std::fs::read_to_string(&snippets_file_path).unwrap();
+fn add_snippet(matches: &ArgMatches) {
     let snippets_file_path = get_snippets_file();
     let summary = just::summary::summary(&snippets_file_path).unwrap().unwrap();
     let mut cli = String::new();
-    let mut name = String::new();
+    let mut name = if let Some(name) = matches.get_one::<String>("name") {
+        name.clone()
+    } else {
+        String::new()
+    };
     let mut description = String::new();
     // read cli
     print!("{}", "Cli: ".bold());
@@ -78,7 +80,14 @@ fn add_snippet() {
     let stdin = std::io::stdin();
     stdin.read_line(&mut cli).unwrap();
     // read name
-    name = read_snippet_name(&stdin, &summary);
+    if name.is_empty() {
+        name = read_snippet_name(&stdin, &summary);
+    } else {
+        if summary.recipes.contains_key("name") {
+            println!("{}", format!("Snippet of {} exits already, please input another name", name).red());
+            name = read_snippet_name(&stdin, &summary);
+        }
+    }
     // read description
     print!("{}", "Description: ".bold());
     std::io::stdout().flush().unwrap();
@@ -206,6 +215,13 @@ pub fn build_sq_app() -> Command {
         .subcommand(
             Command::new("add")
                 .about("Add a new snippet")
+                .arg(
+                    Arg::new("name")
+                        .help("Snippet name")
+                        .num_args(1)
+                        .index(1)
+                        .required(false)
+                )
         )
         .subcommand(
             Command::new("edit")
@@ -239,13 +255,13 @@ pub fn build_sq_app() -> Command {
                         .help("Open editor to edit snippet")
                         .num_args(1)
                         .index(1)
+                        .required(false)
                 )
         )
 }
 
 #[cfg(test)]
 mod tests {
-    use just::summary::summary;
     use super::*;
 
     #[test]
