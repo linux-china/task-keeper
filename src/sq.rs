@@ -13,7 +13,7 @@ fn main() {
     let args = Vec::from_iter(std::env::args());
     if args.len() >= 2 {
         let arg_1 = args[1].as_str();
-        if !arg_1.starts_with("-") && SUB_COMMANDS.contains(&arg_1) {
+        if !arg_1.starts_with("-") && !SUB_COMMANDS.contains(&arg_1) {
             let args = args.iter().map(|v| v.as_ref()).collect::<Vec<_>>();
             run_snippet(&args);
             return;
