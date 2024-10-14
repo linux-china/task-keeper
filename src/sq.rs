@@ -7,7 +7,7 @@ use just::summary::Summary;
 
 pub const VERSION: &str = "0.1.0";
 
-const SUB_COMMANDS: [&str; 5] = ["list", "add", "edit", "completion","help"];
+const SUB_COMMANDS: [&str; 5] = ["list", "add", "edit", "completion", "help"];
 
 fn main() {
     let args = Vec::from_iter(std::env::args());
@@ -128,8 +128,10 @@ fn edit_snippet(matches: &ArgMatches) {
         "zed"
     } else {
         &std::env::var("EDITOR").unwrap_or_else(|_|
-            // default to vim or vi
-            if which::which("vim").is_ok() {
+            // default to nvim, vim or vi
+            if which::which("nvim").is_ok() {
+                "nvim".to_owned()
+            } else if which::which("vim").is_ok() {
                 "vim".to_owned()
             } else {
                 "vi".to_owned()
@@ -153,7 +155,7 @@ fn edit_snippet(matches: &ArgMatches) {
         } else if editor_name == "zed" { // open with zed
             let location = format!("{}:{}", snippets_file, line_number);
             run_command("zed", &[&location]);
-        } else if editor_name.starts_with("vi") { // open with vi
+        } else if editor_name.starts_with("vi") || editor_name.ends_with("vim") { // open with vi
             let location = format!("+{}", line_number);
             run_command(editor_name, &[&location, snippets_file]);
         } else {
