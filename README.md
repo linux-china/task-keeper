@@ -21,7 +21,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
 # How to get started?
 
-* Install by cargo: `cargo install task-keeper`
+* Install by cargo: `cargo install task-keeper` (or `cargo binstall task-keeper`)
 * Using [nix](https://nix.dev/):
   * try without installing: `nix shell github:linux-china/task-keeper`
   * install: e.g. `nix profile install github:linux-china/task-keeper` 
