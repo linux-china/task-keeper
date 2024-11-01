@@ -22,7 +22,10 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 # How to get started?
 
 * Install by cargo: `cargo install task-keeper`
-* Download and install from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
+* Using [nix](https://nix.dev/):
+  * try without installing: `nix shell github:linux-china/task-keeper`
+  * install: e.g. `nix profile install github:linux-china/task-keeper` 
+* Download pre-built binary from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
 
 After install, execute `tk --help` for usage. Some commands as following:
 
