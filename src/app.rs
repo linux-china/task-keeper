@@ -1,7 +1,7 @@
 //! clap App for command cli
 use clap::{Command, Arg, ArgAction};
 
-pub const VERSION: &str = "0.13.1";
+pub const VERSION: &str = "0.24.2";
 
 pub fn build_app() -> Command {
     Command::new("tk")
@@ -41,7 +41,7 @@ pub fn build_app() -> Command {
             Arg::new("init")
                 .long("init")
                 .num_args(1)
-                .value_parser(["shell", "make", "jbang", "just"])
+                .value_parser(["shell", "make", "jbang", "just","vscode","pipenv","deno","argc","nur"])
                 .help("Create a new task file by runner name")
                 .required(false),
         )

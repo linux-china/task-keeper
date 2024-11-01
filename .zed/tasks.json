@@ -1,0 +1,17 @@
+[
+  {
+    "label": "bash echo",
+    "command": "bash",
+    "args": ["-c", "echo hello $NAME"],
+    "env": { "NAME": "bar" },
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "java-version",
+    "command": "java",
+    "args": ["--version"],
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  }
+]

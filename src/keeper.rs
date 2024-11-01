@@ -26,7 +26,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                         task_count += 1;
-                        run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
+                        run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose)?;
                     }
                 }
             }
@@ -48,7 +48,7 @@ pub fn run_tasks(cli_runner: &str, target_task_names: &[&str], task_args: &[&str
                 // execute package manager task
                 if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                     task_count += 1;
-                    run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose).unwrap();
+                    run_manager_task(cli_runner, target_task_name, task_args, global_args, verbose)?;
                 }
             }
         }
@@ -75,7 +75,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] ant(https://ant.apache.org/) command not available for build.xml").bold().red());
+                println!("{}", "[tk] ant(https://ant.apache.org/) command not available for build.xml".bold().red());
             }
         }
     }
@@ -90,6 +90,13 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
         if let Ok(runner_tasks) = runners::vstasks::list_tasks() {
             if !runner_tasks.is_empty() {
                 all_tasks.insert("vscode".to_string(), runner_tasks);
+            }
+        }
+    }
+    if runners::zed::is_available() {
+        if let Ok(runner_tasks) = runners::zed::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("zed".to_string(), runner_tasks);
             }
         }
     }
@@ -123,7 +130,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] just(https://github.com/casey/just) command not available for justfile").bold().red());
+                println!("{}", "[tk] just(https://github.com/casey/just) command not available for justfile".bold().red());
             }
         }
     }
@@ -136,7 +143,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] npm(https://nodejs.org) command not available for package.json").bold().red());
+                println!("{}", "[tk] npm(https://nodejs.org) command not available for package.json".bold().red());
             }
         }
     }
@@ -149,7 +156,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] deno(https://deno.land) command not available for deno.json").bold().red());
+                println!("{}", "[tk] deno(https://deno.land) command not available for deno.json".bold().red());
             }
         }
     }
@@ -162,7 +169,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] make(https://www.gnu.org/software/make) command not available for makefile").bold().red());
+                println!("{}", "[tk] make(https://www.gnu.org/software/make) command not available for makefile".bold().red());
             }
         }
     }
@@ -175,7 +182,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] rake(https://ruby.github.io/rake/) command not available for rakefile").bold().red());
+                println!("{}", "[tk] rake(https://ruby.github.io/rake/) command not available for rakefile".bold().red());
             }
         }
     }
@@ -188,7 +195,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] task(https://taskfile.dev) command not available for Taskfile.yml").bold().red());
+                println!("{}", "[tk] task(https://taskfile.dev) command not available for Taskfile.yml".bold().red());
             }
         }
     }
@@ -201,7 +208,20 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml").bold().red());
+                println!("{}", "[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml".bold().red());
+            }
+        }
+    }
+    if runners::bun_shell::is_available() {
+        if runners::bun_shell::is_command_available() {
+            if let Ok(runner_tasks) = runners::bun_shell::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("bun-shell".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] bun(https://bun.sh/docs/runtime/shell) command not available for Taskfile.ts".bold().red());
             }
         }
     }
@@ -214,7 +234,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py").bold().red());
+                println!("{}", "[tk] invoke(https://www.pyinvoke.org) command not available for tasks.py".bold().red());
             }
         }
     }
@@ -227,7 +247,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] composer(https://getcomposer.org/) command not available for composer.json").bold().red());
+                println!("{}", "[tk] composer(https://getcomposer.org/) command not available for composer.json".bold().red());
             }
         }
     }
@@ -240,7 +260,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] jbang(https://www.jbang.dev/) command not available for jbang-catalog.json").bold().red());
+                println!("{}", "[tk] jbang(https://www.jbang.dev/) command not available for jbang-catalog.json".bold().red());
             }
         }
     }
@@ -253,7 +273,7 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+                println!("{}", "[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml".bold().red());
             }
         }
     }
@@ -266,7 +286,47 @@ pub fn list_all_runner_tasks(error_display: bool) -> Result<HashMap<String, Vec<
             }
         } else {
             if error_display {
-                println!("{}", format!("[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock").bold().red());
+                println!("{}", "[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock".bold().red());
+            }
+        }
+    }
+    if runners::argcfile::is_available() {
+        if runners::argcfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::argcfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("argc".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] argc(https://github.com/sigoden/argc) command not available for Argcfile.sh".bold().red());
+            }
+        }
+    }
+    if runners::nurfile::is_available() {
+        if runners::nurfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::nurfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("nur".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] nur(https://github.com/ddanier/nur) command not available for nurfile".bold().red());
+            }
+        }
+    }
+    if runners::xtask::is_available() {
+        if let Ok(runner_tasks) = runners::xtask::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("xtask".to_string(), runner_tasks);
+            }
+        }
+    }
+    if runners::xtask_go::is_available() {
+        if let Ok(runner_tasks) = runners::xtask_go::list_tasks() {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert("xtask-go".to_string(), runner_tasks);
             }
         }
     }

@@ -18,7 +18,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let mvn_command = get_mvn_command();
-    task_command_map.insert("init".to_string(), format!("{} archetype:generate", mvn_command));
     task_command_map.insert("install".to_string(), format!("{} -U dependency:resolve", mvn_command));
     task_command_map.insert("compile".to_string(), format!("{} compile test-compile", mvn_command));
     task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));
@@ -28,6 +27,13 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("doc".to_string(), format!("{} javadoc:javadoc", mvn_command));
     task_command_map.insert("clean".to_string(), format!("{}  clean", mvn_command));
     task_command_map.insert("outdated".to_string(), format!("{} versions:display-dependency-updates", mvn_command));
+    if std::env::current_dir().map(|dir| dir.join(".mvn/wrapper").exists()).unwrap_or(false) {
+        if let Ok(code) = std::fs::read_to_string(".mvn/wrapper/maven-wrapper.properties") {
+            if !code.contains("apache-maven-3.9.9") {
+                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.0:wrapper -Dmaven=3.9.9", mvn_command));
+            }
+        }
+    }
     task_command_map
 }
 

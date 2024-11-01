@@ -23,9 +23,15 @@ pub mod requirements;
 pub mod pipenv;
 pub mod rye;
 pub mod dart;
+pub mod zig;
+pub mod amper;
+pub mod meson;
+pub mod xmake;
+pub mod uv;
+pub mod bld;
 
-pub const COMMANDS: &'static [&'static str] = &["init", "install", "compile", "build", "start", "test", "deps", "doc", "clean", "outdated", "update"];
-pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "sbt", "npm", "cargo", "cmake", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "lein", "rebar3", "mix","dart"];
+pub const COMMANDS: &'static [&'static str] = &["sync", "install", "compile", "build", "release", "start", "test", "deps", "doc", "clean", "outdated", "update", "self-update"];
+pub const MANAGERS: &'static [&'static str] = &["maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer", "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein", "rebar3", "mix", "dart", "zig","xmake"];
 
 pub fn get_available_managers() -> Vec<String> {
     let mut managers = Vec::new();
@@ -35,8 +41,14 @@ pub fn get_available_managers() -> Vec<String> {
     if gradle::is_available() {
         managers.push("gradle".to_string());
     }
+    if amper::is_available() {
+        managers.push("amper".to_string());
+    }
     if sbt::is_available() {
         managers.push("sbt".to_string());
+    }
+    if bld::is_available() {
+        managers.push("bld".to_string());
     }
     if npm::is_available() {
         managers.push("npm".to_string());
@@ -56,6 +68,9 @@ pub fn get_available_managers() -> Vec<String> {
     if cmakeconan::is_available() {
         managers.push("cmake".to_string());
     }
+    if meson::is_available() {
+        managers.push("meson".to_string());
+    }
     if swift::is_available() {
         managers.push("swift".to_string());
     }
@@ -74,6 +89,9 @@ pub fn get_available_managers() -> Vec<String> {
     if rye::is_available() {
         managers.push("rye".to_string());
     }
+    if uv::is_available() {
+        managers.push("uv".to_string());
+    }
     if lein::is_available() {
         managers.push("lein".to_string());
     }
@@ -86,6 +104,12 @@ pub fn get_available_managers() -> Vec<String> {
     if dart::is_available() {
         managers.push("dart".to_string());
     }
+    if zig::is_available() {
+        managers.push("zig".to_string());
+    }
+    if xmake::is_available() {
+        managers.push("xmake".to_string());
+    }
     managers
 }
 
@@ -93,10 +117,13 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
     match runner {
         "maven" => "pom.xml",
         "gradle" => gradle::get_gradle_build_file(),
+        "amper" => "module.yaml",
         "sbt" => "build.sbt",
+        "bld" => "bld",
         "npm" => "package.json",
         "cargo" => "Cargo.toml",
         "cmake" => "CMakeLists.txt, conanfile.txt",
+        "meson" => "meson.build",
         "composer" => "composer.json",
         "go" => "go.mod",
         "swift" => "Package.swift",
@@ -108,8 +135,11 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "mix" => "mix.exs",
         "pip" => "requirements.txt",
         "rye" => "requirements.lock",
+        "uv" => "uv.lock",
         "pipenv" => "Pipfile",
         "dart" => "pubspec.yaml",
+        "zig" => "build.zig",
+        "xmake" => "xmake.lua",
         _ => "unknown",
     }
 }
@@ -118,10 +148,13 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
     match runner {
         "maven" => "https://maven.apache.org",
         "gradle" => "https://gradle.org",
+        "amper" => "https://github.com/JetBrains/amper",
         "sbt" => "https://www.scala-sbt.org",
+        "bld" => "https://rife2.com/bld",
         "npm" => "https://nodejs.org",
         "cargo" => "https://doc.rust-lang.org/cargo/",
         "cmake" => "https://cmake.org/",
+        "meson" => "https://mesonbuild.com/",
         "composer" => "https://getcomposer.org",
         "go" => "https://go.dev/ref/mod",
         "swift" => "https://www.swift.org/package-manager/",
@@ -134,7 +167,10 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
         "pipenv" => "https://pipenv.pypa.io",
         "rye" => "https://github.com/mitsuhiko/rye",
+        "uv" => "https://github.com/astral-sh/uv",
         "dart" => "https://dart.dev/guides/packages",
+        "zig" => "https://ziglang.org/learn/build-system/",
+        "xmake" => "https://xmake.io",
         _ => "unknown",
     }
 }
@@ -143,12 +179,15 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
     match runner {
         "maven" => maven::get_task_command_map(),
         "gradle" => gradle::get_task_command_map(),
+        "amper" => amper::get_task_command_map(),
         "sbt" => sbt::get_task_command_map(),
+        "bld" => bld::get_task_command_map(),
         "npm" => npm::get_task_command_map(),
         "cargo" => cargo::get_task_command_map(),
         "composer" => composer::get_task_command_map(),
         "go" => golang::get_task_command_map(),
         "cmake" => cmakeconan::get_task_command_map(),
+        "meson" => meson::get_task_command_map(),
         "bundle" => bundler::get_task_command_map(),
         "swift" => swift::get_task_command_map(),
         "bazel" => bazel::get_task_command_map(),
@@ -159,7 +198,10 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "pip" => requirements::get_task_command_map(),
         "pipenv" => pipenv::get_task_command_map(),
         "rye" => rye::get_task_command_map(),
+        "uv" => uv::get_task_command_map(),
         "dart" => dart::get_task_command_map(),
+        "zig" => zig::get_task_command_map(),
+        "xmake" => xmake::get_task_command_map(),
         _ => HashMap::new(),
     }
 }
@@ -170,22 +212,32 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         if maven::is_command_available() {
             queue.insert("maven", maven::run_task);
         } else {
-            println!("{}", format!("[tk] maven(https://maven.apache.org/) command not available for pom.xml").bold().red());
+            println!("{}", "[tk] maven(https://maven.apache.org/) command not available for pom.xml".bold().red());
         }
     }
     if gradle::is_available() {
         if gradle::is_command_available() {
             queue.insert("gradle", gradle::run_task);
         } else {
-            println!("{}", format!("[tk] gradle(https://gradle.org/) command not available").bold().red());
+            println!("{}", "[tk] gradle(https://gradle.org/) command not available".bold().red());
+        }
+    }
+    if amper::is_available() {
+        if amper::is_command_available() {
+            queue.insert("amper", amper::run_task);
+        } else {
+            println!("{}", "[tk] amper(https://github.com/JetBrains/amper) command not available".bold().red());
         }
     }
     if sbt::is_available() {
         if sbt::is_command_available() {
             queue.insert("sbt", sbt::run_task);
         } else {
-            println!("{}", format!("[tk] sbt(https://www.scala-sbt.org/) command not available for build.sbt").bold().red());
+            println!("{}", "[tk] sbt(https://www.scala-sbt.org/) command not available for build.sbt".bold().red());
         }
+    }
+    if bld::is_available() {
+        queue.insert("bld", bld::run_task);
     }
     if npm::is_available() {
         if npm::is_command_available() {
@@ -193,14 +245,14 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
                 queue.insert("npm", npm::run_task);
             }
         } else {
-            println!("{}", format!("[tk] npm(https://nodejs.org/) command not available for package.json").bold().red());
+            println!("{}", "[tk] npm(https://nodejs.org/) command not available for package.json".bold().red());
         }
     }
     if cargo::is_available() {
         if cargo::is_command_available() {
             queue.insert("cargo", cargo::run_task);
         } else {
-            println!("{}", format!("[tk] cargo(https://gradle.org/) command not available for Cargo.toml").bold().red());
+            println!("{}", "[tk] cargo(https://gradle.org/) command not available for Cargo.toml".bold().red());
         }
     }
     if composer::is_available() {
@@ -209,102 +261,130 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
                 queue.insert("composer", composer::run_task);
             }
         } else {
-            println!("{}", format!("[tk] gradle(https://gradle.org/) command not available for composer.json").bold().red());
+            println!("{}", "[tk] gradle(https://gradle.org/) command not available for composer.json".bold().red());
         }
     }
     if bundler::is_available() {
         if bundler::is_command_available() {
             queue.insert("bundle", bundler::run_task);
         } else {
-            println!("{}", format!("[tk] bundle(https://bundler.io/) command not available for Gemfile").bold().red());
+            println!("{}", "[tk] bundle(https://bundler.io/) command not available for Gemfile".bold().red());
         }
     }
     if golang::is_available() {
         if golang::is_command_available() {
             queue.insert("go", golang::run_task);
         } else {
-            println!("{}", format!("[tk] go(https://go.dev/) command not available for go.mod").bold().red());
+            println!("{}", "[tk] go(https://go.dev/) command not available for go.mod".bold().red());
         }
     }
     if cmakeconan::is_available() {
         if cmakeconan::is_command_available() {
             queue.insert("cmake", cmakeconan::run_task);
         } else {
-            println!("{}", format!("[tk] cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt").bold().red());
+            println!("{}", "[tk] cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt".bold().red());
+        }
+    }
+    if meson::is_available() {
+        if meson::is_command_available() {
+            queue.insert("meson", meson::run_task);
+        } else {
+            println!("{}", "[tk] meson(https://mesonbuild.com) command not available for meson.build".bold().red());
         }
     }
     if swift::is_available() {
         if swift::is_command_available() {
             queue.insert("swift", swift::run_task);
         } else {
-            println!("{}", format!("[tk] swift(https://www.swift.org/) command not available for Package.swift").bold().red());
+            println!("{}", "[tk] swift(https://www.swift.org/) command not available for Package.swift".bold().red());
         }
     }
     if bazel::is_available() {
         if bazel::is_command_available() {
             queue.insert("bazel", bazel::run_task);
         } else {
-            println!("{}", format!("[tk] bazel(https://bazel.build/) command not available for WORKSPACE").bold().red());
+            println!("{}", "[tk] bazel(https://bazel.build/) command not available for WORKSPACE".bold().red());
         }
     }
     if poetry::is_available() {
         if poetry::is_command_available() {
             queue.insert("poetry", poetry::run_task);
         } else {
-            println!("{}", format!("[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml").bold().red());
+            println!("{}", "[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml".bold().red());
         }
     }
     if pipenv::is_available() {
         if pipenv::is_command_available() {
             queue.insert("pipenv", pipenv::run_task);
         } else {
-            println!("{}", format!("[tk] pipenv(https://pipenv.pypa.io/en/latest/) command not available for Pipfile").bold().red());
+            println!("{}", "[tk] pipenv(https://pipenv.pypa.io/en/latest/) command not available for Pipfile".bold().red());
         }
     }
     if rye::is_available() {
         if rye::is_command_available() {
             queue.insert("rye", rye::run_task);
         } else {
-            println!("{}", format!("[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock").bold().red());
+            println!("{}", "[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock".bold().red());
+        }
+    }
+    if uv::is_available() {
+        if uv::is_command_available() {
+            queue.insert("uv", uv::run_task);
+        } else {
+            println!("{}", "[uv] uv(https://github.com/astral-sh/uv) command not available for uv.lock".bold().red());
         }
     }
     if requirements::is_available() {
         if requirements::is_command_available() {
             queue.insert("requirements", requirements::run_task);
         } else {
-            println!("{}", format!("[tk] pip(https://pypi.org/project/pip/) command not available for requirements.txt").bold().red());
+            println!("{}", "[tk] pip(https://pypi.org/project/pip/) command not available for requirements.txt".bold().red());
         }
     }
     if lein::is_available() {
         if lein::is_command_available() {
             queue.insert("lein", lein::run_task);
         } else {
-            println!("{}", format!("[tk] lein(https://leiningen.org/) command not available for project.clj").bold().red());
+            println!("{}", "[tk] lein(https://leiningen.org/) command not available for project.clj".bold().red());
         }
     }
     if rebar3::is_available() {
         if rebar3::is_command_available() {
             queue.insert("rebar3", rebar3::run_task);
         } else {
-            println!("{}", format!("[tk] rebar3(https://rebar3.readme.io/) command not available for rebar.config").bold().red());
+            println!("{}", "[tk] rebar3(https://rebar3.readme.io/) command not available for rebar.config".bold().red());
         }
     }
     if mix::is_available() {
         if mix::is_command_available() {
             queue.insert("mix", mix::run_task);
         } else {
-            println!("{}", format!("[tk] mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs").bold().red());
+            println!("{}", "[tk] mix(https://hexdocs.pm/mix/1.13/Mix.html) command not available for mix.exs".bold().red());
         }
     }
     if dart::is_available() {
         if dart::is_command_available() {
             queue.insert("dart", dart::run_task);
         } else {
-            println!("{}", format!("[tk] dart(https://dart.dev/guides/packages) command not available for pubspec.yaml").bold().red());
+            println!("{}", "[tk] dart(https://dart.dev/guides/packages) command not available for pubspec.yaml".bold().red());
+        }
+    }
+    if zig::is_available() {
+        if zig::is_command_available() {
+            queue.insert("zig", zig::run_task);
+        } else {
+            println!("{}", "[tk] zig(https://ziglang.org/) command not available for build.zig".bold().red());
+        }
+    }
+    if xmake::is_available() {
+        if xmake::is_command_available() {
+            queue.insert("xmake", xmake::run_task);
+        } else {
+            println!("{}", "[tk] xmake(https://xmake.io/) command not available for xmake.lua".bold().red());
         }
     }
     if queue.is_empty() { // no manager found
-        println!("{}", format!("[tk] no available manager detected").bold().red());
+        println!("{}", "[tk] no available manager detected".bold().red());
     } else if !runner.is_empty() { // run task by runner name
         if let Some(task) = queue.get(runner) {
             println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
@@ -314,7 +394,7 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         }
     } else { // run task by all available managers
         match task_name {
-            "init" => {}
+            "sync" => {}
             /*"start" => { // only execute start task once
                 if queue.len() == 1 {
                     queue.iter().for_each(|(runner_name, task)| {

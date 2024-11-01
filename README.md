@@ -1,9 +1,11 @@
 Task Keeper
 =================
 tk(Task Keeper) is a tool to manage tasks from different task files,
-such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc,
+such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc.,
 and call tasks from different project management tools,
 such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
+
+**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets. 
 
 ![Task Keeper](./screenshot.png)
 
@@ -47,21 +49,42 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * deno(deno.json): https://deno.land/manual/tools/task_runner
 * composer(composer.json): https://getcomposer.org/doc/articles/scripts.md
 * just(justfile): https://github.com/casey/just
-* fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * Rakefile(rake): https://ruby.github.io/rake/
 * invoke(tasks.py): https://www.pyinvoke.org/
 * task(Taskfile.yml): https://github.com/go-task/task  https://www.sobyte.net/post/2022-04/taskfile/
 * cargo-make(Makefile.toml):  https://github.com/sagiegurari/cargo-make
 * JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
+* Bun Shell(Taskfile.ts): https://bun.sh/docs/runtime/shell
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
+* fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
-* Rye: https://github.com/mitsuhiko/rye#scripts
+* zed Tasks: https://zed.dev/docs/tasks
+* Rye: https://rye.astral.sh/guide/pyproject/#projectscripts
+* argc: a Bash-based command runner https://github.com/sigoden/argc
+* nur: a task runner based on nu shell https://github.com/ddanier/nur
+* cargo-xtask: https://github.com/linux-china/xtask-demo
+* go-xtask: https://github.com/linux-china/xtask-go-demo
 
-**Tips**:
+### Bun Shell - Taskfile.ts
 
-* Deno: please refer https://github.com/ije/esm.sh/releases/tag/v91 for npm packages manager
+[Bun Shell](https://bun.sh/docs/runtime/shell) is a nice feature from Bun to make shell scripting with JavaScript & TypeScript fun.
+
+Now Task Keeper support `Taskfile.ts` with Bun Shell, and you can use following code to run tasks:
+
+```typescript
+import {$} from "bun";
+
+  export async function hello() {
+  await $`echo Hello World!`;
+}
+  export async function list_js() {
+  await $`ls *.js`;
+}
+```
+
+Then `tk hello` to run task with Bun Shell.
 
 ### Fleet Run configurations
 
@@ -74,12 +97,17 @@ command type support now:
 * maven-run
 * cargo-run
 * docker-run
+* python
+* flask
+* fastapi
+* node
+* php
 
 For details, please refer https://www.jetbrains.com/help/fleet/run-configurations.html
 
 # Language version detection and PATH
 
-Task Keeper uses `.java-version`, `.node-version`  files to detect language version and bound with local installed SDK.
+Task Keeper uses `.java-version`, `.node-version`, `.python-version`  files to detect language version and bound with local installed SDK.
 
 To make task runner run tasks smoothly, Task Keeper will append following directories to `PATH` automatically:
 
@@ -162,6 +190,12 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
 addDependencyTreePlugin
 ```
 
+### bld
+
+Available. 
+
+[bld](https://rife2.com/bld) is a new build system that allows you to write your build logic in pure Java. 
+
 ### npm
 
 Available
@@ -171,7 +205,7 @@ Available
 
 ### Cargo
 
-Available
+Available. Please install `cargo-tree`, `cargo-outdated`.
 
 ### Composer
 
@@ -191,6 +225,10 @@ Only support [cmake-conan](https://github.com/conan-io/cmake-conan), and conanfi
 
 Default build directory is `cmake-build-debug`, and you override it by `CMAKE_BINARY_DIR=_build tk build`.
 
+### Meson
+
+Available
+
 ### Swift
 
 Available. Please install [swift-outdated](https://github.com/kiliankoe/swift-outdated) for `outdated` operation.
@@ -203,7 +241,8 @@ Available.
 
 Available with following tools:
 
-* [Rye](https://github.com/mitsuhiko/rye): please commit `requirements.lock` to git
+* [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected
+* [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
@@ -234,6 +273,30 @@ Available.
 ### Dart package manager
 
 Available.
+
+### Zig Build System
+
+Available.
+
+### task - Taskfile.yml
+
+if you use JetBrains IDE to edit Taskfile.yml, please add `$schema` comment on top of Taskfile.yml for completion.
+
+```yaml
+# $schema: https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+```
+
+### xtask for Rust and Golang
+
+* cargo-xtask: https://github.com/linux-china/xtask-demo
+* go-xtask: https://github.com/linux-china/xtask-go-demo
 
 ### Tasks from README.md
 
@@ -276,6 +339,10 @@ console.log("hello world");
 
 Task Keeper will detect version configuration file and adjust the environment variables to run tasks.
 
+### Python
+
+`.python-version` is used for version management for [pyenv](https://github.com/pyenv/pyenv). 
+
 ### Java
 
 `.java-version` is used for version management, and values as following:
@@ -297,6 +364,16 @@ for detail.
 
 Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.volta/tools/image/node`.
 
+# sq(Squirrel)
+
+sq is a command-line snippets keeper to manage cli snippets, and it's based on Just command runner.
+
+- Add snippet: `sq add snippet_name`
+- Edit snippet: `sq edit snippet_name`. sq uses `EDITOR` environment variable to open snippets justfile.
+- Run snippet: `sq snippet_name`
+
+Snippets justfile: `$HOME/.sk/snippets.just`. 
+
 # References
 
 * The Ultimate Guide to Gemfile and
@@ -305,7 +382,7 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
 * Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
 * Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
 
-# Task scripts in Markdown
+# Task scripts demo in Markdown
 
 ```shell {#demo}
 $ curl https://httpbin.org/get

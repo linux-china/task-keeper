@@ -1,3 +1,5 @@
+#!/usr/bin/env just --justfile
+
 # say hello
 hello:
   echo "hello"

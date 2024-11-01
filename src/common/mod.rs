@@ -1,11 +1,10 @@
 pub mod pyproject;
 
-use crate::common::pyproject::PyProjectToml;
 use crate::errors::KeeperError;
 use error_stack::Result;
-use error_stack::{IntoReport, ResultExt};
+use error_stack::{ResultExt};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, path::Path};
+use std::{collections::HashMap};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
@@ -20,7 +19,6 @@ pub fn parse_package_json() -> Result<PackageJson, KeeperError> {
         .map(|dir| dir.join("package.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_json::from_str::<PackageJson>(&data).unwrap())
-        .into_report()
         .change_context(KeeperError::InvalidPackageJson)
 }
 
@@ -32,12 +30,12 @@ pub fn get_npm_command(package_json: &PackageJson) -> &'static str {
             "pnpm"
         } else if package_manager.starts_with("bun") {
             "bun"
-        }else {
+        } else {
             "npm"
         };
     } else {
         if let Ok(dir) = std::env::current_dir() {
-            if dir.join("bun.lockb").exists() {
+            if dir.join("bun.lockb").exists() || dir.join("bun.lock").exists() {
                 return "bun";
             } else if dir.join("pnpm-lock.yaml").exists() {
                 return "pnpm";

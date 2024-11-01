@@ -2,7 +2,114 @@
 
 # Task Keeper Changelog
 
-## [Unreleased]
+## [0.25.0] - 2024-10-13
+
+- Add `sq(Squirrel)` command-line snippets keeper: https://github.com/linux-china/task-keeper#sqsquirrel
+
+## [0.24.3] - 2024-10-10
+
+- Create justfile by project type: Cargo, Zig, uv etc.
+
+## [0.24.2] - 2024-10-05
+
+- Update to gradle 8.10.1
+- Add `bun.lock` support
+- Remove `init` from project manager
+
+## [0.23.0] - 2024-08-21
+
+- Add uv 0.3 support
+
+## [0.22.2] - 2024-08-20
+
+- Update to Gradle 8.10
+- Update to Maven 3.9.9
+
+## [0.22.1] - 2024-06-16
+
+- Add release for cargo, cmake, zig etc
+
+## [0.22.0] - 2024-06-09
+
+- Add [Meson Build](https://mesonbuild.com/) support
+- Add [xmake](https://xmake.io/) support
+
+## [0.21.0] - 2024-05-23
+
+- Add [amper](https://github.com/JetBrains/amper) standalone support
+
+## [0.20.0] - 2024-05-09
+
+- Add [nur](https://github.com/ddanier/nur) support
+- Add [goreleaser](https://goreleaser.com/) support
+
+## [0.19.0] - 2024-04-23
+
+- Add [cargo-xtask](https://github.com/linux-china/xtask-demo) support
+- Add [go-xtask](https://github.com/linux-china/xtask-go-demo) support
+- Add `tk --init=argc` to create `Argcfile.sh` file
+- Update to `maven-wrapper 3.3.0`
+
+## [0.18.0] - 2024-04-17
+
+- Add [argc](https://github.com/sigoden/argc) support
+- Some bug fix for fleet
+
+## [0.17.2] - 2024-04-11
+
+- Add `.justfile` support
+- Update to Gradle 8.7
+- Add `$PORT` for procfile
+
+## [0.17.1] - 2024-04-07
+
+- Add [just module](https://github.com/casey/just?tab=readme-ov-file#modules1190) support
+- Auto detect java version from pom.xml, Gradle java toolchain.
+
+## [0.17.0] - 2024-03-19
+
+- Add Zig Build System `build.zig` support: https://ziglang.org/learn/build-system/
+
+## [0.16.0] - 2024-03-14
+
+- Add `.zed/tasks.json` support: https://zed.dev/docs/tasks
+
+## [0.15.1] - 2024-02-24
+
+- Rename `self_update` to `self-update` for Maven/Gradle wrapper
+- Add version lasted or not for for Maven/Gradle wrapper
+- Add `php`,`flask` and `fastapi` type for Fleet `run.json` support
+- Add `start` for Gradle project if `springframework.boot` or `quarkus` detected
+
+## [0.15.0] - 2024-02-22
+
+- Add `self_update` for Maven/Gradle wrapper
+- Add [uv](https://github.com/astral-sh/uv) support if uv command detected
+
+## [0.14.0] - 2024-01-23
+
+- Add [Bun Shell](https://bun.sh/docs/runtime/shell) support: create a `Taskfile.ts` with following code:
+
+```typescript
+import {$} from "bun";
+
+export async function hello() {
+    await $`echo Hello World!`;
+}
+
+export async function list_js() {
+    await $`ls *.js`;
+}
+```
+
+Then run `tk hello` to run task with Bun Shell.
+
+## [0.13.2] - 2023-12-10
+
+- Fix bug to parse ID in Markdown Attributes
+- Add exit code to run tasks #9
+- Docs: add `.python-version` support
+- Docs: add `task - Taskfile.yml`
 
 ## [0.13.1] - 2023-10-30
 

@@ -1,4 +1,3 @@
-use std::io::{BufRead, BufReader};
 use std::process::Output;
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -26,20 +25,31 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
         })?;
     let re = Regex::new(r"^\* [a-zA-Z0-9._-]+:.*").unwrap();
-    let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
+    let tasks: Vec<Task> = makefile_meta_text
         .lines()
         .filter(|line| {
-            line.is_ok() && re.is_match(line.as_ref().unwrap())
+            re.is_match(line)
         })
-        .map(|line| line.unwrap())
-        .map(|line| {
-            let mut parts = line.split(':');
+        .flat_map(|line| {
+            let mut parts = line.splitn(2, ":");
             let mut task_name = parts.next().unwrap().trim().to_owned();
             if task_name.starts_with("* ") {
                 task_name = task_name.split_off(2);
             }
             let description = parts.next().unwrap_or("").trim().to_owned();
-            task!(task_name, "task", description)
+            let mut tasks: Vec<Task> = vec![];
+            if description.contains("(aliases:") {
+                let offset = description.find("(aliases:").unwrap();
+                let task_description = description[..offset].trim().to_owned();
+                tasks.push(task!(task_name, "task", task_description));
+                let aliases = description[offset + 9..description.len() - 1].trim();
+                for alias in aliases.split(",") {
+                    tasks.push(task!(alias.trim(), "task", format!("Alias for {}", task_name)));
+                }
+            } else {
+                tasks.push(task!(task_name, "task", description));
+            }
+            tasks
         }).collect();
     Ok(tasks)
 }
@@ -82,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("hello", &[], &[],true) {
+        if let Ok(output) = run_task("hello", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

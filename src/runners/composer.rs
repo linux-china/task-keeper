@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::process::Output;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -49,7 +49,6 @@ fn parse_composer_json() -> Result<ComposerJson, KeeperError> {
         .map(|dir| dir.join("composer.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_json::from_str::<ComposerJson>(&data).unwrap())
-        .into_report()
         .change_context(KeeperError::InvalidComposerJson)
 }
 

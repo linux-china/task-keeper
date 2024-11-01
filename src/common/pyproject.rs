@@ -1,4 +1,3 @@
-use std::any::Any;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -12,6 +11,7 @@ pub struct PyProjectToml {
 #[serde(rename_all = "kebab-case")]
 pub struct Tool {
     rye: Option<ToolRye>,
+    uv: Option<ToolUv>,
     poetry: Option<ToolPoetry>,
 }
 
@@ -21,7 +21,28 @@ pub struct ToolRye {
     scripts: Option<HashMap<String, toml::Value>>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "kebab-case")]
+pub struct ToolUv {
+    scripts: Option<HashMap<String, toml::Value>>,
+}
+
 impl ToolRye {
+    pub fn get_scripts(&self) -> Option<HashMap<String, String>> {
+        self.scripts.as_ref().map(|scripts| {
+            scripts.iter().map(|(key, value)| {
+                let description: String = match value {
+                    toml::Value::String(value) => value.to_string(),
+                    toml::Value::Table(table) => table.get("cmd").unwrap_or(&toml::Value::String("".to_owned())).to_string(),
+                    _ => "".to_owned()
+                };
+                return (key.clone(), description);
+            }).collect()
+        })
+    }
+}
+
+impl ToolUv {
     pub fn get_scripts(&self) -> Option<HashMap<String, String>> {
         self.scripts.as_ref().map(|scripts| {
             scripts.iter().map(|(key, value)| {
@@ -75,6 +96,10 @@ impl PyProjectToml {
         self.tool.as_ref().map(|tool| tool.rye.is_some()).unwrap_or(false)
     }
 
+    pub fn uv_available(&self) -> bool {
+        self.tool.as_ref().map(|tool| tool.uv.is_some()).unwrap_or(false)
+    }
+
     pub fn poetry_available(&self) -> bool {
         self.tool.as_ref().map(|tool| tool.poetry.is_some()).unwrap_or(false)
     }
@@ -82,6 +107,11 @@ impl PyProjectToml {
     pub fn get_rye_scripts(&self) -> Option<HashMap<String, String>> {
         self.tool.as_ref().and_then(|tool| tool.rye.as_ref()).and_then(|rye| rye.get_scripts().clone())
     }
+
+    pub fn get_uv_scripts(&self) -> Option<HashMap<String, String>> {
+        self.tool.as_ref().and_then(|tool| tool.uv.as_ref()).and_then(|uv| uv.get_scripts().clone())
+    }
+
 
     pub fn get_poetry_scripts(&self) -> Option<HashMap<String, String>> {
         self.tool.as_ref().and_then(|tool| tool.poetry.as_ref()).and_then(|poetry| poetry.get_scripts().clone())

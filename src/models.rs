@@ -77,11 +77,11 @@ mod tests {
 
     #[test]
     fn test_parse_task_context() {
-        let args = vec!["helo", "second", "-", "linux_china"];
+        let args = vec!["hello", "second", "-", "linux_china"];
         println!("{:?}", TaskContext::new(args));
-        let args = vec!["helo", "second", "-n", "linux_china", "--", "--verbose", "--debug"];
+        let args = vec!["hello", "second", "-n", "linux_china", "--", "--verbose", "--debug"];
         println!("{:?}", TaskContext::new(args));
-        let args = vec!["helo", "second", "-n", "linux_china", "--"];
+        let args = vec!["hello", "second", "-n", "linux_china", "--"];
         println!("{:?}", TaskContext::new(args));
     }
 }

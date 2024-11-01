@@ -1,0 +1,11 @@
+# hello task
+def "nur hello" [] {
+    print "hello nur"
+}
+
+# welcome task with name param
+def "nur welcome" [
+    name: string = "world"  # The name to say welcome to
+] {
+    print $"welcome ($name)"
+}

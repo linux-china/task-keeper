@@ -18,7 +18,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     // https://rebar3.readme.io/docs/getting-started
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "rebar3 new app {name}".to_string());
     task_command_map.insert("install".to_string(), "rebar3 get-deps".to_string());
     task_command_map.insert("compile".to_string(), "rebar3 compile".to_string());
     task_command_map.insert("build".to_string(), "rebar3 release".to_string());
