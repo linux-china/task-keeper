@@ -37,8 +37,8 @@ chrono = "0.4"
 regex = "1"
 dirs = "5"
 dirs-sys = "0.4.1"
-which = "6"
-thiserror = "1"
+which = "7.0"
+thiserror = "2"
 error-stack = "0.5"
 dotenv = "0.15"
 shlex = "1"
@@ -48,7 +48,7 @@ logos = "0.14"
 shell-escape = "0.1"
 bytecount = "0.6.8"
 just = "1.36.0"
-update-informer = { version = "1.1.0", default-features = false, features = ["github"] }
+reqwest = { version = "0.12", features = ["blocking"] }
 
 [profile.release]
 strip = true
