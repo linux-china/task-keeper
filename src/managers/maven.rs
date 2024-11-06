@@ -4,6 +4,8 @@ use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::{run_command_line};
 use crate::errors::KeeperError;
+use serde::{Deserialize};
+use serde_xml_rs::from_str;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -69,4 +71,47 @@ fn get_start_command_line() -> String {
     } else {
         format!("{} exec:java", get_mvn_command())
     };
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Metadata {
+    #[serde(rename = "groupId")]
+    pub group_id: String,
+    #[serde(rename = "artifactId")]
+    pub artifact_id: String,
+    pub versioning: Versioning,
+}
+#[derive(Deserialize, Debug)]
+pub struct Versioning {
+    pub latest: String,
+    pub release: String,
+    #[serde(rename = "lastUpdated")]
+    pub last_updated: String,
+    pub versions: Versions,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Versions {
+    #[serde(rename = "version")]
+    pub versions: Vec<String>,
+}
+
+pub fn parse_maven_metadata(url: &str) -> Result<Metadata, KeeperError> {
+    let text = reqwest::blocking::get(url)
+        .unwrap()
+        .text()
+        .unwrap();
+    from_str(&text).map_err(|e| report!(KeeperError::InvalidMavenMetadataXml))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_metadata_xml() {
+        let url = "https://packages.jetbrains.team/maven/p/amper/amper/org/jetbrains/amper/cli/maven-metadata.xml";
+        let metadata: Metadata = parse_maven_metadata(url).unwrap();
+        println!("{:?}", metadata);
+    }
 }
