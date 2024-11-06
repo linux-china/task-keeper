@@ -1,7 +1,7 @@
 use std::io::{BufRead, BufReader, Stdin, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Stdio};
-use clap::{Command, Arg, ArgAction, ArgMatches, arg};
+use clap::{Command, Arg, ArgAction, ArgMatches};
 use colored::Colorize;
 use just::summary::Summary;
 
