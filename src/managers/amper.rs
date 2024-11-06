@@ -23,6 +23,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("start".to_string(), format!("{} run", amper_command));
     task_command_map.insert("test".to_string(), format!("{} test", amper_command));
     task_command_map.insert("clean".to_string(), format!("{} clean", amper_command));
+    task_command_map.insert("self-update".to_string(), format!("{} update", amper_command));
     task_command_map
 }
 
