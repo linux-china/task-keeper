@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.26.0] - 2024-11-12
+
+- `self-update` for `amper`
+- Use `uv pip list --outdated` to list outdated packages
+
 ## [0.25.0] - 2024-10-13
 
 - Add `sq(Squirrel)` command-line snippets keeper: https://github.com/linux-china/task-keeper#sqsquirrel
