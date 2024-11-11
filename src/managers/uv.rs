@@ -20,7 +20,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     task_command_map.insert("install".to_string(), "uv sync".to_string());
     task_command_map.insert("deps".to_string(), "uv tree".to_string());
-    task_command_map.insert("outdated".to_string(), "uv run pip3 list --outdated".to_string());
+    task_command_map.insert("outdated".to_string(), "uv pip list --outdated".to_string());
     task_command_map.insert("update".to_string(), "uv sync --upgrade".to_string());
     task_command_map.insert("build".to_string(), "uvx --from build pyproject-build --installer uv".to_string());
     task_command_map
