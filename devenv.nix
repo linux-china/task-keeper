@@ -14,6 +14,7 @@
     # Search for packages: https://search.nixos.org/packages?channel=unstable&query=cowsay
     # (note: this searches on unstable channel, be aware your nixpkgs flake input might be on a release channel)
     cargo-watch
+    bacon
   ];
 
   #difftastic.enable = true; # Better git diff https://devenv.sh/integrations/difftastic/
