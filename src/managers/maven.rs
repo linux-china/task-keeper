@@ -4,6 +4,8 @@ use error_stack::{report, Result};
 use which::which;
 use crate::command_utils::{run_command_line};
 use crate::errors::KeeperError;
+use serde::{Deserialize};
+use serde_xml_rs::from_str;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -18,7 +20,6 @@ pub fn is_command_available() -> bool {
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let mvn_command = get_mvn_command();
-    task_command_map.insert("init".to_string(), format!("{} archetype:generate", mvn_command));
     task_command_map.insert("install".to_string(), format!("{} -U dependency:resolve", mvn_command));
     task_command_map.insert("compile".to_string(), format!("{} compile test-compile", mvn_command));
     task_command_map.insert("build".to_string(), format!("{} -DskipTests package", mvn_command));
@@ -28,6 +29,13 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("doc".to_string(), format!("{} javadoc:javadoc", mvn_command));
     task_command_map.insert("clean".to_string(), format!("{}  clean", mvn_command));
     task_command_map.insert("outdated".to_string(), format!("{} versions:display-dependency-updates", mvn_command));
+    if std::env::current_dir().map(|dir| dir.join(".mvn/wrapper").exists()).unwrap_or(false) {
+        if let Ok(code) = std::fs::read_to_string(".mvn/wrapper/maven-wrapper.properties") {
+            if !code.contains("apache-maven-3.9.9") {
+                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.0:wrapper -Dmaven=3.9.9", mvn_command));
+            }
+        }
+    }
     task_command_map
 }
 
@@ -63,4 +71,47 @@ fn get_start_command_line() -> String {
     } else {
         format!("{} exec:java", get_mvn_command())
     };
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Metadata {
+    #[serde(rename = "groupId")]
+    pub group_id: String,
+    #[serde(rename = "artifactId")]
+    pub artifact_id: String,
+    pub versioning: Versioning,
+}
+#[derive(Deserialize, Debug)]
+pub struct Versioning {
+    pub latest: String,
+    pub release: String,
+    #[serde(rename = "lastUpdated")]
+    pub last_updated: String,
+    pub versions: Versions,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Versions {
+    #[serde(rename = "version")]
+    pub versions: Vec<String>,
+}
+
+pub fn parse_maven_metadata(url: &str) -> Result<Metadata, KeeperError> {
+    let text = reqwest::blocking::get(url)
+        .unwrap()
+        .text()
+        .unwrap();
+    from_str(&text).map_err(|e| report!(KeeperError::InvalidMavenMetadataXml))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_metadata_xml() {
+        let url = "https://packages.jetbrains.team/maven/p/amper/amper/org/jetbrains/amper/cli/maven-metadata.xml";
+        let metadata: Metadata = parse_maven_metadata(url).unwrap();
+        println!("{:?}", metadata);
+    }
 }

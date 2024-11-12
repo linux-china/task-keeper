@@ -1,3 +1,4 @@
+#![feature(error_in_core)]
 use crate::app::build_app;
 use crate::keeper::{run_tasks, list_all_runner_tasks};
 use colored::Colorize;
@@ -7,8 +8,10 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::path::Path;
 use std::env;
+use std::fs::Permissions;
 use crate::models::TaskContext;
 use crate::polyglot::PATH_SEPARATOR;
+use crate::runners::justfile::init_justfile;
 
 mod app;
 mod keeper;
@@ -70,9 +73,8 @@ fn main() {
             make_file.write_all(include_bytes!("./templates/Makefile")).unwrap();
             println!("{}", "Makefile created".bold().green());
         } else if runner_name == "just" {
-            let mut make_file = std::fs::File::create("justfile").unwrap();
-            make_file.write_all(include_bytes!("./templates/justfile")).unwrap();
-            println!("{}", "justfile created".bold().green());
+            init_justfile();
+            set_executable("justfile");
         } else if runner_name == "jbang" {
             let mut make_file = std::fs::File::create("jbang-catalog.json").unwrap();
             make_file.write_all(include_bytes!("./templates/jbang-catalog.json")).unwrap();
@@ -94,6 +96,15 @@ fn main() {
             let mut import_map_file = std::fs::File::create("import_map.json").unwrap();
             import_map_file.write_all(include_bytes!("./templates/import_map.json")).unwrap();
             println!("{}", "deno.json and import_map.json created".bold().green());
+        } else if runner_name == "argc" {
+            let mut argc_file = std::fs::File::create("Argcfile.sh").unwrap();
+            argc_file.write_all(include_bytes!("./templates/Argcfile.sh")).unwrap();
+            println!("{}", "Argcfile.sh created".bold().green());
+            set_executable("Argcfile.sh");
+        } else if runner_name == "nur" {
+            let mut argc_file = std::fs::File::create("nurfile").unwrap();
+            argc_file.write_all(include_bytes!("./templates/nurfile")).unwrap();
+            println!("{}", "nurfile created".bold().green());
         } else {
             println!("[tk] Create task file for {} not support now.", runner_name);
         }
@@ -105,7 +116,7 @@ fn main() {
     if matches.contains_id("tasks") {
         // load .env for tasks
         if !no_dotenv {
-            dotenv().ok();
+            load_env();
         }
         // inject polyglot for tasks
         polyglot::inject_languages();
@@ -116,7 +127,10 @@ fn main() {
         if tk_args[0] == "--" && tk_args.len() > 1 { // execute command line after double dash
             let command = &tk_args[1];
             let args = tk_args.iter().skip(2).map(|arg| arg.as_str()).collect::<Vec<&str>>();
-            command_utils::run_command(command, &args, false).unwrap();
+            if let Err(err) = command_utils::run_command(command, &args, false) {
+                eprintln!("{}", err.to_string());
+                std::process::exit(1);
+            }
             return;
         }
         let tasks_options = matches.get_many::<String>("tasks")
@@ -130,16 +144,24 @@ fn main() {
         let global_args = &task_context.global_options;
         let default_runner = "".to_owned();
         let runner = task_runner.unwrap_or(&default_runner);
-        let task_count = run_tasks(runner, &tasks, task_args, global_args, verbose).unwrap();
-        if task_count == 0 { // no tasks executed
-            println!("{}", "[tk] no tasks found".bold().red());
-            /*if runners::makefile::is_available() { // try Makefile
-                for task in tasks {
-                    runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
+        match run_tasks(runner, &tasks, task_args, global_args, verbose) {
+            Ok(task_count) => {
+                if task_count == 0 { // no tasks executed
+                    eprintln!("{}", "[tk] no tasks found".bold().red());
+                    std::process::exit(1);
+                    /*if runners::makefile::is_available() { // try Makefile
+                        for task in tasks {
+                            runners::makefile::run_task(task, task_args, global_args, verbose).unwrap();
+                        }
+                    } else {
+                        println!("{}", "[tk] no tasks found".bold().red());
+                    }*/
                 }
-            } else {
-                println!("{}", "[tk] no tasks found".bold().red());
-            }*/
+            }
+            Err(err) => {
+                eprintln!("{}", err.to_string());
+                std::process::exit(1);
+            }
         }
         return;
     }
@@ -271,6 +293,12 @@ fn diagnose() {
             println!("{} cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml", "Warning:".bold().yellow());
         }
     }
+    if runners::bun_shell::is_available() {
+        if !runners::bun_shell::is_command_available() {
+            problems_count += 1;
+            println!("{} bun(https://bun.sh/docs/runtime/shell) command not available for Taskfile.ts", "Warning:".bold().yellow());
+        }
+    }
     if runners::taskspy::is_available() {
         if !runners::taskspy::is_command_available() {
             problems_count += 1;
@@ -301,6 +329,18 @@ fn diagnose() {
             println!("{} rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock", "Warning:".bold().yellow());
         }
     }
+    if runners::argcfile::is_available() {
+        if !runners::argcfile::is_command_available() {
+            problems_count += 1;
+            println!("{} argc(https://github.com/sigoden/argc) command not available for Argcfile.sh", "Warning:".bold().yellow());
+        }
+    }
+    if runners::nurfile::is_available() {
+        if !runners::nurfile::is_command_available() {
+            problems_count += 1;
+            println!("{} nur(https://github.com/ddanier/nur) command not available for nurfile", "Warning:".bold().yellow());
+        }
+    }
     // ==========package managers============
     if managers::maven::is_available() {
         if !managers::maven::is_command_available() {
@@ -311,13 +351,19 @@ fn diagnose() {
     if managers::gradle::is_available() {
         if !managers::gradle::is_command_available() {
             problems_count += 1;
-            println!("{} gradle(https://gradle.org/) command not available for {}", "Warning:".bold().yellow(), managers::gradle::get_gradle_build_file());
+            println!("{} amper(https://github.com/JetBrains/amper) command not available for {}", "Warning:".bold().yellow(), "module.yaml");
         } else {
             //global plugins for gradle $HOME/.gradle/init.d/plugins.gradle
             if !dirs::home_dir().unwrap().join(".gradle").join("init.d").join("plugins.gradle").exists() {
                 println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#gradle",
                          "Suggestion:".bold().yellow(), "plugins.gradle".bold().blue(), "dependencyUpdates".bold().blue());
             }
+        }
+    }
+    if managers::amper::is_available() {
+        if !managers::amper::is_command_available() {
+            problems_count += 1;
+            println!("{} amper(https://github.com/JetBrains/amper) command not available for module.yaml", "Warning:".bold().yellow());
         }
     }
     if managers::sbt::is_available() {
@@ -380,6 +426,12 @@ fn diagnose() {
             println!("{} cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt", "Warning:".bold().yellow());
         }
     }
+    if managers::meson::is_available() {
+        if !managers::meson::is_command_available() {
+            problems_count += 1;
+            println!("{} meson(https://mesonbuild.com) command not available for meson.build", "Warning:".bold().yellow());
+        }
+    }
     if managers::swift::is_available() {
         if !managers::swift::is_command_available() {
             problems_count += 1;
@@ -422,6 +474,12 @@ fn diagnose() {
             println!("{} dart(https://dart.dev/guides/packages) command not available for pubspec.yaml", "Warning:".bold().yellow());
         }
     }
+    if managers::zig::is_available() {
+        if !managers::zig::is_command_available() {
+            problems_count += 1;
+            println!("{} zig(https://ziglang.org/) command not available for build.zig", "Warning:".bold().yellow());
+        }
+    }
     if polyglot::java::is_available() {
         if polyglot::java::find_sdk_home().is_none() {
             problems_count += 1;
@@ -457,14 +515,24 @@ fn format_description(description: &str) -> String {
     if short_desc.len() > 60 {
         short_desc = format!("{} ...", &short_desc[0..60]);
     }
-    return short_desc;
+    short_desc
 }
 
-#[cfg(target_family = "unix")]
-fn set_executable(path: &str) {
+fn load_env() {
+    dotenv().ok();
+    if env::current_dir().unwrap().join(".flaskenv").exists() {
+        dotenv::from_filename(".flaskenv").ok();
+    }
+    if let Ok(node_env) = env::var("NODE_ENV") {
+        dotenv::from_filename(format!(".env.{}", node_env)).ok();
+    }
+}
+
+#[cfg(unix)]
+fn set_executable<P: AsRef<Path>>(path: P) {
     use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::set_permissions(path, Permissions::from_mode(0o755)).unwrap();
 }
 
-#[cfg(not(target_family = "unix"))]
-fn set_executable(path: &str) {}
+#[cfg(not(unix))]
+fn set_executable<P: AsRef<Path>>(path: P) {}

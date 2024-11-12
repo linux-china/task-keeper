@@ -1,6 +1,7 @@
+use std::env;
 use std::io::{BufRead, BufReader};
 use std::process::{Output};
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::command_utils::{run_command_line};
@@ -13,10 +14,9 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let procfile_text = std::env::current_dir()
+    let procfile_text = env::current_dir()
         .map(|dir| dir.join("Procfile"))
         .map(|path| std::fs::read_to_string(path).unwrap())
-        .into_report()
         .change_context(KeeperError::InvalidProcfile)?;
     let tasks: Vec<Task> = BufReader::new(procfile_text.as_bytes())
         .lines()
@@ -25,7 +25,11 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|line| {
             let mut parts = line.splitn(2, ':');
             let name = parts.next().unwrap().trim();
-            let command = parts.next().unwrap().trim();
+            let mut command = parts.next().unwrap().trim().to_string();
+            if command.contains("$PORT") {
+                let port_env = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
+                command = command.replace("$PORT", &port_env);
+            }
             task!(name, "proc", command)
         })
         .collect();

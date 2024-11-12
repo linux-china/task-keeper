@@ -24,7 +24,6 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let package_manager = get_npm_command(&package_json);
     let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), format!("{} init", package_manager));
     task_command_map.insert("install".to_string(), format!("{} install", package_manager));
     if scripts.contains_key("compile") {
         task_command_map.insert("compile".to_string(), format!("{} run compile", package_manager));
@@ -44,9 +43,19 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     if scripts.contains_key("clean") {
         task_command_map.insert("clean".to_string(), format!("{} run clean", package_manager));
     }
-    task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
-    task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
+    if package_manager == "bun" {
+        task_command_map.insert("deps".to_string(), format!("bun pm ls"));
+        if which::which("npm-check").is_ok() {
+            task_command_map.insert("outdated".to_string(), "bun outdated".to_string());
+        } else {
+            task_command_map.insert("outdated".to_string(), format!("npm outdated"));
+        }
+    } else {
+        task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
+        task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
+    }
     task_command_map.insert("update".to_string(), format!("{} update", package_manager));
+
     if package_manager_raw.starts_with("yarn@3") || package_manager_raw.starts_with("yarn@2") {
         task_command_map.insert("deps".to_string(), "yarn info --dependents".to_string());
         task_command_map.insert("outdated".to_string(), "yarn upgrade-interactive".to_string());

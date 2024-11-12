@@ -17,3 +17,4 @@ hello2:
 build:
   cargo build --bin tk
   cp target/debug/tk ~/bin
+  cp target/debug/sq ~/bin

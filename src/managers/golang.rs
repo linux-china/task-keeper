@@ -17,10 +17,14 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "go mod init {name}".to_string());
     task_command_map.insert("install".to_string(), "go get -u".to_string());
     task_command_map.insert("compile".to_string(), "go build".to_string());
     task_command_map.insert("build".to_string(), "go build".to_string());
+    if std::env::current_dir().map(|dir| dir.join(".goreleaser.yaml").exists()).is_ok() {
+        task_command_map.insert("release".to_string(), "goreleaser release --clean".to_string());
+    } else {
+        task_command_map.insert("release".to_string(), "go build -ldflags '-s -w'".to_string());
+    }
     if std::env::current_dir().map(|dir| dir.join("main.go").exists()).is_ok() {
         task_command_map.insert("start".to_string(), "go run main.go".to_string());
     }

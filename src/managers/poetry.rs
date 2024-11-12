@@ -16,7 +16,6 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("init".to_string(), "poetry init".to_string());
     task_command_map.insert("install".to_string(), "poetry install".to_string());
     task_command_map.insert("build".to_string(), "poetry build".to_string());
     task_command_map.insert("deps".to_string(), "poetry show --tree".to_string());

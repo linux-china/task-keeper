@@ -1,7 +1,7 @@
 use std::process::Output;
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
+use crate::command_utils::{run_command};
 use crate::task;
 use error_stack::{Result};
 use which::which;
@@ -10,7 +10,7 @@ use crate::common::pyproject_toml_has_tool;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| pyproject_toml_has_tool("poetry"))
+        .map(|_dir| pyproject_toml_has_tool("poetry"))
         .unwrap_or(false)
 }
 
