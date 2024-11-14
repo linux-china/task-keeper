@@ -1,9 +1,9 @@
 pub mod pyproject;
 
 use crate::errors::KeeperError;
-use error_stack::{report, IntoReportCompat, Report, Result, ResultExt};
+use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs, io};
+use std::{collections::HashMap, fs};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
