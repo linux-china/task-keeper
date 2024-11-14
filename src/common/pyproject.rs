@@ -42,8 +42,12 @@ impl ToolRye {
                     let description: String = match value {
                         toml::Value::String(value) => value.to_string(),
                         toml::Value::Table(table) => table
-                            .get("cmd")
-                            .unwrap_or(&toml::Value::String("".to_owned()))
+                            .get("script")
+                            .unwrap_or(
+                                table
+                                    .get("help")
+                                    .unwrap_or(&toml::Value::String("".to_owned())),
+                            )
                             .to_string(),
                         _ => "".to_owned(),
                     };
@@ -86,9 +90,11 @@ impl PeoTasks {
                         toml::Value::Table(table) => table
                             .get("help")
                             .unwrap_or(
-                                table
-                                    .get("cmd")
-                                    .unwrap_or(&toml::Value::String("".to_owned())),
+                                table.get("cmd").unwrap_or(
+                                    table
+                                        .get("script")
+                                        .unwrap_or(&toml::Value::String("".to_owned())),
+                                ),
                             )
                             .to_string(),
                         _ => "".to_owned(),
@@ -198,7 +204,6 @@ mod tests {
     #[test]
     fn test_get_default_project() {
         let pyproject = PyProjectToml::get_default_project().unwrap();
-        // println!("{:#?}", pyproject);
-        println!("{:#?}", pyproject.get_poe_tasks());
+        println!("{:#?}", pyproject);
     }
 }
