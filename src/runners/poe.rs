@@ -9,9 +9,7 @@ use std::process::Output;
 use which::which;
 
 pub fn is_available() -> bool {
-    std::env::current_dir()
-        .map(|dir| pyproject_toml_has_tool("poe"))
-        .unwrap_or(false)
+    pyproject_toml_has_tool("poe")
 }
 
 pub fn is_command_available() -> bool {
