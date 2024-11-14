@@ -97,6 +97,11 @@ impl PeoTasks {
                                 ),
                             )
                             .to_string(),
+                        toml::Value::Array(task_sequences) => task_sequences
+                            .iter()
+                            .map(|task_name| task_name.to_string())
+                            .collect::<Vec<String>>()
+                            .join(" && "),
                         _ => "".to_owned(),
                     };
                     return (key.clone(), description);
@@ -212,5 +217,6 @@ mod tests {
     fn test_get_default_project() {
         let pyproject = PyProjectToml::get_default_project().unwrap();
         println!("{:#?}", pyproject);
+        // println!("{:#?}", pyproject.get_poe_tasks());
     }
 }
