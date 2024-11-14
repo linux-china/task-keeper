@@ -168,6 +168,13 @@ impl PyProjectToml {
             .unwrap_or(false)
     }
 
+    pub fn poe_available(&self) -> bool {
+        self.tool
+            .as_ref()
+            .map(|tool| tool.poe.is_some())
+            .unwrap_or(false)
+    }
+
     pub fn get_rye_scripts(&self) -> Option<HashMap<String, String>> {
         self.tool
             .as_ref()
