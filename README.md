@@ -5,7 +5,7 @@ such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` et
 and call tasks from different project management tools,
 such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
-**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets. 
+**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets.
 
 ![Task Keeper](./screenshot.png)
 
@@ -23,8 +23,8 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
 * Install by cargo: `cargo install task-keeper` (or `cargo binstall task-keeper`)
 * Using [nix](https://nix.dev/):
-  * try without installing: `nix shell github:linux-china/task-keeper`
-  * install: e.g. `nix profile install github:linux-china/task-keeper` 
+    * try without installing: `nix shell github:linux-china/task-keeper`
+    * install: e.g. `nix profile install github:linux-china/task-keeper`
 * Download pre-built binary from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
 
 After install, execute `tk --help` for usage. Some commands as following:
@@ -64,6 +64,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 * zed Tasks: https://zed.dev/docs/tasks
+* poe: batteries included task runner that works well with pyproject.toml https://github.com/nat-n/poethepoet
 * Rye: https://rye.astral.sh/guide/pyproject/#projectscripts
 * argc: a Bash-based command runner https://github.com/sigoden/argc
 * nur: a task runner based on nu shell https://github.com/ddanier/nur
@@ -72,18 +73,20 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 
 ### Bun Shell - Taskfile.ts
 
-[Bun Shell](https://bun.sh/docs/runtime/shell) is a nice feature from Bun to make shell scripting with JavaScript & TypeScript fun.
+[Bun Shell](https://bun.sh/docs/runtime/shell) is a nice feature from Bun to make shell scripting with JavaScript &
+TypeScript fun.
 
 Now Task Keeper support `Taskfile.ts` with Bun Shell, and you can use following code to run tasks:
 
 ```typescript
 import {$} from "bun";
 
-  export async function hello() {
-  await $`echo Hello World!`;
+export async function hello() {
+    await $`echo Hello World!`;
 }
-  export async function list_js() {
-  await $`ls *.js`;
+
+export async function list_js() {
+    await $`ls *.js`;
 }
 ```
 
@@ -110,7 +113,8 @@ For details, please refer https://www.jetbrains.com/help/fleet/run-configuration
 
 # Language version detection and PATH
 
-Task Keeper uses `.java-version`, `.node-version`, `.python-version`  files to detect language version and bound with local installed SDK.
+Task Keeper uses `.java-version`, `.node-version`, `.python-version`  files to detect language version and bound with
+local installed SDK.
 
 To make task runner run tasks smoothly, Task Keeper will append following directories to `PATH` automatically:
 
@@ -195,9 +199,9 @@ addDependencyTreePlugin
 
 ### bld
 
-Available. 
+Available.
 
-[bld](https://rife2.com/bld) is a new build system that allows you to write your build logic in pure Java. 
+[bld](https://rife2.com/bld) is a new build system that allows you to write your build logic in pure Java.
 
 ### npm
 
@@ -244,8 +248,9 @@ Available.
 
 Available with following tools:
 
-* [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected
-* [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected
+* [poe](https://github.com/nat-n/poethepoet): `[tool.poe]` detected in `pyproject.toml`
+* [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected in `pyproject.toml`
+* [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected in `pyproject.toml`
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
@@ -344,7 +349,7 @@ Task Keeper will detect version configuration file and adjust the environment va
 
 ### Python
 
-`.python-version` is used for version management for [pyenv](https://github.com/pyenv/pyenv). 
+`.python-version` is used for version management for [pyenv](https://github.com/pyenv/pyenv).
 
 ### Java
 
@@ -375,7 +380,7 @@ sq is a command-line snippets keeper to manage cli snippets, and it's based on J
 - Edit snippet: `sq edit snippet_name`. sq uses `EDITOR` environment variable to open snippets justfile.
 - Run snippet: `sq snippet_name`
 
-Snippets justfile: `$HOME/.sk/snippets.just`. 
+Snippets justfile: `$HOME/.sk/snippets.just`.
 
 # References
 
