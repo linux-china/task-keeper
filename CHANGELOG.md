@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.27.0] - 2024-11-15
+
+- Add [poe](https://github.com/nat-n/poethepoet) support if `[tool.poe]` detected in `pyproject.toml`
+
 ## [0.26.0] - 2024-11-12
 
 - `self-update` for `amper`
