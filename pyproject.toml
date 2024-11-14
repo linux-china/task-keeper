@@ -36,6 +36,7 @@ devtest = { callable = "mypackage:test.run_tests", extras = ["test"] }
 [tool.poe.tasks]
 test = "pytest --cov=my_app"
 serve.script = "my_app.service:run(debug=True)"
+build  = ["test", "_build"]
 
 [tool.poe.tasks.test-quick]
 help = "Run tests excluding those makes as slow."
