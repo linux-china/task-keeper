@@ -5,6 +5,7 @@
 ## [0.27.0] - 2024-11-15
 
 - Add [poe](https://github.com/nat-n/poethepoet) support if `[tool.poe]` detected in `pyproject.toml`
+- Update to gradle 8.11
 
 ## [0.26.0] - 2024-11-12
 
