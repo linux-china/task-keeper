@@ -4,6 +4,15 @@
 2. Install [direnv](https://direnv.net/) (optional, recommended for ease of use)
 3. Run `direnv allow` / `nix develop --impure`
 
+### Run
+```
+cargo run --bin tk
+```
+### Run & watch
+```
+bacon run -- --bin tk
+```
+
 ### Tests
 Note: I did not manage to set up all dependencies yet - e.g. java tests are failing
 ```bash
