@@ -41,10 +41,10 @@ dotenv = "0.15"
 shlex = "1"
 cfg-if = "1"
 uuid = { version = "1", features = ["v4"] }
-logos = "0.14"
+logos = "0.15"
 shell-escape = "0.1"
 bytecount = "0.6.8"
-just = "1.36.0"
+just = "1.38.0"
 reqwest = { version = "0.12", features = ["blocking"] }
 
 [profile.release]
