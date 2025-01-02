@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.28.0] - 2025-01-02
+
+- Add support for `invoke`, `poetry` and `poethepoet` installed by uv
+- Update to gradle 8.12
+
 ## [0.27.0] - 2024-11-15
 
 - Add [poe](https://github.com/nat-n/poethepoet) support if `[tool.poe]` detected in `pyproject.toml`
