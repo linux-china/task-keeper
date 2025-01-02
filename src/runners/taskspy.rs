@@ -27,6 +27,13 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
+    let user_home = dirs::home_dir();
+    if let Some(user_home) = user_home {
+        let user_home = user_home.join(".local").join("bin").join("invoke");
+        if user_home.exists() {
+            return true;
+        }
+    }
     which("invoke").is_ok()
 }
 
