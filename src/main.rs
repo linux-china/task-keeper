@@ -406,7 +406,7 @@ fn diagnose() {
         if !runners::taskspy::is_command_available() {
             problems_count += 1;
             println!(
-                "{} invoke(https://www.pyinvoke.org) command not available for tasks.py",
+                "{} invoke(https://www.pyinvoke.org) command not available for tasks.py, please use `uv tool install --python 3.11 invoke` to install. ",
                 "Warning:".bold().yellow()
             );
         }
@@ -433,7 +433,7 @@ fn diagnose() {
         if !runners::poetry::is_command_available() {
             problems_count += 1;
             println!(
-                "{} poetry(https://python-poetry.org/) command not available for pyproject.toml",
+                "{} poetry(https://python-poetry.org/) command not available for pyproject.toml, please use `uv tool install --python 3.11 poetry` to install.",
                 "Warning:".bold().yellow()
             );
         }
