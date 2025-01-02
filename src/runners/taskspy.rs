@@ -1,4 +1,5 @@
 use crate::command_utils::{capture_command_output, run_command};
+use crate::common::pyproject::get_uv_tool_path;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -27,14 +28,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
-    let user_home = dirs::home_dir();
-    if let Some(user_home) = user_home {
-        let user_home = user_home.join(".local").join("bin").join("invoke");
-        if user_home.exists() {
-            return true;
-        }
-    }
-    which("invoke").is_ok()
+    get_uv_tool_path("invoke").is_some() || which("invoke").is_ok()
 }
 
 pub fn install() -> Result<Output, KeeperError> {
@@ -79,7 +73,11 @@ pub fn run_task(
     args.extend(global_args);
     args.push(task);
     args.extend(task_args);
-    run_command("invoke", &args, verbose)
+    if let Some(invoke) = get_uv_tool_path("invoke") {
+        run_command(&invoke, &args, verbose)
+    } else {
+        run_command("invoke", &args, verbose)
+    }
 }
 
 #[cfg(test)]

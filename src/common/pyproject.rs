@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PyProjectToml {
@@ -207,6 +208,17 @@ impl PyProjectToml {
             .and_then(|tool| tool.poe.as_ref())
             .and_then(|peo_tasks| peo_tasks.get_tasks().clone())
     }
+}
+
+pub fn get_uv_tool_path(tool_name: &str) -> Option<String> {
+    let user_home = dirs::home_dir();
+    if let Some(user_home) = user_home {
+        let tool_bin = user_home.join(".local").join("bin").join(tool_name);
+        if tool_bin.exists() {
+            return Some(tool_bin.to_string_lossy().to_string());
+        }
+    }
+    None
 }
 
 #[cfg(test)]

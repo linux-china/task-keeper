@@ -1,5 +1,5 @@
 use crate::command_utils::run_command;
-use crate::common::pyproject::PyProjectToml;
+use crate::common::pyproject::{get_uv_tool_path, PyProjectToml};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -13,14 +13,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
-    let user_home = dirs::home_dir();
-    if let Some(user_home) = user_home {
-        let user_home = user_home.join(".local").join("bin").join("poe");
-        if user_home.exists() {
-            return true;
-        }
-    }
-    which("poe").is_ok()
+    get_uv_tool_path("poe").is_some() || which("poe").is_ok()
 }
 
 pub fn install() -> Result<Output, KeeperError> {
@@ -55,7 +48,11 @@ pub fn run_task(
     args.extend(global_args);
     args.push(task);
     args.extend(task_args);
-    run_command("poe", &args, verbose)
+    if let Some(poe) = get_uv_tool_path("poe") {
+        run_command(&poe, &args, verbose)
+    } else {
+        run_command("poe", &args, verbose)
+    }
 }
 
 #[cfg(test)]

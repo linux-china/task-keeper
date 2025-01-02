@@ -1,5 +1,5 @@
 use crate::command_utils::run_command;
-use crate::common::pyproject::PyProjectToml;
+use crate::common::pyproject::{get_uv_tool_path, PyProjectToml};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -15,14 +15,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
-    let user_home = dirs::home_dir();
-    if let Some(user_home) = user_home {
-        let user_home = user_home.join(".local").join("bin").join("poetry");
-        if user_home.exists() {
-            return true;
-        }
-    }
-    which("poetry").is_ok()
+    get_uv_tool_path("poetry").is_some() || which("poetry").is_ok()
 }
 
 pub fn install() -> Result<Output, KeeperError> {
@@ -58,5 +51,9 @@ pub fn run_task(
     args.push("run");
     args.push(task);
     args.extend(task_args);
-    run_command("poetry", &args, verbose)
+    if let Some(poetry) = get_uv_tool_path("poetry") {
+        run_command(&poetry, &args, verbose)
+    } else {
+        run_command("poetry", &args, verbose)
+    }
 }
