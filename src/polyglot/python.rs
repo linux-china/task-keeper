@@ -1,7 +1,7 @@
-use std::env;
-use std::path::PathBuf;
-use std::path::Path;
 use crate::polyglot::PATH_SEPARATOR;
+use std::env;
+use std::path::Path;
+use std::path::PathBuf;
 
 pub fn is_available() -> bool {
     env::current_dir()
@@ -21,7 +21,11 @@ pub fn find_sdk_home() -> Option<PathBuf> {
         let home_dir = dirs_sys::home_dir().unwrap();
         let python_version = text.trim();
         // find python from uv
-        let python_versions_dir = home_dir.join(".local").join("share").join("uv").join("python");
+        let python_versions_dir = home_dir
+            .join(".local")
+            .join("share")
+            .join("uv")
+            .join("python");
         if python_versions_dir.exists() {
             let prefix = format!("cpython-{}", python_version);
             if let Some(path) = find_sub_directory(&python_versions_dir, &prefix) {
@@ -29,10 +33,17 @@ pub fn find_sdk_home() -> Option<PathBuf> {
             }
         }
         // find python from rye
-        let mut python_home = home_dir.join(".rye").join("py").join(format!("cpython@{}", python_version)).join("install");
+        let mut python_home = home_dir
+            .join(".rye")
+            .join("py")
+            .join(format!("cpython@{}", python_version))
+            .join("install");
         // find python from pyenv
         if !python_home.exists() {
-            python_home = home_dir.join(".pyenv").join("versions").join(python_version);
+            python_home = home_dir
+                .join(".pyenv")
+                .join("versions")
+                .join(python_version);
         }
         if python_home.exists() {
             return Some(python_home);
@@ -44,7 +55,8 @@ pub fn find_sdk_home() -> Option<PathBuf> {
 pub fn init_env() {
     if !env::current_dir()
         .map(|dir| dir.join("venv").exists() || dir.join(".venv").exists())
-        .unwrap_or(false) {
+        .unwrap_or(false)
+    {
         if let Some(python_home) = find_sdk_home() {
             reset_python_home(&python_home);
         }
@@ -54,7 +66,10 @@ pub fn init_env() {
 fn reset_python_home(python_home_path: &PathBuf) {
     if let Ok(path) = env::var("PATH") {
         let node_bin_path = python_home_path.join("bin").to_string_lossy().to_string();
-        env::set_var("PATH", format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path));
+        env::set_var(
+            "PATH",
+            format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path),
+        );
     }
 }
 
@@ -75,8 +90,8 @@ pub fn find_sub_directory(dir: &Path, prefix: &str) -> Option<PathBuf> {
 
 #[cfg(test)]
 mod tests {
-    use dirs::home_dir;
     use super::*;
+    use dirs::home_dir;
 
     #[test]
     fn test_init_env() {
@@ -87,7 +102,11 @@ mod tests {
     #[test]
     fn test_find_sub_directory() {
         let home_dir = home_dir().unwrap();
-        let python_versions_dir = home_dir.join(".local").join("share").join("uv").join("python");
+        let python_versions_dir = home_dir
+            .join(".local")
+            .join("share")
+            .join("uv")
+            .join("python");
         let prefix = "cpython-3.11.9";
         let path = find_sub_directory(&python_versions_dir, prefix).unwrap();
         println!("path: {:?}", path);
