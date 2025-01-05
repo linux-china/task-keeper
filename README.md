@@ -109,7 +109,7 @@ command type support now:
 * node
 * php
 
-For details, please refer https://www.jetbrains.com/help/fleet/run-configurations.html
+For details, please refer https://www.jetbrains.com/help/fleet/run-configs.html
 
 # Language version detection and PATH
 
