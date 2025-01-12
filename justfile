@@ -8,6 +8,9 @@ task-hello:
 list:
   cargo run --bin tk -- --list
 
+vs-tasks:
+  cargo run --bin tk -- --runner vscode --list
+
 hello:
   echo "hello"
 
