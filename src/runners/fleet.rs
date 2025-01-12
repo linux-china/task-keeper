@@ -6,6 +6,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::{report, Result};
+use jsonc_to_json::jsonc_to_json;
 use crate::command_utils::{is_command_available, run_command_with_env_vars};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -110,7 +111,8 @@ fn parse_run_json() -> FleetRunJson {
     std::env::current_dir()
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_jsonrc::from_str::<FleetRunJson>(&data).unwrap())
+        .map(|data| jsonc_to_json(&data).to_string())
+        .map(|data| serde_json::from_str::<FleetRunJson>(&data).unwrap())
         .unwrap()
 }
 

@@ -1,10 +1,11 @@
-use std::process::{Output};
-use crate::errors::KeeperError;
-use error_stack::{Result};
-use crate::models::Task;
 use crate::command_utils::{run_command_by_shell, run_command_line};
+use crate::errors::KeeperError;
+use crate::models::Task;
 use crate::task;
+use error_stack::Result;
+use jsonc_to_json::jsonc_to_json;
 use serde::{Deserialize, Serialize};
+use std::process::Output;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct TasksJson {
@@ -27,36 +28,51 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json().tasks
+    Ok(parse_run_json()
+        .tasks
         .map(|tasks| {
-            tasks.into_iter().map(|task| {
-                if task.task_type == "shell" {
-                    Some(task!(&task.label.clone().unwrap(), "vscode", "shell", &task.command.clone().unwrap()))
-                } else if let Some(cmd) = task.command {
-                    Some(task!(&task.label.clone().unwrap(), "vscode", &cmd))
-                } else {None}
-            }).flatten().collect()
+            tasks
+                .into_iter()
+                .map(|task| {
+                    if task.task_type == "shell" {
+                        Some(task!(
+                            &task.label.clone().unwrap(),
+                            "vscode",
+                            "shell",
+                            &task.command.clone().unwrap()
+                        ))
+                    } else if let Some(cmd) = task.command {
+                        Some(task!(&task.label.clone().unwrap(), "vscode", &cmd))
+                    } else {
+                        None
+                    }
+                })
+                .flatten()
+                .collect()
         })
-        .unwrap_or_else(|| vec![])
-    )
+        .unwrap_or_else(|| vec![]))
 }
-
 
 fn parse_run_json() -> TasksJson {
     std::env::current_dir()
         .map(|dir| dir.join(".vscode").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_jsonrc::from_str::<TasksJson>(&data).expect(".vscode/tasks.json format"))
-        // ! serde_jsonrc has a bug with trailing commas inside objects (but the repo has no issues enabled). - the above fails with `Error("key must be a string", line: 123, column: 123)`
-        // Would need some investigation into the code around here: https://github.com/serde-rs/json/commit/e34885f6ec5218c721ce33b5f27eaf8bfac9649d
+        .map(|data| jsonc_to_json(&data).to_string())
+        .map(|data| serde_json::from_str::<TasksJson>(&data).expect(".vscode/tasks.json format"))
         .unwrap()
 }
 
-pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    _task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<Output, KeeperError> {
     let tasks = list_tasks()?;
-    let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
-        KeeperError::TaskNotFound(task.to_string())
-    })?;
+    let task = tasks
+        .iter()
+        .find(|t| t.name == task)
+        .ok_or_else(|| KeeperError::TaskNotFound(task.to_string()))?;
     if let Some(_runner2) = &task.runner2 {
         run_command_by_shell(&task.description, verbose)
     } else {
@@ -67,7 +83,6 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn test_parse() {
