@@ -5,6 +5,7 @@
 ## [0.28.1] - 2025-01-12
 
 - List tasks by default instead of help
+- Add jsonc support for VS Code, Zed and Fleet
 
 ## [0.28.0] - 2025-01-02
 
