@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.28.1] - 2025-01-12
+
+- List tasks by default instead of help
+
 ## [0.28.0] - 2025-01-02
 
 - Add support for `invoke`, `poetry` and `poethepoet` installed by uv
