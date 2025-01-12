@@ -7,7 +7,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::{report, Result};
-use jsonc_to_json::jsonc_to_json;
+use jsonc_parser::parse_to_serde_value;
 use crate::command_utils::{is_command_available, run_command_with_env_vars};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -62,8 +62,8 @@ fn parse_tasks_json() -> Vec<Configuration> {
     std::env::current_dir()
         .map(|dir| dir.join(".zed").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("[]".to_owned()))
-        .map(|data| jsonc_to_json(&data).to_string())
-        .map(|data| serde_json::from_str::<Vec<Configuration>>(&data).unwrap())
+        .map(|data| parse_to_serde_value(&data, &Default::default()).unwrap().unwrap())
+        .map(|json_value| serde_json::from_value::<Vec<Configuration>>(json_value).unwrap())
         .unwrap()
 }
 

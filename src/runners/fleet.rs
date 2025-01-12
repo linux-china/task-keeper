@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-use std::process::Output;
-use colored::Colorize;
-use serde::{Deserialize, Serialize};
+use crate::command_utils::{is_command_available, run_command_with_env_vars};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
+use colored::Colorize;
 use error_stack::{report, Result};
-use jsonc_to_json::jsonc_to_json;
-use crate::command_utils::{is_command_available, run_command_with_env_vars};
+use jsonc_parser::parse_to_serde_value;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::process::Output;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -95,7 +95,9 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json().configurations.iter()
+    Ok(parse_run_json()
+        .configurations
+        .iter()
         .map(|configuration| {
             let description = if &configuration.type_value == "command" {
                 configuration.program.clone().unwrap()
@@ -111,14 +113,24 @@ fn parse_run_json() -> FleetRunJson {
     std::env::current_dir()
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| jsonc_to_json(&data).to_string())
-        .map(|data| serde_json::from_str::<FleetRunJson>(&data).unwrap())
+        .map(|data| {
+            parse_to_serde_value(&data, &Default::default())
+                .unwrap()
+                .unwrap()
+        })
+        .map(|json_value| serde_json::from_value::<FleetRunJson>(json_value).unwrap())
         .unwrap()
 }
 
-pub fn run_task(task_name: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task_name: &str,
+    _task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<Output, KeeperError> {
     let run_json = parse_run_json();
-    let result = run_json.configurations
+    let result = run_json
+        .configurations
         .iter()
         .find(|configuration| configuration.formatted_name() == task_name);
     if let Some(configuration) = result {
@@ -133,9 +145,19 @@ fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Out
     let args = get_command_args(configuration);
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
     if is_command_available(&command_name) {
-        Ok(run_command_with_env_vars(&command_name, &args, &configuration.working_dir, &configuration.environment, verbose).unwrap())
+        Ok(run_command_with_env_vars(
+            &command_name,
+            &args,
+            &configuration.working_dir,
+            &configuration.environment,
+            verbose,
+        )
+        .unwrap())
     } else {
-        println!("{}", format!("{} is not available", command_name).bold().red());
+        println!(
+            "{}",
+            format!("{} is not available", command_name).bold().red()
+        );
         Err(report!(KeeperError::CommandNotFound(command_name)))
     }
 }
@@ -153,7 +175,10 @@ fn get_command_name(configuration: &Configuration) -> String {
         "node" => "node".to_owned(),
         "npm" => "npm".to_owned(),
         "php" => "php".to_owned(),
-        "go" => configuration.go_exec_path.clone().unwrap_or("go".to_owned()),
+        "go" => configuration
+            .go_exec_path
+            .clone()
+            .unwrap_or("go".to_owned()),
         "command" => configuration.program.clone().unwrap_or_default(),
         _ => "".to_owned(),
     }
@@ -167,12 +192,24 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
         "maven-run" => {
             if let Some(args) = &configuration.args {
                 let args_text = args.join(" ");
-                vec!["compile".to_owned(), "exec:java".to_owned(),
-                     format!("-Dexec.mainClass='{}'", configuration.main_class.clone().unwrap_or_default()),
-                     format!("-Dexec.args='{}'", args_text)]
+                vec![
+                    "compile".to_owned(),
+                    "exec:java".to_owned(),
+                    format!(
+                        "-Dexec.mainClass='{}'",
+                        configuration.main_class.clone().unwrap_or_default()
+                    ),
+                    format!("-Dexec.args='{}'", args_text),
+                ]
             } else {
-                vec!["compile".to_owned(), "exec:java".to_owned(),
-                     format!("-Dexec.mainClass={}", configuration.main_class.clone().unwrap_or_default())]
+                vec![
+                    "compile".to_owned(),
+                    "exec:java".to_owned(),
+                    format!(
+                        "-Dexec.mainClass={}",
+                        configuration.main_class.clone().unwrap_or_default()
+                    ),
+                ]
             }
         }
         "docker-run" => {
@@ -183,7 +220,10 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
                 args.push(configuration.image_id_or_name.clone().unwrap_or_default());
                 args
             } else {
-                vec!["run".to_owned(), configuration.image_id_or_name.clone().unwrap_or_default()]
+                vec![
+                    "run".to_owned(),
+                    configuration.image_id_or_name.clone().unwrap_or_default(),
+                ]
             }
         }
         "python" => configuration.python_full_args().clone(),
@@ -193,7 +233,11 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
             args
         }
         "fastapi" => {
-            let module_and_app = format!("{}{}", &configuration.module.clone().unwrap_or("".to_owned()), &configuration.application.clone().unwrap_or("".to_owned()));
+            let module_and_app = format!(
+                "{}{}",
+                &configuration.module.clone().unwrap_or("".to_owned()),
+                &configuration.application.clone().unwrap_or("".to_owned())
+            );
             let mut args = vec!["-m".to_owned(), "unicorn".to_owned(), module_and_app];
             args.extend(configuration.arguments.clone().unwrap_or_default());
             args
@@ -208,13 +252,13 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
         }
         "go" => configuration.build_params.clone().unwrap_or_default(),
         "node" => {
-                let mut args = vec![];
-                if let Some(file) = &configuration.file {
-                    args.push(file.clone());
-                }
-                args.extend(configuration.app_options.clone().unwrap_or_default());
-                args
-        },
+            let mut args = vec![];
+            if let Some(file) = &configuration.file {
+                args.push(file.clone());
+            }
+            args.extend(configuration.app_options.clone().unwrap_or_default());
+            args
+        }
         "npm" => {
             let mut args = vec![];
             if let Some(command) = &configuration.command {
@@ -225,11 +269,10 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
                 args.push(scripts.clone());
             }
             args
-        },
+        }
         _ => vec![],
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -250,7 +293,8 @@ mod tests {
 
     #[test]
     fn test_run_configuration() {
-        let configuration = Configuration::new_command("my-ip", "curl", &["https://httpbin.org/ip".to_owned()]);
+        let configuration =
+            Configuration::new_command("my-ip", "curl", &["https://httpbin.org/ip".to_owned()]);
         run_configuration(&configuration, true).unwrap();
     }
 }
