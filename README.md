@@ -376,6 +376,7 @@ Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.vol
 
 sq is a command-line snippets keeper to manage cli snippets, and it's based on Just command runner.
 
+- List snippets: `sq list`
 - Add snippet: `sq add snippet_name`
 - Edit snippet: `sq edit snippet_name`. sq uses `EDITOR` environment variable to open snippets justfile.
 - Run snippet: `sq snippet_name`
