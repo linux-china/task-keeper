@@ -24,7 +24,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("test".to_string(), format!("{} test", amper_command));
     task_command_map.insert("clean".to_string(), format!("{} clean", amper_command));
     if let Ok(code) = std::fs::read_to_string("./amper") {
-        if !code.contains("amper_version=0.5.0") {
+        if !code.contains("amper_version=0.6.0") {
             task_command_map.insert("self-update".to_string(), format!("{} update", amper_command));
         }
     }
