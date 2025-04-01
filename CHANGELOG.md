@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.28.2] - 2025-04-01
+
+- Update to amper 0.6.0
+- Update to gradle 8.13
+
 ## [0.28.1] - 2025-01-12
 
 - List tasks by default instead of help
