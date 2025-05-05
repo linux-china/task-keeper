@@ -46,6 +46,7 @@ shell-escape = "0.1"
 bytecount = "0.6.8"
 just = "1.40.0"
 reqwest = { version = "0.12", features = ["blocking"] }
+anyhow = "1.0"
 tokio = { version = "1", features = ["full"] }
 async-nats = "0.40.0"
 minio = { git = "https://github.com/minio/minio-rs", rev = "1869cfeba7b588c259213456b8dbd1f57157dadd" }

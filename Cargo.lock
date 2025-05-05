@@ -2516,6 +2516,7 @@ checksum = "1e8f05f774b2db35bdad5a8237a90be1102669f8ea013fea9777b366d34ab145"
 name = "task-keeper"
 version = "0.28.2"
 dependencies = [
+ "anyhow",
  "async-nats",
  "bytecount",
  "cfg-if",
