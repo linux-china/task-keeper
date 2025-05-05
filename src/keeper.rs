@@ -1,3 +1,4 @@
+use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::RUNNERS;
@@ -5,7 +6,6 @@ use crate::{managers, runners};
 use colored::Colorize;
 use error_stack::Result;
 use std::collections::HashMap;
-use std::process::Output;
 
 pub fn run_tasks(
     cli_runner: &str,
@@ -94,7 +94,7 @@ pub fn run_runner_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     runners::run_task(runner, task_name, task_args, global_args, verbose)
 }
 

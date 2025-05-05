@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PyProjectToml {
