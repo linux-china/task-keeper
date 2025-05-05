@@ -1,4 +1,4 @@
-use crate::command_utils::CommandOutput;
+use crate::common::notification::send_notification;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::runners::RUNNERS;
@@ -32,8 +32,7 @@ pub fn run_tasks(
                                 task_args,
                                 global_args,
                                 verbose,
-                            )
-                            .unwrap();
+                            );
                         }
                     });
                     // execute package manager task
@@ -65,8 +64,7 @@ pub fn run_tasks(
                                     task_args,
                                     global_args,
                                     verbose,
-                                )
-                                .unwrap();
+                                );
                             }
                         });
                     }
@@ -94,8 +92,12 @@ pub fn run_runner_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
-    runners::run_task(runner, task_name, task_args, global_args, verbose)
+) {
+    let command_output =
+        runners::run_task(runner, task_name, task_args, global_args, verbose).unwrap();
+    if std::env::var("TK_TASK_ID").is_ok() {
+        send_notification(&command_output, task_name, task_args);
+    }
 }
 
 pub fn run_manager_task(
