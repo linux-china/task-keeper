@@ -1,12 +1,11 @@
-use std::collections::HashMap;
-use std::process::Output;
-use error_stack::{Result, ResultExt};
-use serde::{Deserialize, Serialize};
-use toml::Value;
+use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::run_command;
 use crate::task;
+use error_stack::{Result, ResultExt};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use toml::Value;
 use which::which;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -40,10 +39,18 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| toml::from_str::<MakefileToml>(&data).unwrap())
         .map(|makefile_toml| {
-            makefile_toml.tasks
+            makefile_toml
+                .tasks
                 .map(|tasks| {
-                    tasks.iter()
-                        .map(|(name, task)| task!(name, "cargo-make", task.description.clone().unwrap_or("".to_owned())))
+                    tasks
+                        .iter()
+                        .map(|(name, task)| {
+                            task!(
+                                name,
+                                "cargo-make",
+                                task.description.clone().unwrap_or("".to_owned())
+                            )
+                        })
                         .collect()
                 })
                 .unwrap_or_else(|| vec![])
@@ -51,7 +58,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .change_context(KeeperError::InvalidMakefileToml)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec!["make", "-t", task];
     args.extend(global_args);
     args.push("make");

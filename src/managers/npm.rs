@@ -1,10 +1,9 @@
-use std::collections::HashMap;
-use std::process::Output;
-use error_stack::{report, Result};
-use which::which;
-use crate::command_utils::{run_command_line};
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::common::{get_npm_command, parse_package_json};
 use crate::errors::KeeperError;
+use error_stack::{report, Result};
+use std::collections::HashMap;
+use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -20,19 +19,34 @@ pub fn is_command_available() -> bool {
 
 pub fn get_task_command_map() -> HashMap<String, String> {
     let package_json = parse_package_json().unwrap();
-    let package_manager_raw = package_json.package_manager.clone().unwrap_or("npm".to_owned());
+    let package_manager_raw = package_json
+        .package_manager
+        .clone()
+        .unwrap_or("npm".to_owned());
     let package_manager = get_npm_command(&package_json);
     let scripts = &package_json.scripts.unwrap_or_else(|| HashMap::new());
     let mut task_command_map = HashMap::new();
-    task_command_map.insert("install".to_string(), format!("{} install", package_manager));
+    task_command_map.insert(
+        "install".to_string(),
+        format!("{} install", package_manager),
+    );
     if scripts.contains_key("compile") {
-        task_command_map.insert("compile".to_string(), format!("{} run compile", package_manager));
+        task_command_map.insert(
+            "compile".to_string(),
+            format!("{} run compile", package_manager),
+        );
     }
     if scripts.contains_key("build") {
-        task_command_map.insert("build".to_string(), format!("{} run build", package_manager));
+        task_command_map.insert(
+            "build".to_string(),
+            format!("{} run build", package_manager),
+        );
     }
     if scripts.contains_key("start") {
-        task_command_map.insert("start".to_string(), format!("{} run start", package_manager));
+        task_command_map.insert(
+            "start".to_string(),
+            format!("{} run start", package_manager),
+        );
     }
     if scripts.contains_key("test") {
         task_command_map.insert("test".to_string(), format!("{} run test", package_manager));
@@ -41,7 +55,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         task_command_map.insert("doc".to_string(), format!("{} run doc", package_manager));
     }
     if scripts.contains_key("clean") {
-        task_command_map.insert("clean".to_string(), format!("{} run clean", package_manager));
+        task_command_map.insert(
+            "clean".to_string(),
+            format!("{} run clean", package_manager),
+        );
     }
     if package_manager == "bun" {
         task_command_map.insert("deps".to_string(), format!("bun pm ls"));
@@ -52,13 +69,19 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         }
     } else {
         task_command_map.insert("deps".to_string(), format!("{} list", package_manager));
-        task_command_map.insert("outdated".to_string(), format!("{} outdated", package_manager));
+        task_command_map.insert(
+            "outdated".to_string(),
+            format!("{} outdated", package_manager),
+        );
     }
     task_command_map.insert("update".to_string(), format!("{} update", package_manager));
 
     if package_manager_raw.starts_with("yarn@3") || package_manager_raw.starts_with("yarn@2") {
         task_command_map.insert("deps".to_string(), "yarn info --dependents".to_string());
-        task_command_map.insert("outdated".to_string(), "yarn upgrade-interactive".to_string());
+        task_command_map.insert(
+            "outdated".to_string(),
+            "yarn upgrade-interactive".to_string(),
+        );
         task_command_map.insert("update".to_string(), "yarn up".to_string());
     } else if package_manager_raw.starts_with("yarn@1") {
         task_command_map.insert("update".to_string(), "yarn upgrade".to_string());
@@ -70,10 +93,18 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map
 }
 
-pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    _task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(report!(KeeperError::ManagerTaskNotFound(task.to_owned(), "npm".to_string())))
+        Err(report!(KeeperError::ManagerTaskNotFound(
+            task.to_owned(),
+            "npm".to_string()
+        )))
     }
 }

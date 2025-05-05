@@ -1,7 +1,6 @@
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
 use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
@@ -29,9 +28,7 @@ pub struct ArgcSubCommand {
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| {
-            ARGC_SCRIPT_NAMES.iter().any(|name| dir.join(name).exists())
-        })
+        .map(|dir| ARGC_SCRIPT_NAMES.iter().any(|name| dir.join(name).exists()))
         .unwrap_or(false)
 }
 
@@ -41,22 +38,28 @@ pub fn is_command_available() -> bool {
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let current_dir = std::env::current_dir().unwrap();
-    let argc_file = ARGC_SCRIPT_NAMES.iter()
+    let argc_file = ARGC_SCRIPT_NAMES
+        .iter()
         .map(|name| current_dir.join(name))
         .find(|path| path.exists())
         .map(|path| path.to_str().unwrap_or("").to_owned())
         .unwrap_or("".to_owned());
     let json_text = capture_command_output("argc", &["--argc-export", &argc_file])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
-        })?;
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))?;
     serde_json::from_str::<ArgcfileJson>(&json_text)
         .map(|argc_file_json| {
             let mut tasks: Vec<Task> = vec![];
             // sub tasks
-            let sub_tasks: Vec<Task> = argc_file_json.subcommands
+            let sub_tasks: Vec<Task> = argc_file_json
+                .subcommands
                 .iter()
-                .map(|sub_command| task!(sub_command.name.clone(), "argc", &sub_command.describe.clone().unwrap_or("".to_owned())))
+                .map(|sub_command| {
+                    task!(
+                        sub_command.name.clone(),
+                        "argc",
+                        &sub_command.describe.clone().unwrap_or("".to_owned())
+                    )
+                })
                 .collect();
             tasks.extend(sub_tasks);
             tasks
@@ -64,7 +67,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .change_context(KeeperError::InvalidArgcFile)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

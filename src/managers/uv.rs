@@ -1,9 +1,8 @@
-use crate::command_utils::run_command_line;
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use error_stack::{report, Result};
 use std::collections::HashMap;
-use std::process::Output;
 use which::which;
 
 pub fn is_available() -> bool {
@@ -38,7 +37,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {

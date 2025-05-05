@@ -1,14 +1,12 @@
-use std::env;
-use std::io::{BufRead, BufReader};
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result};
+use error_stack::Result;
 use serde::{Deserialize, Serialize};
+use std::env;
+use std::io::{BufRead, BufReader};
 use which::which;
-
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ArgcfileJson {
@@ -22,10 +20,8 @@ pub struct ArgcSubCommand {
 }
 
 pub fn is_available() -> bool {
-    std::env::current_dir()
-        .map(|dir| {
-            dir.join("nurfile").exists()
-        })
+    env::current_dir()
+        .map(|dir| dir.join("nurfile").exists())
         .unwrap_or(false)
 }
 
@@ -35,13 +31,11 @@ pub fn is_command_available() -> bool {
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let nur_list = capture_command_output("nur", &["--quiet", "--list"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("".to_owned())
-        })?;
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let tasks: Vec<Task> = BufReader::new(nur_list.as_bytes())
         .lines()
         .map(|line| line.unwrap())
-        .filter(|line|  !line.is_empty())
+        .filter(|line| !line.is_empty())
         .map(|line| {
             let name = line.trim();
             let command = format!("nur {}", name);
@@ -51,7 +45,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push("--quiet");

@@ -1,11 +1,10 @@
-use crate::command_utils::{capture_command_output, run_command};
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::common::pyproject::get_uv_tool_path;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::{Result, ResultExt};
 use serde::{Deserialize, Serialize};
-use std::process::Output;
 use which::which;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -31,7 +30,7 @@ pub fn is_command_available() -> bool {
     get_uv_tool_path("invoke").is_some() || which("invoke").is_ok()
 }
 
-pub fn install() -> Result<Output, KeeperError> {
+pub fn install() -> Result<CommandOutput, KeeperError> {
     run_command(
         "uv",
         &["tool", "install", "--python", "3.11", "invoke"],
@@ -68,7 +67,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

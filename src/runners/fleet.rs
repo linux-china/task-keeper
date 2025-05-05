@@ -1,4 +1,4 @@
-use crate::command_utils::{is_command_available, run_command_with_env_vars};
+use crate::command_utils::{is_command_available, run_command_with_env_vars, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -7,7 +7,6 @@ use error_stack::{report, Result};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::process::Output;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -127,7 +126,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     let run_json = parse_run_json();
     let result = run_json
         .configurations
@@ -140,7 +139,10 @@ pub fn run_task(
     }
 }
 
-fn run_configuration(configuration: &Configuration, verbose: bool) -> Result<Output, KeeperError> {
+fn run_configuration(
+    configuration: &Configuration,
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let command_name = get_command_name(configuration);
     let args = get_command_args(configuration);
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();

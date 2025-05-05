@@ -1,11 +1,10 @@
-use std::env;
-use std::io::{BufRead, BufReader};
-use std::process::{Output};
-use error_stack::{Result, ResultExt};
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command_line};
 use crate::task;
+use error_stack::{Result, ResultExt};
+use std::env;
+use std::io::{BufRead, BufReader};
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -36,11 +35,17 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    _task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let tasks = list_tasks()?;
-    let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
-        KeeperError::TaskNotFound(task.to_string())
-    })?;
+    let task = tasks
+        .iter()
+        .find(|t| t.name == task)
+        .ok_or_else(|| KeeperError::TaskNotFound(task.to_string()))?;
     run_command_line(&task.description, verbose)
 }
 
@@ -63,7 +68,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("my-ip", &[], &[],true) {
+        if let Ok(output) = run_task("my-ip", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

@@ -1,17 +1,15 @@
-use std::process::{Output};
+use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
-use error_stack::{Result};
 use crate::models::Task;
-use crate::command_utils::{run_command};
 use crate::task;
-use serde::{Deserialize};
+use error_stack::Result;
+use serde::Deserialize;
 use which::which;
-
 
 #[derive(Deserialize, Debug, Default)]
 struct Project {
     pub name: Option<String>,
-    #[serde(rename="target")]
+    #[serde(rename = "target")]
     pub targets: Option<Vec<Target>>,
 }
 
@@ -32,16 +30,22 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_build_xml().targets
+    Ok(parse_build_xml()
+        .targets
         .map(|targets| {
-            targets.into_iter().map(|target| {
-                task!(&target.name.clone(), "ant", &target.description.clone().unwrap_or("".to_owned()))
-            }).collect()
+            targets
+                .into_iter()
+                .map(|target| {
+                    task!(
+                        &target.name.clone(),
+                        "ant",
+                        &target.description.clone().unwrap_or("".to_owned())
+                    )
+                })
+                .collect()
         })
-        .unwrap_or_else(|| vec![])
-    )
+        .unwrap_or_else(|| vec![]))
 }
-
 
 fn parse_build_xml() -> Project {
     std::env::current_dir()
@@ -51,7 +55,12 @@ fn parse_build_xml() -> Project {
         .unwrap()
 }
 
-pub fn run_task(task: &str, task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     //args.extend(global_args);
     args.push(task);
@@ -62,7 +71,6 @@ pub fn run_task(task: &str, task_args: &[&str], _global_args: &[&str], verbose: 
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn test_parse() {

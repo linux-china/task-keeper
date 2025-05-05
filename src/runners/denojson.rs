@@ -1,12 +1,11 @@
-use std::collections::HashMap;
-use std::process::Output;
-use error_stack::{Result, ResultExt};
-use serde::{Deserialize, Serialize};
+use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
+use error_stack::{Result, ResultExt};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use which::which;
-use crate::command_utils::run_command;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct DenoJson {
@@ -29,9 +28,11 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| serde_json::from_str::<DenoJson>(&data).unwrap())
         .map(|deno_json| {
-            deno_json.tasks
+            deno_json
+                .tasks
                 .map(|scripts| {
-                    scripts.iter()
+                    scripts
+                        .iter()
                         .map(|(name, command)| task!(name, "deno", command))
                         .collect()
                 })
@@ -40,7 +41,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .change_context(KeeperError::InvalidPackageJson)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push("task");
@@ -63,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("first", &[], &[],true) {
+        if let Ok(output) = run_task("first", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

@@ -1,11 +1,10 @@
-use std::process::Output;
-use error_stack::{Result};
+use crate::command_utils::{run_command, CommandOutput};
+use crate::common::{get_npm_command, parse_package_json};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::run_command;
 use crate::task;
+use error_stack::Result;
 use which::which;
-use crate::common::{get_npm_command, parse_package_json};
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -20,20 +19,26 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    parse_package_json()
-        .map(|package_json| {
-            package_json.scripts
-                .map(|scripts| {
-                    scripts.iter()
-                        .filter(|(name, _)| !name.starts_with("pre") && !name.starts_with("post"))
-                        .map(|(name, command)| task!(name, "npm", command))
-                        .collect()
-                })
-                .unwrap_or_else(|| vec![])
-        })
+    parse_package_json().map(|package_json| {
+        package_json
+            .scripts
+            .map(|scripts| {
+                scripts
+                    .iter()
+                    .filter(|(name, _)| !name.starts_with("pre") && !name.starts_with("post"))
+                    .map(|(name, command)| task!(name, "npm", command))
+                    .collect()
+            })
+            .unwrap_or_else(|| vec![])
+    })
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let package_json = parse_package_json()?;
     let command_name = get_npm_command(&package_json);
     let mut args = vec![];

@@ -1,11 +1,10 @@
-use crate::command_utils::{run_command_by_shell, run_command_line};
+use crate::command_utils::{run_command_by_shell, run_command_line, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::Result;
-use serde::{Deserialize, Serialize};
-use std::process::Output;
 use jsonc_parser::parse_to_serde_value;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct TasksJson {
@@ -57,8 +56,14 @@ fn parse_run_json() -> TasksJson {
     std::env::current_dir()
         .map(|dir| dir.join(".vscode").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| parse_to_serde_value(&data, &Default::default()).unwrap().unwrap())
-        .map(|json_value| serde_json::from_value::<TasksJson>(json_value).expect(".vscode/tasks.json format"))
+        .map(|data| {
+            parse_to_serde_value(&data, &Default::default())
+                .unwrap()
+                .unwrap()
+        })
+        .map(|json_value| {
+            serde_json::from_value::<TasksJson>(json_value).expect(".vscode/tasks.json format")
+        })
         .unwrap()
 }
 
@@ -67,7 +72,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     let tasks = list_tasks()?;
     let task = tasks
         .iter()

@@ -1,13 +1,11 @@
-use std::io::{BufRead, BufReader};
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result};
+use error_stack::Result;
 use regex::Regex;
+use std::io::{BufRead, BufReader};
 use which::which;
-
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -15,22 +13,17 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-
 pub fn is_command_available() -> bool {
     which("rake").is_ok()
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     let makefile_meta_text = capture_command_output("rake", &["-AT"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
-        })?;
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-].*").unwrap();
     let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
         .lines()
-        .filter(|line| {
-            line.is_ok() && re.is_match(line.as_ref().unwrap())
-        })
+        .filter(|line| line.is_ok() && re.is_match(line.as_ref().unwrap()))
         .map(|line| line.unwrap())
         .map(|line| {
             let mut parts = line.split('#');
@@ -40,11 +33,17 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             }
             let description = parts.next().unwrap_or("").trim().to_owned();
             task!(task_name, "rake", description)
-        }).collect();
+        })
+        .collect();
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);
@@ -65,7 +64,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        if let Ok(output) = run_task("doit", &[], &[],true) {
+        if let Ok(output) = run_task("doit", &[], &[], true) {
             let status_code = output.status.code().unwrap_or(0);
             println!("exit code: {}", status_code);
         }

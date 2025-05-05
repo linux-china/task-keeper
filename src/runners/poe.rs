@@ -1,11 +1,10 @@
-use crate::command_utils::run_command;
+use crate::command_utils::{run_command, CommandOutput};
 use crate::common::pyproject::{get_uv_tool_path, PyProjectToml};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::Result;
-use std::process::Output;
 use which::which;
 
 pub fn is_available() -> bool {
@@ -16,7 +15,7 @@ pub fn is_command_available() -> bool {
     get_uv_tool_path("poe").is_some() || which("poe").is_ok()
 }
 
-pub fn install() -> Result<Output, KeeperError> {
+pub fn install() -> Result<CommandOutput, KeeperError> {
     run_command(
         "uv",
         &["tool", "install", "--python", "3.13", "poethepoet"],
@@ -43,7 +42,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<Output, KeeperError> {
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

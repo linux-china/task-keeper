@@ -1,10 +1,9 @@
-use std::io::{BufRead, BufReader};
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result};
+use error_stack::Result;
+use std::io::{BufRead, BufReader};
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -13,15 +12,11 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let tasks_text = capture_command_output("cargo", &[ "-q", "xtask", "--help"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("".to_owned())
-        })?;
+    let tasks_text = capture_command_output("cargo", &["-q", "xtask", "--help"])
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let tasks: Vec<Task> = BufReader::new(tasks_text.as_bytes())
         .lines()
-        .filter(|line| {
-            line.is_ok() && line.as_ref().unwrap().starts_with("  ")
-        })
+        .filter(|line| line.is_ok() && line.as_ref().unwrap().starts_with("  "))
         .map(|line| line.unwrap().trim().to_string())
         .map(|line| {
             let offset = line.find(' ').unwrap_or(0);
@@ -31,7 +26,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 if description.starts_with('-') {
                     description = description[1..].trim();
                 }
-                task!(task_name, "xtask",description)
+                task!(task_name, "xtask", description)
             } else {
                 task!(line, "xtask")
             }
@@ -40,7 +35,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.push("-q");
     args.push("xtask");
@@ -49,4 +49,3 @@ pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: b
     args.extend(task_args);
     run_command("cargo", &args, verbose)
 }
-

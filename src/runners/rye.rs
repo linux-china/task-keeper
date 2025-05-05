@@ -1,12 +1,11 @@
-use std::process::Output;
-use crate::errors::KeeperError;
-use crate::models::Task;
-use crate::command_utils::{run_command};
-use crate::task;
-use error_stack::{Result};
-use which::which;
+use crate::command_utils::{run_command, CommandOutput};
 use crate::common::pyproject::PyProjectToml;
 use crate::common::pyproject_toml_has_tool;
+use crate::errors::KeeperError;
+use crate::models::Task;
+use crate::task;
+use error_stack::Result;
+use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -32,7 +31,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push("run");

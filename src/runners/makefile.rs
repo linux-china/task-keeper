@@ -1,11 +1,10 @@
-use std::io::{BufRead, BufReader};
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result};
+use error_stack::Result;
 use regex::Regex;
+use std::io::{BufRead, BufReader};
 use which::which;
 
 pub fn is_available() -> bool {
@@ -23,48 +22,43 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         return list_tasks_by_mmake();
     }
     let makefile_meta_text = capture_command_output("make", &["-pRrq"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("".to_owned())
-        })?;
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*:.*").unwrap();
 
     let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
         .lines()
-        .filter(|line| {
-            line.is_ok() && re.is_match(line.as_ref().unwrap())
-        })
+        .filter(|line| line.is_ok() && re.is_match(line.as_ref().unwrap()))
         .map(|line| line.unwrap().split(':').nth(0).unwrap().to_owned())
-        .filter(|task_name| {
-            task_name != "Makefile"
-        })
-        .map(|task_name| {
-            task!(task_name, "make")
-        }).collect();
+        .filter(|task_name| task_name != "Makefile")
+        .map(|task_name| task!(task_name, "make"))
+        .collect();
     Ok(tasks)
 }
 
 fn list_tasks_by_mmake() -> Result<Vec<Task>, KeeperError> {
     let makefile_meta_text = capture_command_output("mmake", &["help"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("".to_owned())
-        })?;
+        .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*.*").unwrap();
     let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
         .lines()
-        .filter(|line| {
-            line.is_ok() && re.is_match(line.as_ref().unwrap().trim())
-        })
+        .filter(|line| line.is_ok() && re.is_match(line.as_ref().unwrap().trim()))
         .map(|line| line.unwrap().trim().to_owned())
         .map(|line| {
             let mut parts = line.split_whitespace();
             let task_name = parts.next().unwrap();
             let description = parts.next().unwrap_or("");
-            task!(task_name, "make",description)
-        }).collect();
+            task!(task_name, "make", description)
+        })
+        .collect();
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

@@ -1,39 +1,76 @@
 pub mod fleet;
 
-pub mod zed;
-pub mod justfile;
-pub mod packagejson;
-pub mod denojson;
-pub mod makefile;
-pub mod rakefile;
-pub mod taskspy;
-pub mod taskfileyml;
-pub mod makefiletoml;
-pub mod procfile;
-pub mod markdown;
-pub mod taskshell;
-pub mod composer;
-pub mod jbang;
-pub mod vstasks;
 pub mod ant;
-pub mod rye;
-pub mod poetry;
-pub mod bun_shell;
 pub mod argcfile;
+pub mod bun_shell;
+pub mod composer;
+pub mod denojson;
+pub mod jbang;
+pub mod justfile;
+pub mod makefile;
+pub mod makefiletoml;
+pub mod markdown;
+pub mod nurfile;
+pub mod packagejson;
+pub mod poe;
+pub mod poetry;
+pub mod procfile;
+pub mod rakefile;
+pub mod rye;
+pub mod taskfileyml;
+pub mod taskshell;
+pub mod taskspy;
+pub mod vstasks;
 pub mod xtask;
 pub mod xtask_go;
-pub mod nurfile;
-pub mod poe;
+pub mod zed;
 
-use std::process::{Output};
+use crate::command_utils::CommandOutput;
+use crate::errors::KeeperError;
 use colored::Colorize;
 use error_stack::{report, Result};
-use crate::errors::KeeperError;
 
-pub const RUNNERS: &'static [&'static str] = &["ant", "rake", "invoke", "task", "cargo-make", "just", "make", "proc", "npm", "deno", "composer", "jbang", "shell", "fleet", "vscode", "zed", "markdown", "rye", "poe", "poetry","bun-shell","argc","xtask","xtask-go","nur"];
+pub const RUNNERS: &'static [&'static str] = &[
+    "ant",
+    "rake",
+    "invoke",
+    "task",
+    "cargo-make",
+    "just",
+    "make",
+    "proc",
+    "npm",
+    "deno",
+    "composer",
+    "jbang",
+    "shell",
+    "fleet",
+    "vscode",
+    "zed",
+    "markdown",
+    "rye",
+    "poe",
+    "poetry",
+    "bun-shell",
+    "argc",
+    "xtask",
+    "xtask-go",
+    "nur",
+];
 
-pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
-    println!("{}", format!("[tk] execute {} from {}", task_name, runner).bold().blue());
+pub fn run_task(
+    runner: &str,
+    task_name: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
+    println!(
+        "{}",
+        format!("[tk] execute {} from {}", task_name, runner)
+            .bold()
+            .blue()
+    );
     match runner {
         "ant" => ant::run_task(task_name, task_args, global_args, verbose),
         "npm" => packagejson::run_task(task_name, task_args, global_args, verbose),
@@ -60,7 +97,10 @@ pub fn run_task(runner: &str, task_name: &str, task_args: &[&str], global_args: 
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
         "xtask" => xtask::run_task(task_name, task_args, global_args, verbose),
         "xtask-go" => xtask_go::run_task(task_name, task_args, global_args, verbose),
-        _ => Err(report!(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)))),
+        _ => Err(report!(KeeperError::FailedToRunTasks(format!(
+            "Unknown runner: {}",
+            runner
+        )))),
     }
 }
 

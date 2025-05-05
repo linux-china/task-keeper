@@ -1,16 +1,15 @@
-use std::io::{BufRead, BufReader};
-use std::process::{Output};
+use crate::command_utils::{run_command_line, run_command_line_from_stdin, CommandOutput};
+use crate::errors::KeeperError;
+use crate::models::Task;
+use crate::task;
+use error_stack::{Result, ResultExt};
+use logos::Logos;
+use std::collections::HashMap;
 use std::env::temp_dir;
 use std::fs::File;
 use std::io::prelude::*;
-use error_stack::{Result, ResultExt};
+use std::io::{BufRead, BufReader};
 use uuid::Uuid;
-use crate::errors::KeeperError;
-use crate::models::Task;
-use crate::command_utils::{run_command_line, run_command_line_from_stdin};
-use crate::task;
-use std::collections::HashMap;
-use logos::Logos;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -32,18 +31,29 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
             break;
         }
         let end_num = end.unwrap();
-        let line_break_offset = readme_md[offset_num..].find('\n').map(|x| x + offset_num).unwrap();
-        let language_and_attributes: &str = readme_md.get(offset_num..line_break_offset).unwrap().trim();
-        if language_and_attributes.contains('{') && language_and_attributes.ends_with('}') && language_and_attributes.contains('#') {
+        let line_break_offset = readme_md[offset_num..]
+            .find('\n')
+            .map(|x| x + offset_num)
+            .unwrap();
+        let language_and_attributes: &str =
+            readme_md.get(offset_num..line_break_offset).unwrap().trim();
+        if language_and_attributes.contains('{')
+            && language_and_attributes.ends_with('}')
+            && language_and_attributes.contains('#')
+        {
             // format as {#name first=second} {#name}
             let language = language_and_attributes.split('{').next().unwrap().trim();
-            let markdown_attributes = language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
+            let markdown_attributes =
+                language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
             let attributes = parse_markdown_attributes(markdown_attributes);
             if attributes.contains_key("id") {
                 let name = attributes.get("id").unwrap();
                 let code_runner = attributes.get("class").cloned().unwrap_or("".to_string());
                 let description = attributes.get("desc").cloned().unwrap_or("".to_string());
-                let code = readme_md.get((line_break_offset + 1)..end_num).unwrap().trim();
+                let code = readme_md
+                    .get((line_break_offset + 1)..end_num)
+                    .unwrap()
+                    .trim();
                 if !code.is_empty() {
                     if language == "javascript" || language == "typescript" {
                         let runner2 = if !code_runner.is_empty() {
@@ -51,15 +61,30 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                         } else {
                             "node".to_owned()
                         };
-                        tasks.push(parse_task_from_code_block(&name, code, &runner2, &description));
+                        tasks.push(parse_task_from_code_block(
+                            &name,
+                            code,
+                            &runner2,
+                            &description,
+                        ));
                     } else if language == "shell" {
                         tasks.push(parse_task_from_code_block(&name, code, "sh", &description));
                     } else if language == "java" || language == "jshelllanguage" {
-                        tasks.push(parse_task_from_code_block(&name, code, "java", &description));
+                        tasks.push(parse_task_from_code_block(
+                            &name,
+                            code,
+                            "java",
+                            &description,
+                        ));
                     } else if language == "kotlin" {
                         tasks.push(parse_task_from_code_block(&name, code, "kt", &description));
                     } else if language == "groovy" {
-                        tasks.push(parse_task_from_code_block(&name, code, "groovy", &description));
+                        tasks.push(parse_task_from_code_block(
+                            &name,
+                            code,
+                            "groovy",
+                            &description,
+                        ));
                     }
                 }
             }
@@ -97,7 +122,12 @@ fn find_shell_code_offset(text: &str) -> Option<usize> {
     offset
 }
 
-fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str, description: &str) -> Task {
+fn parse_task_from_code_block(
+    task_name: &str,
+    code_block: &str,
+    runner2: &str,
+    description: &str,
+) -> Task {
     let lines = BufReader::new(code_block.as_bytes())
         .lines()
         .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
@@ -112,7 +142,8 @@ fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str, 
         .collect::<Vec<String>>();
     let mut command_lines: Vec<String> = vec![];
     let mut line_escape = false;
-    lines.iter()
+    lines
+        .iter()
         .filter(|line| !line.starts_with("#"))
         .for_each(|line| {
             let mut temp_line = line.as_str();
@@ -135,11 +166,17 @@ fn parse_task_from_code_block(task_name: &str, code_block: &str, runner2: &str, 
     task!(task_name, "markdown", runner2, task_desc, Some(code_block))
 }
 
-pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    _task_args: &[&str],
+    _global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let tasks = list_tasks()?;
-    let task = tasks.iter().find(|t| t.name == task).ok_or_else(|| {
-        KeeperError::TaskNotFound(task.to_string())
-    })?;
+    let task = tasks
+        .iter()
+        .find(|t| t.name == task)
+        .ok_or_else(|| KeeperError::TaskNotFound(task.to_string()))?;
     let runner2 = task.runner2.clone().unwrap_or("sh".to_owned());
     let code_block = task.code_block.clone().unwrap_or("".to_string());
     if runner2 == "node" {
@@ -159,9 +196,7 @@ pub fn run_task(task: &str, _task_args: &[&str], _global_args: &[&str], verbose:
     } else {
         BufReader::new(code_block.as_bytes())
             .lines()
-            .map(|line| {
-                run_command_line(&line.unwrap(), verbose)
-            })
+            .map(|line| run_command_line(&line.unwrap(), verbose))
             .last()
             .unwrap()
     }
@@ -223,7 +258,6 @@ fn parse_markdown_attributes(markdown_attributes: &str) -> HashMap<String, Strin
     }
     return attributes;
 }
-
 
 #[cfg(test)]
 mod tests {

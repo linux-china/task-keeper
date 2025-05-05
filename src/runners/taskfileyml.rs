@@ -1,12 +1,10 @@
-use std::process::Output;
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::command_utils::{run_command, capture_command_output};
 use crate::task;
-use error_stack::{Result};
+use error_stack::Result;
 use regex::Regex;
 use which::which;
-
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -18,18 +16,14 @@ pub fn is_command_available() -> bool {
     get_go_task_command().is_some()
 }
 
-
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let makefile_meta_text = capture_command_output(&get_go_task_command().unwrap(), &["--list-all"])
-        .map(|output| {
-            String::from_utf8(output.stdout).unwrap_or("{}".to_owned())
-        })?;
+    let makefile_meta_text =
+        capture_command_output(&get_go_task_command().unwrap(), &["--list-all"])
+            .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))?;
     let re = Regex::new(r"^\* [a-zA-Z0-9._-]+:.*").unwrap();
     let tasks: Vec<Task> = makefile_meta_text
         .lines()
-        .filter(|line| {
-            re.is_match(line)
-        })
+        .filter(|line| re.is_match(line))
         .flat_map(|line| {
             let mut parts = line.splitn(2, ":");
             let mut task_name = parts.next().unwrap().trim().to_owned();
@@ -44,17 +38,27 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                 tasks.push(task!(task_name, "task", task_description));
                 let aliases = description[offset + 9..description.len() - 1].trim();
                 for alias in aliases.split(",") {
-                    tasks.push(task!(alias.trim(), "task", format!("Alias for {}", task_name)));
+                    tasks.push(task!(
+                        alias.trim(),
+                        "task",
+                        format!("Alias for {}", task_name)
+                    ));
                 }
             } else {
                 tasks.push(task!(task_name, "task", description));
             }
             tasks
-        }).collect();
+        })
+        .collect();
     Ok(tasks)
 }
 
-pub fn run_task(task: &str, task_args: &[&str], global_args: &[&str], verbose: bool) -> Result<Output, KeeperError> {
+pub fn run_task(
+    task: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);
