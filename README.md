@@ -18,6 +18,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 * .env support by default: `tk --no-dotenv` to disable
 * `--doctor` support: check your system for potential problems to run tasks
 * Execute command line: `tk -- node hello.js` with correct language version and PATH
+* Notification: save task output to OSS or send notification to NATS server
 
 # How to get started?
 
@@ -382,6 +383,22 @@ sq is a command-line snippets keeper to manage cli snippets, and it's based on J
 - Run snippet: `sq snippet_name`
 
 Snippets justfile: `$HOME/.sk/snippets.just`.
+
+# Notification
+
+Please set `TK_TASK_NAME` for task unique name, and Task Keeper will send notification when the task finished.
+If not set, Task Keeper will ge.
+
+* NATS: `NATS_URL` environment variable to set NATS server URL, and `task-keeper` as subject.
+* Output saved on OSS: `TK_TASK_NAME` environment variable to set OSS object name
+  to set OSS object name.
+    - `S3_ENDPOINT_URL`: such as `http://minio.example.com:9000`
+    - `S3_ACCESS_KEY`: access key for S3
+    - `S3_SECRET_KEY`: access secret for S3
+    - `S3_BUCKET`: bucket name for S3
+    - `S3_REGION`: region for S3, such as `us-east-1`
+    - `S3_VIRTUAL_STYLE`: for MinIO, you don't need to set this, but for Aliyun OSS, you need to set this to `true` to use
+      virtual-hosted-style requests.
 
 # References
 
