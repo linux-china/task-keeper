@@ -556,7 +556,7 @@ pub fn run_task(
                             .blue()
                     );
                     let command_output = task(task_name, task_args, global_args, verbose).unwrap();
-                    if std::env::var("TK_TASK_NAME").is_ok() {
+                    if std::env::var("TK_TASK_ID").is_ok() {
                         send_notification(&command_output, task_name, task_args);
                     }
                 });

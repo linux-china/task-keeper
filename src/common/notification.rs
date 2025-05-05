@@ -22,7 +22,7 @@ pub fn send_notification(
     command_name: &str,
     command_args: &[&str],
 ) {
-    let task_id = env::var("TK_TASK_NAME").unwrap();
+    let task_id = env::var("TK_TASK_ID").unwrap();
     // Create a notification object
     let notification = Notification {
         task_id: task_id.clone(),
