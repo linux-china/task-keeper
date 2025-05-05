@@ -26,13 +26,13 @@ path = "src/sq.rs"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 jsonc-parser={version = "0.26", features = ["serde"]}
-serde-xml-rs = "0.6"
+serde-xml-rs = "0.8"
 toml = "0.8"
 java-properties = "2"
 colored = "3"
 clap = "4"
 regex = "1"
-dirs = "5"
+dirs = "6"
 dirs-sys = "0.5"
 which = "7.0"
 thiserror = "2"
@@ -46,6 +46,9 @@ shell-escape = "0.1"
 bytecount = "0.6.8"
 just = "1.40.0"
 reqwest = { version = "0.12", features = ["blocking"] }
+tokio = { version = "1", features = ["full"] }
+async-nats = "0.40.0"
+minio = { git = "https://github.com/minio/minio-rs", rev = "1869cfeba7b588c259213456b8dbd1f57157dadd" }
 
 [profile.release]
 strip = true
