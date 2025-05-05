@@ -1,4 +1,5 @@
 use crate::command_utils::CommandOutput;
+use crate::common::notification::send_notification;
 use crate::errors::KeeperError;
 use colored::Colorize;
 use error_stack::Result;
@@ -554,7 +555,10 @@ pub fn run_task(
                             .bold()
                             .blue()
                     );
-                    task(task_name, task_args, global_args, verbose).unwrap();
+                    let command_output = task(task_name, task_args, global_args, verbose).unwrap();
+                    if std::env::var("TK_TASK_NAME").is_ok() {
+                        send_notification(&command_output, task_name, task_args);
+                    }
                 });
             }
         }
