@@ -1,4 +1,5 @@
 pub mod pyproject;
+pub mod notification;
 
 use crate::errors::KeeperError;
 use error_stack::{Result, ResultExt};
