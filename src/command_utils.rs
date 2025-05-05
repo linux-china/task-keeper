@@ -131,6 +131,7 @@ pub fn run_command_with_env_vars(
     verbose: bool,
 ) -> Result<CommandOutput, KeeperError> {
     let mut command = Command::new(command_name);
+    command.envs(std::env::vars());
     if args.len() > 0 {
         command.args(args);
     }
@@ -145,8 +146,10 @@ pub fn run_command_with_env_vars(
     if verbose {
         println!("[tk] command line:  {:?}", command);
     }
+    if std::env::var("TK_TASK_NAME").is_ok() {
+        return intercept_output(&mut command);
+    }
     command
-        .envs(std::env::vars())
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
@@ -155,7 +158,10 @@ pub fn run_command_with_env_vars(
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
 }
 
-pub fn run_command_by_shell(command_line: &str, verbose: bool) -> Result<CommandOutput, KeeperError> {
+pub fn run_command_by_shell(
+    command_line: &str,
+    verbose: bool,
+) -> Result<CommandOutput, KeeperError> {
     let mut command = if cfg!(target_os = "windows") {
         Command::new("cmd")
     } else {
