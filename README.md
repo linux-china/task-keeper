@@ -247,7 +247,7 @@ Available.
 
 ### Python
 
-Available with following tools:
+Available with the following tools:
 
 * [poe](https://github.com/nat-n/poethepoet): `[tool.poe]` detected in `pyproject.toml`
 * [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected in `pyproject.toml`
@@ -386,11 +386,10 @@ Snippets justfile: `$HOME/.sk/snippets.just`.
 
 # Notification
 
-Please set `TK_TASK_NAME` for task unique name, and Task Keeper will send notification when the task finished.
-If not set, Task Keeper will ge.
+Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notification when the task finished.
 
 * NATS: `NATS_URL` environment variable to set NATS server URL, and `task-keeper` as subject.
-* Output saved on OSS: `TK_TASK_NAME` environment variable to set OSS object name
+* Output saved on OSS: `TK_TASK_ID` environment variable to set OSS object name, such as `tasks/random-uuid`.
   to set OSS object name.
     - `S3_ENDPOINT_URL`: such as `http://minio.example.com:9000`
     - `S3_ACCESS_KEY`: access key for S3
@@ -399,6 +398,8 @@ If not set, Task Keeper will ge.
     - `S3_REGION`: region for S3, such as `us-east-1`
     - `S3_VIRTUAL_STYLE`: for MinIO, you don't need to set this, but for Aliyun OSS, you need to set this to `true` to use
       virtual-hosted-style requests.
+
+**Tips**: Notification is useful for CI/CD.
 
 # References
 
