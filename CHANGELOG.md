@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.29.0] - 2025-05-05
+
+- Add notification support: save output to OSS and notify via NATS
+
 ## [0.28.2] - 2025-04-01
 
 - Update to amper 0.6.0
