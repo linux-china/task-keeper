@@ -34,6 +34,12 @@ pub fn send_notification(
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
+        // save to OSS
+        if env::var("S3_BUCKET").is_ok() {
+            save_oss(&notification).await.unwrap_or_else(|err| {
+                eprintln!("Failed to save to OSS: {}", err);
+            });
+        }
         // Send the notification asynchronously
         if let Ok(nats_url) = env::var("NATS_URL") {
             send_nats_message(&nats_url, &notification)
@@ -41,12 +47,6 @@ pub fn send_notification(
                 .unwrap_or_else(|err| {
                     eprintln!("Failed to send NATS message: {}", err);
                 });
-        }
-        // save to OSS
-        if let Ok(s3_bucket) = env::var("S3_BUCKET") {
-            save_oss(&notification).await.unwrap_or_else(|err| {
-                eprintln!("Failed to save to OSS: {}", err);
-            });
         }
     })
 }
