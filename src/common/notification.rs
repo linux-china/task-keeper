@@ -1,12 +1,11 @@
 use crate::command_utils::CommandOutput;
-use minio::s3::args::PutObjectArgs;
+use minio::s3::builders::ObjectContent;
 use minio::s3::client::{Client, ClientBuilder};
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
-use minio::s3::utils::Multimap;
+use minio::s3::multimap::Multimap;
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::io::{Cursor, Read};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Notification {
@@ -67,6 +66,7 @@ async fn send_nats_message(nats_url: &str, notification: &Notification) -> anyho
 
 async fn save_oss(notification: &Notification) -> anyhow::Result<()> {
     let s3_bucket = env::var("S3_BUCKET")?;
+    let object_name = &notification.task_id;
     if let Ok(minio_client) = create_oss_client() {
         let mut text = String::new();
         if let Some(stdout) = &notification.stdout {
@@ -75,15 +75,16 @@ async fn save_oss(notification: &Notification) -> anyhow::Result<()> {
         if let Some(stderr) = &notification.stderr {
             text.push_str(stderr);
         }
-        let reader: &mut dyn Read = &mut Cursor::new(text.as_bytes());
-        let mut put_object =
-            PutObjectArgs::new(&s3_bucket, &notification.task_id, reader, None, None)?;
-        put_object.content_type = "text/plain";
+        let content = ObjectContent::from(text);
         let mut user_metadata = Multimap::new();
         user_metadata.insert("status".to_string(), notification.status.to_string());
         user_metadata.insert("command".to_string(), notification.command_name.to_string());
-        put_object.user_metadata = Some(&user_metadata);
-        minio_client.put_object(&mut put_object).await?;
+        minio_client
+            .put_object_content(&s3_bucket, object_name, content)
+            .content_type("text/plain".to_string())
+            .user_metadata(Some(user_metadata))
+            .send()
+            .await?;
     }
     Ok(())
 }
