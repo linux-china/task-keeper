@@ -2,6 +2,13 @@
 
 # Task Keeper Changelog
 
+
+## [0.29.1] - 2025-06-10
+
+- Update to amper 0.7.0
+- Apache Maven 3.9.10
+- Use `minio-rs 0.3.0`
+
 ## [0.29.0] - 2025-05-05
 
 - Add notification support: save output to OSS and notify via NATS
