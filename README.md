@@ -1,13 +1,13 @@
 Task Keeper
 =================
 tk(Task Keeper) is a tool to manage tasks from different task files,
-such as `Makefile`,`justfile`, `package.json` , `deno.jso`, `.fleet/run.json` etc.,
+such as `Makefile`,`justfile`, `package.json` , `deno.json`, `.fleet/run.json` etc.,
 and call tasks from different project management tools,
 such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
-**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets.
-
 ![Task Keeper](./screenshot.png)
+
+**Bonus**: sq(Squirrel) is a command-line snippets keeper to manage cli snippets.
 
 # Features
 
