@@ -17,7 +17,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
 * .env support by default: `tk --no-dotenv` to disable
 * `--doctor` support: check your system for potential problems to run tasks
-* Execute command line: `tk -- node hello.js` with correct language version and PATH
+* Execute command line: `tk -- node hello.js` with a correct language version and PATH
 * Notification: save task output to OSS or send notification to NATS server
 
 # How to get started?
@@ -28,16 +28,16 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
     * install: e.g. `nix profile install github:linux-china/task-keeper`
 * Download pre-built binary from [GitHub Releases](https://github.com/linux-china/task-keeper/releases)
 
-After install, execute `tk --help` for usage. Some commands as following:
+After installation, execute `tk --help` for usage. Some commands as following:
 
 * list tasks: `tk --list`
 * execute task: `tk task_name`
 
 # Why task keeper?
 
-Sorry, I got lost in different task files and management tools, and sometimes I even can not remember how to run them.
+Sorry, I got lost in different task files and management tools, and sometimes I even cannot remember how to run them.
 
-* Find tasks: `Makefile`,`justfile`, `package.json`, `deno.json`, `Taskfile.yml`, `tasks.py`, `README.md` etc, and
+* Find tasks: `Makefile`,`justfile`, `package.json`, `deno.json`, `Taskfile.yml`, `tasks.py`, `README.md` etc., and
   too many task files to check tasks.
 * Run task: `just taskName`, `npm run task_name`, `deno task task_name`, `composer run-script task_name` etc
 * Check outdated deps: `mvn versions:display-dependency-updates`, `./gradlew dependencyUpdates`, `npm outdated` etc
@@ -77,7 +77,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 [Bun Shell](https://bun.sh/docs/runtime/shell) is a nice feature from Bun to make shell scripting with JavaScript &
 TypeScript fun.
 
-Now Task Keeper support `Taskfile.ts` with Bun Shell, and you can use following code to run tasks:
+Now Task Keeper support `Taskfile.ts` with Bun Shell, and you can use the following code to run tasks:
 
 ```typescript
 import {$} from "bun";
@@ -91,7 +91,7 @@ export async function list_js() {
 }
 ```
 
-Then `tk hello` to run task with Bun Shell.
+Then execute `tk hello` to run the task with Bun Shell.
 
 ### Fleet Run configurations
 
@@ -114,10 +114,10 @@ For details, please refer https://www.jetbrains.com/help/fleet/run-configs.html
 
 # Language version detection and PATH
 
-Task Keeper uses `.java-version`, `.node-version`, `.python-version`  files to detect language version and bound with
+Task Keeper uses `.java-version`, `.node-version`, `.python-version`  files to detect a language version and bound with
 local installed SDK.
 
-To make task runner run tasks smoothly, Task Keeper will append following directories to `PATH` automatically:
+To make task runner run tasks smoothly, Task Keeper will append the following directories to `PATH` automatically:
 
 * `node-modules/.bin`
 * `venv/bin` or `.venv/bin`
@@ -141,7 +141,7 @@ then you can run `e mvn spring-boot:run` to run your project.
 
 ### Common tasks for all package managers:
 
-* init: create project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx` etc
+* init: create a project by manager `mvn archetype:generate`, `npm init`, `cargo new xxx` etc
 * install: install all dependencies `npm istall`, `dependency:resolve`
 * compile: compile source code, not available for some script languages
 * build: cargo: `tk build -- --release`, maven: `mvn -DskipTests clean package`, npm: `npm run build`
@@ -166,7 +166,7 @@ Available
 Please set up [gradle-versions-plugin](https://github.com/ben-manes/gradle-versions-plugin) for dependency version
 management.
 You can transparently add the plugin to every Gradle project that you run via a Gradle init script.
-`$HOME/.gradle/init.d/plugins.gradle` with following code:
+`$HOME/.gradle/init.d/plugins.gradle` with the following code:
 
 ```
 initscript {
@@ -191,7 +191,7 @@ allprojects {
 ### Sbt
 
 Please add [sbt-updates](https://github.com/rtimush/sbt-updates) and DependencyTreePlugin as global plugins.
-`$HOME/.sbt/1.0/plugins/plugins.sbt` with following code:
+`$HOME/.sbt/1.0/plugins/plugins.sbt` with the following code:
 
 ```
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
@@ -309,7 +309,7 @@ tasks:
 
 ### Tasks from README.md
 
-Task keeper will parse README.md and extract tasks with following code block format:
+Task keeper will parse README.md and extract tasks with the following code block format:
 
 ~~~markdown
 ```shell {#task_name}
@@ -346,7 +346,7 @@ console.log("hello world");
 
 # Version detection
 
-Task Keeper will detect version configuration file and adjust the environment variables to run tasks.
+Task Keeper will detect a version configuration file and adjust the environment variables to run tasks.
 
 ### Python
 
@@ -368,7 +368,7 @@ for detail.
 
 `.node-version` is used for Node.js version management, and values as following:
 
-* 18: match major version of Node.js
+* 18: match a major version of Node.js
 * 16.16.0: match version of Node.js
 
 Task Keeper will try to find Node from `$HOME/.nvm/versions/node` or `$HOME/.volta/tools/image/node`.
@@ -396,7 +396,8 @@ Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notifica
     - `S3_SECRET_KEY`: access secret for S3
     - `S3_BUCKET`: bucket name for S3
     - `S3_REGION`: region for S3, such as `us-east-1`
-    - `S3_VIRTUAL_STYLE`: for MinIO, you don't need to set this, but for Aliyun OSS, you need to set this to `true` to use
+    - `S3_VIRTUAL_STYLE`: for MinIO, you don't need to set this, but for Aliyun OSS, you need to set this to `true` to
+      use
       virtual-hosted-style requests.
 
 **Tips**: Notification is useful for CI/CD.
