@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.29.2] - 2025-07-02
+
+- Fix `build.xml` parse error
+- Update just to 1.41.0
 
 ## [0.29.1] - 2025-06-10
 
