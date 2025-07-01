@@ -8,6 +8,7 @@ use which::which;
 
 #[derive(Deserialize, Debug, Default)]
 struct Project {
+    #[serde(rename = "@name")]
     pub name: Option<String>,
     #[serde(rename = "target")]
     pub targets: Option<Vec<Target>>,
@@ -15,7 +16,9 @@ struct Project {
 
 #[derive(Deserialize, Debug, Default)]
 struct Target {
+    #[serde(rename = "@name")]
     pub name: String,
+    #[serde(rename = "@description")]
     pub description: Option<String>,
 }
 
