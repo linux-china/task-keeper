@@ -1,6 +1,6 @@
 [package]
 name = "task-keeper"
-version = "0.29.1"
+version = "0.29.2"
 edition = "2021"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
@@ -43,12 +43,12 @@ cfg-if = "1"
 uuid = { version = "1.17", features = ["v4"] }
 logos = "0.15"
 shell-escape = "0.1"
-bytecount = "0.6.8"
-just = "1.40.0"
+bytecount = "0.6.9"
+just = "1.41.0"
 reqwest = { version = "0.12", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.45", features = ["full"] }
-async-nats = "0.41.0"
+async-nats = "0.42.0"
 minio = "0.3.0"
 
 [profile.release]
