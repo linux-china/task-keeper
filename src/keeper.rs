@@ -446,9 +446,6 @@ mod tests {
 
     #[test]
     fn test_run_task() {
-        if let Ok(output) = run_runner_task("npm", "start", &[], &[], true) {
-            let status_code = output.status.code().unwrap_or(0);
-            println!("exit code: {}", status_code);
-        }
+        run_runner_task("npm", "start", &[], &[], true);
     }
 }
