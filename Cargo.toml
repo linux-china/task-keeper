@@ -34,7 +34,7 @@ clap = "4.5"
 regex = "1.11"
 dirs = "6"
 dirs-sys = "0.5"
-which = "7.0"
+which = "8.0"
 thiserror = "2"
 error-stack = "0.5"
 dotenv = "0.15"
@@ -44,7 +44,7 @@ uuid = { version = "1.17", features = ["v4"] }
 logos = "0.15"
 shell-escape = "0.1"
 bytecount = "0.6.9"
-just = "1.41.0"
+just = "1.42"
 reqwest = { version = "0.12", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.46", features = ["full"] }
