@@ -49,10 +49,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         format!("{} dependencyUpdates", gradle_command),
     );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
-        if !code.contains("gradle-8.14") {
+        if !code.contains("gradle-8.14.3") {
             task_command_map.insert(
                 "self-update".to_string(),
-                format!("{} wrapper --gradle-version=8.14", gradle_command),
+                format!("{} wrapper --gradle-version=8.14.3", gradle_command),
             );
         }
     }
