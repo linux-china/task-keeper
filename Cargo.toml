@@ -49,7 +49,7 @@ reqwest = { version = "0.12", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.46", features = ["full"] }
 async-nats = "0.42.0"
-minio = "0.3.0"
+minio = "0.3"
 
 [profile.release]
 strip = true
