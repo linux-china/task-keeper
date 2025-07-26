@@ -15,7 +15,7 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 * Invoke task: `tk task_name`
 * Invoke task from a runner: `tk --runner=npm start`
 * Sync tasks between sources: `tk --from=npm --to=fleet task1 task2`
-* .env support by default: `tk --no-dotenv` to disable
+* .env and [dotenvx](https://dotenvx.com/) support by default: `tk --no-dotenv` to disable
 * `--doctor` support: check your system for potential problems to run tasks
 * Execute command line: `tk -- node hello.js` with a correct language version and PATH
 * Notification: save task output to OSS or send notification to NATS server
