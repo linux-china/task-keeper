@@ -5,7 +5,7 @@ use crate::polyglot::PATH_SEPARATOR;
 use crate::runners::justfile::init_justfile;
 use crate::runners::RUNNERS;
 use colored::Colorize;
-use dotenvy::dotenv;
+use dotenvx_rs::dotenvx;
 use std::collections::HashSet;
 use std::env;
 use std::fs::Permissions;
@@ -734,12 +734,12 @@ fn format_description(description: &str) -> String {
 }
 
 fn load_env() {
-    dotenv().ok();
+    dotenvx::dotenv().ok();
     if env::current_dir().unwrap().join(".flaskenv").exists() {
-        dotenvy::from_filename(".flaskenv").ok();
+        dotenvx::from_filename(".flaskenv").ok();
     }
     if let Ok(node_env) = env::var("NODE_ENV") {
-        dotenvy::from_filename(format!(".env.{}", node_env)).ok();
+        dotenvx::from_filename(format!(".env.{}", node_env)).ok();
     }
 }
 
