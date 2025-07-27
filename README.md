@@ -409,6 +409,7 @@ Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notifica
 * Your Makefiles are wrong: https://tech.davis-hansson.com/p/make/
 * Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
 * Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
+* Task Runner Census 2025: https://aleyan.com/blog/2025-task-runners-census/
 
 # Task scripts demo in Markdown
 
