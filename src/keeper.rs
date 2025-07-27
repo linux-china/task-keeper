@@ -360,19 +360,6 @@ pub fn list_all_runner_tasks(
             }
         }
     }
-    if runners::rye::is_available() {
-        if runners::rye::is_command_available() {
-            if let Ok(runner_tasks) = runners::rye::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("rye".to_string(), runner_tasks);
-                }
-            }
-        } else {
-            if error_display {
-                println!("{}", "[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock".bold().red());
-            }
-        }
-    }
     if runners::poe::is_available() {
         if runners::poe::is_command_available() {
             if let Ok(runner_tasks) = runners::poe::list_tasks() {

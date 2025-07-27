@@ -24,7 +24,6 @@ pub mod pipenv;
 pub mod poetry;
 pub mod rebar3;
 pub mod requirements;
-pub mod rye;
 pub mod sbt;
 pub mod swift;
 pub mod uv;
@@ -48,8 +47,8 @@ pub const COMMANDS: &'static [&'static str] = &[
 ];
 pub const MANAGERS: &'static [&'static str] = &[
     "maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer",
-    "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "rye", "uv", "lein",
-    "rebar3", "mix", "dart", "zig", "xmake",
+    "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "uv", "lein", "rebar3",
+    "mix", "dart", "zig", "xmake",
 ];
 
 pub fn get_available_managers() -> Vec<String> {
@@ -105,9 +104,6 @@ pub fn get_available_managers() -> Vec<String> {
     if requirements::is_available() {
         managers.push("pip".to_string());
     }
-    if rye::is_available() {
-        managers.push("rye".to_string());
-    }
     if uv::is_available() {
         managers.push("uv".to_string());
     }
@@ -153,7 +149,6 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
         "rebar3" => "rebar.config",
         "mix" => "mix.exs",
         "pip" => "requirements.txt",
-        "rye" => "requirements.lock",
         "uv" => "uv.lock",
         "pipenv" => "Pipfile",
         "dart" => "pubspec.yaml",
@@ -185,7 +180,6 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
         "mix" => "https://hexdocs.pm/mix/Mix.html",
         "pip" => "https://pip.pypa.io/en/stable/reference/requirements-file-format/",
         "pipenv" => "https://pipenv.pypa.io",
-        "rye" => "https://github.com/mitsuhiko/rye",
         "uv" => "https://github.com/astral-sh/uv",
         "dart" => "https://dart.dev/guides/packages",
         "zig" => "https://ziglang.org/learn/build-system/",
@@ -216,7 +210,6 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
         "mix" => mix::get_task_command_map(),
         "pip" => requirements::get_task_command_map(),
         "pipenv" => pipenv::get_task_command_map(),
-        "rye" => rye::get_task_command_map(),
         "uv" => uv::get_task_command_map(),
         "dart" => dart::get_task_command_map(),
         "zig" => zig::get_task_command_map(),
@@ -416,13 +409,6 @@ pub fn run_task(
                     .bold()
                     .red()
             );
-        }
-    }
-    if rye::is_available() {
-        if rye::is_command_available() {
-            queue.insert("rye", rye::run_task);
-        } else {
-            println!("{}", "[tk] rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock".bold().red());
         }
     }
     if uv::is_available() {

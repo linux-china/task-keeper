@@ -442,12 +442,6 @@ fn diagnose() {
             );
         }
     }
-    if runners::rye::is_available() {
-        if !runners::rye::is_command_available() {
-            problems_count += 1;
-            println!("{} rye(https://github.com/mitsuhiko/rye) command not available for requirements.lock", "Warning:".bold().yellow());
-        }
-    }
     if runners::poe::is_available() {
         if !runners::poe::is_command_available() {
             problems_count += 1;

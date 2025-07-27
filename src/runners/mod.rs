@@ -16,7 +16,6 @@ pub mod poe;
 pub mod poetry;
 pub mod procfile;
 pub mod rakefile;
-pub mod rye;
 pub mod taskfileyml;
 pub mod taskshell;
 pub mod taskspy;
@@ -48,7 +47,6 @@ pub const RUNNERS: &'static [&'static str] = &[
     "vscode",
     "zed",
     "markdown",
-    "rye",
     "poe",
     "poetry",
     "bun-shell",
@@ -89,7 +87,6 @@ pub fn run_task(
         "markdown" => markdown::run_task(task_name, task_args, global_args, verbose),
         "shell" => taskshell::run_task(task_name, task_args, global_args, verbose),
         "jbang" => jbang::run_task(task_name, task_args, global_args, verbose),
-        "rye" => rye::run_task(task_name, task_args, global_args, verbose),
         "poe" => poe::run_task(task_name, task_args, global_args, verbose),
         "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
         "argc" => argcfile::run_task(task_name, task_args, global_args, verbose),
@@ -123,7 +120,6 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "shell" => "task.sh",
         "markdown" => "README.md",
         "jbang" => "jbang-catalog.json",
-        "rye" => "requirements.lock",
         "poe" => "pyproject.toml",
         "poetry" => "pyproject.toml",
         "bun-shell" => "Taskfile.ts",
@@ -154,7 +150,6 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "shell" => "https://www.gnu.org/software/bash/",
         "markdown" => "https://github.com/linux-china/task-keeper#tasks-from-readmemd",
         "jbang" => "https://www.jbang.dev/",
-        "rye" => "https://github.com/mitsuhiko/rye",
         "poe" => "https://github.com/nat-n/poethepoet",
         "poetry" => "https://python-poetry.org",
         "bun-shell" => "https://bun.sh/docs/runtime/shell",

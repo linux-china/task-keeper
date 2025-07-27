@@ -66,7 +66,6 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
 * zed Tasks: https://zed.dev/docs/tasks
 * poe: batteries included task runner that works well with pyproject.toml https://github.com/nat-n/poethepoet
-* Rye: https://rye.astral.sh/guide/pyproject/#projectscripts
 * argc: a Bash-based command runner https://github.com/sigoden/argc
 * nur: a task runner based on nu shell https://github.com/ddanier/nur
 * cargo-xtask: https://github.com/linux-china/xtask-demo
@@ -250,11 +249,12 @@ Available.
 Available with the following tools:
 
 * [poe](https://github.com/nat-n/poethepoet): `[tool.poe]` detected in `pyproject.toml`
-* [Rye](https://github.com/mitsuhiko/rye): if `requirements.lock` or `[tool.rye]` detected in `pyproject.toml`
 * [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected in `pyproject.toml`
 * [Poetry](https://python-poetry.org/)
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
+
+You can use `uv` to install these tools.
 
 ### Lein
 

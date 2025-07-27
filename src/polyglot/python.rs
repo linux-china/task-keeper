@@ -32,19 +32,11 @@ pub fn find_sdk_home() -> Option<PathBuf> {
                 return Some(path);
             }
         }
-        // find python from rye
-        let mut python_home = home_dir
-            .join(".rye")
-            .join("py")
-            .join(format!("cpython@{}", python_version))
-            .join("install");
         // find python from pyenv
-        if !python_home.exists() {
-            python_home = home_dir
-                .join(".pyenv")
-                .join("versions")
-                .join(python_version);
-        }
+        let mut python_home = home_dir
+            .join(".pyenv")
+            .join("versions")
+            .join(python_version);
         if python_home.exists() {
             return Some(python_home);
         }
