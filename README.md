@@ -250,11 +250,17 @@ Available with the following tools:
 
 * [poe](https://github.com/nat-n/poethepoet): `[tool.poe]` detected in `pyproject.toml`
 * [uv](https://github.com/astral-sh/uv): if `uv.lock` or `[tool.uv]` detected in `pyproject.toml`
-* [Poetry](https://python-poetry.org/)
+* [Poetry](https://python-poetry.org/): Python packaging and dependency management made easy
+* [Invoke](https://www.pyinvoke.org/index.html): a Python library for managing shell-oriented subprocesses and
+  organizing executable Python code into CLI-invokable tasks.
 * [pipenv](https://pipenv.pypa.io/en/latest/)
 * requirements.txt
 
-You can use `uv` to install these tools.
+You can use `uv` to install these tools:
+
+- `uv tool install poethepoet`
+- `uv tool install poetry`
+- `uv tool install invoke`
 
 ### Lein
 
