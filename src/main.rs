@@ -445,7 +445,7 @@ fn diagnose() {
     if runners::poe::is_available() {
         if !runners::poe::is_command_available() {
             problems_count += 1;
-            println!("{} poe(https://github.com/nat-n/poethepoet) command not available for pyproject.toml", "Warning:".bold().yellow());
+            println!("{} poe(https://github.com/nat-n/poethepoet) command not available for pyproject.toml, please use `uv tool install --python 3.11 poethepoet` to install.", "Warning:".bold().yellow());
         }
     }
     if runners::argcfile::is_available() {
