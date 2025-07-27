@@ -43,6 +43,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     );
     task_command_map.insert("clean".to_string(), format!("{}  clean", mvn_command));
     task_command_map.insert(
+        "update".to_string(),
+        format!("{} versions:display-dependency-updates", mvn_command),
+    );
+    task_command_map.insert(
         "outdated".to_string(),
         format!("{} versions:display-dependency-updates", mvn_command),
     );
