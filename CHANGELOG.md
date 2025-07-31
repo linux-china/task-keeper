@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.30.1] - 2025-08-01
+
+- Update to gradle 9.0.0
+- Update to dotenvx 0.3
+
 ## [0.30.0] - 2025-07-25
 
 - Add [dotenvx](https://dotenvx.com/) support for `.env` encryption file.
