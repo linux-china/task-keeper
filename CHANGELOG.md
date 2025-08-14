@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.30.2] - 2025-08-15
+
+- Update to dotenvx 0.4.8
+
 ## [0.30.1] - 2025-08-01
 
 - Update to gradle 9.0.0
