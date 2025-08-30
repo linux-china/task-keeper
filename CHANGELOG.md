@@ -4,7 +4,10 @@
 
 ## [0.30.3] - 2025-08-30
 
-- Update to dotenvx 0.4.14 to fix decrypt issue
+- Update to dotenvx 0.4.14 to fix the decrypt issue
+- Add dotenvx for `sq`
+- rye removed
+- Update initial templates
 
 ## [0.30.2] - 2025-08-15
 
