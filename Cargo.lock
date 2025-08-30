@@ -915,9 +915,9 @@ dependencies = [
 
 [[package]]
 name = "dotenvx-rs"
-version = "0.4.13"
+version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18e49f6753f33e2ea94430f032a0f1bc7dc8b1cdb1e879d9da2973131e8fcd70"
+checksum = "5ad7e5c44c2e9100344208f82464332fffd5d2dfda43a0f8724813c5d22137d3"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -3329,7 +3329,7 @@ checksum = "1e8f05f774b2db35bdad5a8237a90be1102669f8ea013fea9777b366d34ab145"
 
 [[package]]
 name = "task-keeper"
-version = "0.30.2"
+version = "0.30.3"
 dependencies = [
  "anyhow",
  "async-nats",
