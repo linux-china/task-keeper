@@ -53,6 +53,7 @@ fn get_snippets_file() -> PathBuf {
 }
 
 pub fn run_snippet(args: &[&str]) {
+    dotenvx_rs::dotenv().ok();
     let snippet_file = get_snippets_file();
     let mut just_args = vec!["just", "-f", snippet_file.to_str().unwrap()];
     just_args.extend(args.iter().skip(1));
