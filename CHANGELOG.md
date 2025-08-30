@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.30.3] - 2025-08-30
+
+- Update to dotenvx 0.4.14 to fix decrypt issue
+
 ## [0.30.2] - 2025-08-15
 
 - Update to dotenvx 0.4.8
