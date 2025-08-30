@@ -3,12 +3,12 @@
     "HelloWorld": {
       "script-ref": "src/main/jbang/HelloWorld.java",
       "description": "Hello World",
-      "java": "17"
+      "java": "21"
     },
     "YourApp": {
       "script-ref": "src/main/jbang/YourApp.java",
       "description": "Run your app",
-      "java": "17"
+      "java": "21"
     }
   }
 }
