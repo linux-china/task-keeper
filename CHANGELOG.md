@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.30.4] - 2025-09-29
+
+- Update to just 1.43.0
+- Update to maven-wrapper-plugin 3.3.4 
+
 ## [0.30.3] - 2025-08-30
 
 - Update to dotenvx 0.4.14 to fix the decrypt issue
