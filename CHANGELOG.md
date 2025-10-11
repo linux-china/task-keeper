@@ -2,7 +2,7 @@
 
 # Task Keeper Changelog
 
-## [0.30.5] - 2025-09-29
+## [0.30.5] - 2025-10-11
 
 - Make bun as default JS/TS engine if no engine assigned for code block
 
