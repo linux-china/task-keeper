@@ -59,7 +59,12 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
                         let runner2 = if !code_runner.is_empty() {
                             code_runner.split(' ').next().unwrap().to_owned()
                         } else {
-                            "node".to_owned()
+                            // make bun as default JS/TS engine
+                            if which::which("bun").is_ok() {
+                                "bun".to_owned()
+                            } else {
+                                "node".to_owned()
+                            }
                         };
                         tasks.push(parse_task_from_code_block(
                             &name,
