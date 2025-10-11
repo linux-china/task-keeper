@@ -4,7 +4,7 @@
 
 ## [0.30.5] - 2025-09-29
 
-- Make bun as default JS/TS engine if no engine detection for code block
+- Make bun as default JS/TS engine if no engine assigned for code block
 
 ## [0.30.4] - 2025-09-29
 
