@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.30.5] - 2025-09-29
+
+- Make bun as default JS/TS engine if no engine detection for code block
+
 ## [0.30.4] - 2025-09-29
 
 - Update to just 1.43.0
