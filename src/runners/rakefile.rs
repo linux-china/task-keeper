@@ -18,10 +18,10 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let makefile_meta_text = capture_command_output("rake", &["-AT"])
+    let rake_output = capture_command_output("rake", &["-AT"])
         .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-].*").unwrap();
-    let tasks: Vec<Task> = BufReader::new(makefile_meta_text.as_bytes())
+    let tasks: Vec<Task> = BufReader::new(rake_output.as_bytes())
         .lines()
         .filter(|line| line.is_ok() && re.is_match(line.as_ref().unwrap()))
         .map(|line| line.unwrap())
