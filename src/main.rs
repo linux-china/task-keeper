@@ -400,6 +400,15 @@ fn diagnose() {
             );
         }
     }
+    if runners::gruntfile::is_available() {
+        if !runners::gruntfile::is_command_available() {
+            problems_count += 1;
+            println!(
+                "{} grunt(https://gruntjs.com/) command not available for Gruntfile.js",
+                "Warning:".bold().yellow()
+            );
+        }
+    }
     if runners::taskfileyml::is_available() {
         if !runners::taskfileyml::is_command_available() {
             problems_count += 1;
