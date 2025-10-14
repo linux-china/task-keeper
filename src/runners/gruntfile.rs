@@ -17,7 +17,7 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    let grunt_help_output = capture_command_output("gulp", &["--help"])
+    let grunt_help_output = capture_command_output("grunt", &["--help"])
         .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let lines = grunt_help_output.lines().collect::<Vec<&str>>();
     // extract lines between "Available tasks" and the next empty line
