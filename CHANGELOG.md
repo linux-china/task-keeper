@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.30.6] - 2025-10-14
+
+- Add `jake`, `grunt`, `gulp` support for JS/TS project
+
 ## [0.30.5] - 2025-10-11
 
 - Make bun as default JS/TS engine if no engine assigned for code block
@@ -9,7 +13,7 @@
 ## [0.30.4] - 2025-09-29
 
 - Update to just 1.43.0
-- Update to maven-wrapper-plugin 3.3.4 
+- Update to maven-wrapper-plugin 3.3.4
 
 ## [0.30.3] - 2025-08-30
 
