@@ -50,6 +50,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * make(Makefile): https://www.gnu.org/software/make/manual/make.html, [Modern Make](https://github.com/tj/mmake) support
 * ant(build.xml): https://ant.apache.org/
 * npm(package.json): https://docs.npmjs.com/cli/v8/using-npm/scripts
+* jake(jakefile.js): https://jakejs.com
 * deno(deno.json): https://deno.land/manual/tools/task_runner
 * composer(composer.json): https://getcomposer.org/doc/articles/scripts.md
 * just(justfile): https://github.com/casey/just
@@ -343,7 +344,8 @@ console.log("hello world");
 
 ## Task Runners
 
-* jake(Jakefile): https://jakejs.com/docs-page.html#item-overview-jakefiles
+* grunt: https://gruntjs.com/
+* gulp: https://gulpjs.com/
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
 
 # Package Managers
@@ -407,6 +409,13 @@ Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notifica
       virtual-hosted-style requests.
 
 **Tips**: Notification is useful for CI/CD.
+
+# How to add a new task runner?
+
+* Create a new rust file in `src/runners` directory, such as `myrunner.rs`
+* Add metadata for the runner in `src/runners/mod.rs`
+* Add runner's tasks in `src/keeper.rs`
+* Add runner's diagnose in `src/main.rs`
 
 # References
 
