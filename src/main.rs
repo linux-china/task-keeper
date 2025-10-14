@@ -382,6 +382,15 @@ fn diagnose() {
             );
         }
     }
+    if runners::jakefile::is_available() {
+        if !runners::jakefile::is_command_available() {
+            problems_count += 1;
+            println!(
+                "{} jake(https://jakejs.com/) command not available for jakefile",
+                "Warning:".bold().yellow()
+            );
+        }
+    }
     if runners::taskfileyml::is_available() {
         if !runners::taskfileyml::is_command_available() {
             problems_count += 1;

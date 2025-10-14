@@ -259,6 +259,24 @@ pub fn list_all_runner_tasks(
             }
         }
     }
+    if runners::jakefile::is_available() {
+        if runners::jakefile::is_command_available() {
+            if let Ok(runner_tasks) = runners::jakefile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("jake".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!(
+                    "{}",
+                    "[tk] jake(https://jakejs.com) command not available for jakefile"
+                        .bold()
+                        .red()
+                );
+            }
+        }
+    }
     if runners::taskfileyml::is_available() {
         if runners::taskfileyml::is_command_available() {
             if let Ok(runner_tasks) = runners::taskfileyml::list_tasks() {
