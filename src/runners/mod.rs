@@ -24,6 +24,7 @@ pub mod xtask;
 pub mod xtask_go;
 pub mod zed;
 pub mod jakefile;
+pub mod gulpfile;
 
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
@@ -34,6 +35,7 @@ pub const RUNNERS: &'static [&'static str] = &[
     "ant",
     "rake",
     "jake",
+    "gulp",
     "invoke",
     "task",
     "cargo-make",
@@ -82,6 +84,7 @@ pub fn run_task(
         "make" => makefile::run_task(task_name, task_args, global_args, verbose),
         "rake" => rakefile::run_task(task_name, task_args, global_args, verbose),
         "jake" => jakefile::run_task(task_name, task_args, global_args, verbose),
+        "gulp" => gulpfile::run_task(task_name, task_args, global_args, verbose),
         "task" => taskfileyml::run_task(task_name, task_args, global_args, verbose),
         "invoke" => taskspy::run_task(task_name, task_args, global_args, verbose),
         "cargo-make" => makefiletoml::run_task(task_name, task_args, global_args, verbose),
@@ -109,6 +112,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "ant" => "build.xml",
         "rake" => "Rakefile",
         "jake" => "jakefile.js",
+        "gulp" => "gulpfile.js",
         "invoke" => "tasks.py",
         "task" => "Taskfile.yml",
         "cargo-make" => "Makefile.toml",
@@ -140,6 +144,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "ant" => "https://ant.apache.org/",
         "rake" => "https://ruby.github.io/rake/",
         "jake" => "https://jakejs.com/",
+        "gulp" => "https://gulpjs.com/",
         "invoke" => "https://www.pyinvoke.org",
         "task" => "https://taskfile.dev",
         "cargo-make" => "https://github.com/sagiegurari/cargo-make",

@@ -270,7 +270,25 @@ pub fn list_all_runner_tasks(
             if error_display {
                 println!(
                     "{}",
-                    "[tk] jake(https://jakejs.com) command not available for jakefile"
+                    "[tk] jake(https://jakejs.com) command not available for jakefile.js"
+                        .bold()
+                        .red()
+                );
+            }
+        }
+    }
+    if runners::gulpfile::is_available() {
+        if runners::gulpfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::gulpfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("gulp".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!(
+                    "{}",
+                    "[tk] gulp(https://gulpjs.com/) command not available for gulpfile.js"
                         .bold()
                         .red()
                 );

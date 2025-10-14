@@ -391,6 +391,15 @@ fn diagnose() {
             );
         }
     }
+    if runners::gulpfile::is_available() {
+        if !runners::gulpfile::is_command_available() {
+            problems_count += 1;
+            println!(
+                "{} gulp(https://gulpjs.com/) command not available for gulpfile.js",
+                "Warning:".bold().yellow()
+            );
+        }
+    }
     if runners::taskfileyml::is_available() {
         if !runners::taskfileyml::is_command_available() {
             problems_count += 1;
