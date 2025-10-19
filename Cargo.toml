@@ -1,7 +1,7 @@
 [package]
 name = "task-keeper"
 version = "0.30.6"
-edition = "2021"
+edition = "2024"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
 keywords = ["task", "just", "npm", "deno"]
