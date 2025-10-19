@@ -440,6 +440,24 @@ pub fn list_all_runner_tasks(
             }
         }
     }
+    if runners::uv_scripts::is_available() {
+        if runners::uv_scripts::is_command_available() {
+            if let Ok(runner_tasks) = runners::uv_scripts::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("uvs".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!(
+                    "{}",
+                    "[tk] uv(https://github.com/astral-sh/uv) command not available for pyproject.toml"
+                        .bold()
+                        .red()
+                );
+            }
+        }
+    }
     if runners::nurfile::is_available() {
         if runners::nurfile::is_command_available() {
             if let Ok(runner_tasks) = runners::nurfile::list_tasks() {
