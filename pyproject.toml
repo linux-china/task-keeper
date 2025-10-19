@@ -26,8 +26,13 @@ devtest = { callable = "mypackage:test.run_tests", extras = ["test"] }
 [tool.poe.tasks]
 test = "pytest --cov=my_app"
 serve.script = "my_app.service:run(debug=True)"
-build  = ["test", "_build"]
+build = ["test", "_build"]
 
 [tool.poe.tasks.test-quick]
 help = "Run tests excluding those makes as slow."
 cmd = "pytest -m \"not slow\""
+
+[tool.rye.scripts]
+# These three options are equivalent:
+python-version = "python3 --version"
+hello = { cmd = "echo 'hello'" }
