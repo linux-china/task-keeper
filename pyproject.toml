@@ -36,3 +36,5 @@ cmd = "pytest -m \"not slow\""
 # These three options are equivalent:
 python-version = "python3 --version"
 hello = { cmd = "echo 'hello'" }
+hello-world = { call = "builtins:print('Hello World!')" }
+all = { chain = ["hello-world","hello"] }
