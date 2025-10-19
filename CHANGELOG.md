@@ -2,7 +2,7 @@
 
 # Task Keeper Changelog
 
-## [unreleased]
+## [0.30.7] - 2025-10-19
 
 - Add `[tool.rye.scripts]`: https://rye.astral.sh/guide/pyproject/#toolryescripts
 

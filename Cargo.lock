@@ -3398,7 +3398,7 @@ checksum = "1e8f05f774b2db35bdad5a8237a90be1102669f8ea013fea9777b366d34ab145"
 
 [[package]]
 name = "task-keeper"
-version = "0.30.6"
+version = "0.30.7"
 dependencies = [
  "anyhow",
  "async-nats",
