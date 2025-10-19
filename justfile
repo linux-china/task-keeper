@@ -21,3 +21,7 @@ build:
   cargo build --bin tk
   cp target/debug/tk ~/bin
   cp target/debug/sq ~/bin
+
+release:
+  cargo build --release --bin tk
+  cp target/release/tk ~/.cargo/bin/tk
