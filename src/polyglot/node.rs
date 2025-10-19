@@ -1,6 +1,6 @@
+use crate::polyglot::PATH_SEPARATOR;
 use std::env;
 use std::path::PathBuf;
-use crate::polyglot::PATH_SEPARATOR;
 
 pub fn is_available() -> bool {
     env::current_dir()
@@ -16,16 +16,12 @@ pub fn find_sdk_home() -> Option<PathBuf> {
     if let Ok(text) = get_default_version() {
         let node_version = text.trim();
         // find version from nvm
-        let node_candidates_path = dirs::home_dir()
-            .map(|dir| {
-                dir.join(".nvm").join("versions").join("node")
-            });
+        let node_candidates_path =
+            dirs::home_dir().map(|dir| dir.join(".nvm").join("versions").join("node"));
         let mut node_home_path = find_node_home(node_version, &node_candidates_path);
         if node_home_path.is_none() {
             let node_candidates_path = dirs::home_dir()
-                .map(|dir| {
-                    dir.join(".volta").join("tools").join("image").join("node")
-                });
+                .map(|dir| dir.join(".volta").join("tools").join("image").join("node"));
             node_home_path = find_node_home(node_version, &node_candidates_path);
         }
         return node_home_path;
@@ -62,10 +58,17 @@ fn find_node_home(node_version: &str, node_candidates_path: &Option<PathBuf>) ->
 
 fn reset_node_home(node_home_path: &PathBuf) {
     let node_home = node_home_path.to_string_lossy().to_string();
-    env::set_var("NODE_HOME", &node_home);
+    unsafe {
+        env::set_var("NODE_HOME", &node_home);
+    }
     if let Ok(path) = env::var("PATH") {
         let node_bin_path = node_home_path.join("bin").to_string_lossy().to_string();
-        env::set_var("PATH", format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path));
+        unsafe {
+            env::set_var(
+                "PATH",
+                format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path),
+            );
+        }
     }
 }
 

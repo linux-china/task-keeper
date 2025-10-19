@@ -90,13 +90,19 @@ pub fn init_env() {
 
 fn reset_java_home(java_home_path: &PathBuf) {
     let java_home = java_home_path.to_string_lossy().to_string();
-    env::set_var("JAVA_HOME", &java_home);
+    unsafe {
+        env::set_var("JAVA_HOME", &java_home);
+    }
     if java_home.contains("-grl") {
-        env::set_var("GRAALVM_HOME", &java_home);
+        unsafe {
+            env::set_var("GRAALVM_HOME", &java_home);
+        }
     }
     if let Ok(path) = env::var("PATH") {
         let java_bin_path = java_home_path.join("bin").to_string_lossy().to_string();
-        env::set_var("PATH", format!("{}{}{}", java_bin_path, PATH_SEPARATOR, path));
+        unsafe {
+            env::set_var("PATH", format!("{}{}{}", java_bin_path, PATH_SEPARATOR, path));
+        }
     }
 }
 

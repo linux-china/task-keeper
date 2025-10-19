@@ -21,7 +21,9 @@ pub fn init_env() {
         let candidate_home_path = candidates_home.join(key).join(value);
         if candidate_home_path.exists() {
             // set candidate home env variable
-            env::set_var(&candidate_home_name, &candidate_home_path.to_string_lossy().to_string());
+            unsafe {
+                env::set_var(&candidate_home_name, &candidate_home_path.to_string_lossy().to_string());
+            }
             // Add candidate bin path to PATH env variable on first position
             let candidate_bin_path = candidates_home.join(key).join(value).join("bin");
             let bin_path = if candidate_bin_path.exists() {
@@ -30,7 +32,9 @@ pub fn init_env() {
                 candidate_home_path.to_string_lossy().to_string()
             };
             if let Ok(path) = env::var("PATH") {
-                env::set_var("PATH", format!("{}{}{}", bin_path, PATH_SEPARATOR, path));
+                unsafe {
+                    env::set_var("PATH", format!("{}{}{}", bin_path, PATH_SEPARATOR, path));
+                }
             }
         }
     }

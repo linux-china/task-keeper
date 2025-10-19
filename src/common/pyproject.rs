@@ -1,29 +1,31 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PyProjectToml {
-    tool: Option<Tool>,
+    pub tool: Option<Tool>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct Tool {
-    uv: Option<ToolUv>,
-    poetry: Option<ToolPoetry>,
-    poe: Option<PeoTasks>,
+    #[serde(rename = "rye")]
+    pub uv: Option<ToolUv>,
+    pub poetry: Option<ToolPoetry>,
+    pub poe: Option<PeoTasks>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct ToolUv {
-    scripts: Option<HashMap<String, toml::Value>>,
+    pub scripts: Option<HashMap<String, toml::Value>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct PeoTasks {
-    tasks: Option<HashMap<String, toml::Value>>,
+    pub tasks: Option<HashMap<String, toml::Value>>,
 }
 
 impl ToolUv {
@@ -148,6 +150,17 @@ impl PyProjectToml {
             .and_then(|uv| uv.get_scripts().clone())
     }
 
+    pub fn get_uv_script(&self, script_name: &str) -> Option<toml::Value> {
+        if let Some(tool) = self.tool.as_ref()
+            && let Some(uv) = tool.uv.as_ref()
+            && let Some(scripts) = uv.scripts.as_ref()
+            && let Some(script) = scripts.get(script_name) {
+            Some(script.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn get_poetry_scripts(&self) -> Option<HashMap<String, String>> {
         self.tool
             .as_ref()
@@ -160,6 +173,14 @@ impl PyProjectToml {
             .as_ref()
             .and_then(|tool| tool.poe.as_ref())
             .and_then(|peo_tasks| peo_tasks.get_tasks().clone())
+    }
+
+    pub fn venv_bin_path(&self) -> PathBuf {
+        std::env::current_dir().unwrap().join(".venv").join("bin")
+    }
+
+    pub fn venv_path(&self) -> PathBuf {
+        std::env::current_dir().unwrap().join(".venv")
     }
 }
 

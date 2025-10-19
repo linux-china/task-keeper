@@ -26,6 +26,7 @@ pub mod zed;
 pub mod jakefile;
 pub mod gulpfile;
 pub mod gruntfile;
+pub mod uv_scripts;
 
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
@@ -60,6 +61,7 @@ pub const RUNNERS: &'static [&'static str] = &[
     "xtask",
     "xtask-go",
     "nur",
+    "uvs"
 ];
 
 pub fn run_task(
@@ -100,6 +102,7 @@ pub fn run_task(
         "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
         "argc" => argcfile::run_task(task_name, task_args, global_args, verbose),
         "nur" => nurfile::run_task(task_name, task_args, global_args, verbose),
+        "uvs" => uv_scripts::run_task(task_name, task_args, global_args, verbose),
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
         "xtask" => xtask::run_task(task_name, task_args, global_args, verbose),
         "xtask-go" => xtask_go::run_task(task_name, task_args, global_args, verbose),
@@ -137,6 +140,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "bun-shell" => "Taskfile.ts",
         "argc" => "Argcfile.sh",
         "nur" => "nurfile",
+        "uvs" => "pyproject.toml",
         "xtask" => "xtask/",
         "xtask-go" => "xtask/main.go",
         _ => "unknown",
@@ -170,6 +174,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "bun-shell" => "https://bun.sh/docs/runtime/shell",
         "argc" => "https://github.com/sigoden/argc",
         "nur" => "https://github.com/ddanier/nur",
+        "uvs" => "https://rye.astral.sh/guide/pyproject/#toolryescripts",
         "xtask" => "https://github.com/matklad/cargo-xtask",
         "xtask-go" => "https://github.com/linux-china/xtask-go-demo",
         _ => "unknown",

@@ -228,7 +228,9 @@ fn reset_path_env() {
             );
         }
     }
-    env::set_var("PATH", new_path);
+    unsafe {
+        env::set_var("PATH", new_path);
+    }
 }
 
 fn list_tasks(task_runner: Option<&String>) {
@@ -421,7 +423,10 @@ fn diagnose() {
     if runners::makefiletoml::is_available() {
         if !runners::makefiletoml::is_command_available() {
             problems_count += 1;
-            println!("{} cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml", "Warning:".bold().yellow());
+            println!(
+                "{} cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml",
+                "Warning:".bold().yellow()
+            );
         }
     }
     if runners::bun_shell::is_available() {
@@ -472,7 +477,10 @@ fn diagnose() {
     if runners::poe::is_available() {
         if !runners::poe::is_command_available() {
             problems_count += 1;
-            println!("{} poe(https://github.com/nat-n/poethepoet) command not available for pyproject.toml, please use `uv tool install --python 3.11 poethepoet` to install.", "Warning:".bold().yellow());
+            println!(
+                "{} poe(https://github.com/nat-n/poethepoet) command not available for pyproject.toml, please use `uv tool install --python 3.11 poethepoet` to install.",
+                "Warning:".bold().yellow()
+            );
         }
     }
     if runners::argcfile::is_available() {
@@ -520,15 +528,22 @@ fn diagnose() {
                 .join("plugins.gradle")
                 .exists()
             {
-                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#gradle",
-                         "Suggestion:".bold().yellow(), "plugins.gradle".bold().blue(), "dependencyUpdates".bold().blue());
+                println!(
+                    "{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#gradle",
+                    "Suggestion:".bold().yellow(),
+                    "plugins.gradle".bold().blue(),
+                    "dependencyUpdates".bold().blue()
+                );
             }
         }
     }
     if managers::amper::is_available() {
         if !managers::amper::is_command_available() {
             problems_count += 1;
-            println!("{} amper(https://github.com/JetBrains/amper) command not available for module.yaml", "Warning:".bold().yellow());
+            println!(
+                "{} amper(https://github.com/JetBrains/amper) command not available for module.yaml",
+                "Warning:".bold().yellow()
+            );
         }
     }
     if managers::sbt::is_available() {
@@ -548,8 +563,12 @@ fn diagnose() {
                 .join("plugins.sbt")
                 .exists()
             {
-                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#sbt",
-                         "Suggestion:".bold().yellow(), "plugins.sbt".bold().blue(), "dependencyUpdates".bold().blue());
+                println!(
+                    "{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#sbt",
+                    "Suggestion:".bold().yellow(),
+                    "plugins.sbt".bold().blue(),
+                    "dependencyUpdates".bold().blue()
+                );
             }
         }
     }
@@ -568,8 +587,12 @@ fn diagnose() {
                 .join("profiles.clj")
                 .exists()
             {
-                println!("{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#lein",
-                         "Suggestion:".bold().yellow(), "profiles.clj".bold().blue(), "outdated".bold().blue());
+                println!(
+                    "{} global {} not available for {} task, please check https://github.com/linux-china/task-keeper#lein",
+                    "Suggestion:".bold().yellow(),
+                    "profiles.clj".bold().blue(),
+                    "outdated".bold().blue()
+                );
             }
         }
     }
@@ -621,7 +644,10 @@ fn diagnose() {
     if managers::cmakeconan::is_available() {
         if !managers::cmakeconan::is_command_available() {
             problems_count += 1;
-            println!("{} cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt", "Warning:".bold().yellow());
+            println!(
+                "{} cmake and conan(https://github.com/conan-io/cmake-conan/) command not available for CMakeLists.txt and conanfile.txt",
+                "Warning:".bold().yellow()
+            );
         }
     }
     if managers::meson::is_available() {

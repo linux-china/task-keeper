@@ -58,10 +58,12 @@ pub fn init_env() {
 fn reset_python_home(python_home_path: &PathBuf) {
     if let Ok(path) = env::var("PATH") {
         let node_bin_path = python_home_path.join("bin").to_string_lossy().to_string();
-        env::set_var(
-            "PATH",
-            format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path),
-        );
+        unsafe {
+            env::set_var(
+                "PATH",
+                format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path),
+            );
+        }
     }
 }
 

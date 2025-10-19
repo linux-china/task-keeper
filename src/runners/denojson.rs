@@ -52,7 +52,9 @@ pub fn run_task(
     args.push("task");
     args.push(task);
     args.extend(task_args);
-    std::env::set_var("DENO_FUTURE", "1");
+    unsafe {
+        std::env::set_var("DENO_FUTURE", "1");
+    }
     run_command("deno", &args, verbose)
 }
 
