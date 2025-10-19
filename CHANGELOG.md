@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [unreleased]
+
+- Add `[tool.rye.scripts]`: https://rye.astral.sh/guide/pyproject/#toolryescripts
+
 ## [0.30.6] - 2025-10-14
 
 - Add `jake`, `grunt`, `gulp` support for JS/TS project
