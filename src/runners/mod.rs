@@ -31,7 +31,7 @@ pub mod uv_scripts;
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::{report, Result};
+use error_stack::{IntoReport, Result};
 
 pub const RUNNERS: &'static [&'static str] = &[
     "ant",
@@ -106,10 +106,10 @@ pub fn run_task(
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
         "xtask" => xtask::run_task(task_name, task_args, global_args, verbose),
         "xtask-go" => xtask_go::run_task(task_name, task_args, global_args, verbose),
-        _ => Err(report!(KeeperError::FailedToRunTasks(format!(
+        _ => Err(KeeperError::FailedToRunTasks(format!(
             "Unknown runner: {}",
             runner
-        )))),
+        )).into_report()),
     }
 }
 

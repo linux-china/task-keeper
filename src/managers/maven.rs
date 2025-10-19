@@ -1,6 +1,6 @@
 use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
-use error_stack::{report, Result};
+use error_stack::{IntoReport, Result};
 use serde::Deserialize;
 use serde_xml_rs::from_str;
 use std::collections::HashMap;
@@ -72,10 +72,10 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(report!(KeeperError::ManagerTaskNotFound(
+        Err(KeeperError::ManagerTaskNotFound(
             task.to_owned(),
             "maven".to_string()
-        )))
+        ).into_report())
     }
 }
 
@@ -131,7 +131,7 @@ pub struct Versions {
 
 pub fn parse_maven_metadata(url: &str) -> Result<Metadata, KeeperError> {
     let text = reqwest::blocking::get(url).unwrap().text().unwrap();
-    from_str(&text).map_err(|_| report!(KeeperError::InvalidMavenMetadataXml))
+    from_str(&text).map_err(|_| KeeperError::InvalidMavenMetadataXml.into_report())
 }
 
 #[cfg(test)]

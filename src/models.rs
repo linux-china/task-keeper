@@ -31,7 +31,7 @@ pub struct TaskContext<'a> {
 }
 
 impl TaskContext<'_> {
-    pub fn new(args: Vec<&str>) -> TaskContext {
+    pub fn new(args: Vec<&str>) -> TaskContext<'_> {
         let len = args.len();
         let mut task_options: Vec<&str> = Vec::new();
         let mut global_options: Vec<&str> = Vec::new();

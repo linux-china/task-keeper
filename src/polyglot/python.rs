@@ -33,7 +33,7 @@ pub fn find_sdk_home() -> Option<PathBuf> {
             }
         }
         // find python from pyenv
-        let mut python_home = home_dir
+        let python_home = home_dir
             .join(".pyenv")
             .join("versions")
             .join(python_version);

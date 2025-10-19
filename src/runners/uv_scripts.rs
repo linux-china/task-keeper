@@ -4,7 +4,7 @@ use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{report, Result};
+use error_stack::{IntoReport, Result};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use toml::Value;
@@ -44,7 +44,7 @@ pub fn run_task(
         let script = get_script_cmd(&script_value);
         invoke_script(&project, &script.unwrap(), verbose)
     } else {
-        Err(report!(KeeperError::TaskNotFound(task.to_owned())))
+        Err(KeeperError::TaskNotFound(task.to_owned()).into_report())
     }
 }
 

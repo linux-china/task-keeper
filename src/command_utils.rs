@@ -1,6 +1,6 @@
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::{report, Result, ResultExt};
+use error_stack::{IntoReport, Result, ResultExt};
 use std::collections::HashMap;
 use std::io;
 use std::io::{Read, Write};
@@ -66,9 +66,9 @@ pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutp
             .bold()
             .red()
         );
-        Err(report!(KeeperError::CommandNotFound(
+        Err(KeeperError::CommandNotFound(
             command_name.to_string()
-        )))
+        ).into_report())
     }
 }
 
@@ -117,9 +117,9 @@ pub fn run_command_line_from_stdin(
             .bold()
             .red()
         );
-        Err(report!(KeeperError::CommandNotFound(
+        Err(KeeperError::CommandNotFound(
             command_name.to_string()
-        )))
+        ).into_report())
     }
 }
 

@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{report, Result};
+use error_stack::{IntoReport, Result};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -86,7 +86,7 @@ pub fn run_task(
     if let Some(configuration) = result {
         run_configuration(configuration, verbose)
     } else {
-        Err(report!(KeeperError::TaskNotFound(task_name.to_owned())))
+        Err(KeeperError::TaskNotFound(task_name.to_owned()).into_report())
     }
 }
 
@@ -107,7 +107,7 @@ fn run_configuration(
             "{}",
             format!("{} is not available", command_name).bold().red()
         );
-        Err(report!(KeeperError::CommandNotFound(command_name.clone())))
+        Err(KeeperError::CommandNotFound(command_name.clone()).into_report())
     }
 }
 

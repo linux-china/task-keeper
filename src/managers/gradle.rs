@@ -1,6 +1,6 @@
 use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
-use error_stack::{report, Result};
+use error_stack::{IntoReport, Result};
 use std::collections::HashMap;
 use which::which;
 
@@ -72,10 +72,10 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(report!(KeeperError::ManagerTaskNotFound(
+        Err(KeeperError::ManagerTaskNotFound(
             task.to_owned(),
             "gradle".to_string()
-        )))
+        ).into_report())
     }
 }
 
