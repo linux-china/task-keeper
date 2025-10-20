@@ -1,8 +1,8 @@
+use error_stack::Report;
 use crate::command_utils::{run_command_by_shell, run_command_line, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Result;
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 
@@ -26,7 +26,7 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     Ok(parse_run_json()
         .tasks
         .map(|tasks| {
@@ -72,7 +72,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let tasks = list_tasks()?;
     let task = tasks
         .iter()

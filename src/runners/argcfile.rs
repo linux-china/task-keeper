@@ -2,7 +2,7 @@ use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use serde::{Deserialize, Serialize};
 use which::which;
 
@@ -36,7 +36,7 @@ pub fn is_command_available() -> bool {
     which("argc").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let current_dir = std::env::current_dir().unwrap();
     let argc_file = ARGC_SCRIPT_NAMES
         .iter()
@@ -72,7 +72,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

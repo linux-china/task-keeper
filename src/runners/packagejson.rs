@@ -1,9 +1,9 @@
+use error_stack::Report;
 use crate::command_utils::{run_command, CommandOutput};
 use crate::common::{get_npm_command, parse_package_json};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Result;
 use which::which;
 
 pub fn is_available() -> bool {
@@ -18,7 +18,7 @@ pub fn is_command_available() -> bool {
     which(package_manager).is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     parse_package_json().map(|package_json| {
         package_json
             .scripts
@@ -38,7 +38,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let package_json = parse_package_json()?;
     let command_name = get_npm_command(&package_json);
     let mut args = vec![];

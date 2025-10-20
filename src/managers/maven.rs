@@ -1,6 +1,6 @@
 use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 use serde::Deserialize;
 use serde_xml_rs::from_str;
 use std::collections::HashMap;
@@ -68,14 +68,11 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(
-            task.to_owned(),
-            "maven".to_string()
-        ).into_report())
+        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "maven".to_string()).into_report())
     }
 }
 
@@ -83,11 +80,7 @@ fn get_mvn_command() -> &'static str {
     let wrapper_available = std::env::current_dir()
         .map(|dir| dir.join("mvnw").exists())
         .unwrap_or(false);
-    if wrapper_available {
-        "./mvnw"
-    } else {
-        "mvn"
-    }
+    if wrapper_available { "./mvnw" } else { "mvn" }
 }
 
 fn get_start_command_line() -> String {
@@ -95,7 +88,7 @@ fn get_start_command_line() -> String {
         .map(|dir| dir.join("pom.xml"))
         .map(|path| std::fs::read_to_string(path).unwrap())
         .unwrap_or("<project></project>".to_owned());
-    return if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>")
+    if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>")
         || pom_xml.contains("<artifactId>spring-boot-starter-webflux</artifactId>")
     {
         format!("{} spring-boot:run", get_mvn_command())
@@ -103,7 +96,7 @@ fn get_start_command_line() -> String {
         format!("{} quarkus:dev", get_mvn_command())
     } else {
         format!("{} exec:java", get_mvn_command())
-    };
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -129,7 +122,7 @@ pub struct Versions {
     pub versions: Vec<String>,
 }
 
-pub fn parse_maven_metadata(url: &str) -> Result<Metadata, KeeperError> {
+pub fn parse_maven_metadata(url: &str) -> Result<Metadata, Report<KeeperError>> {
     let text = reqwest::blocking::get(url).unwrap().text().unwrap();
     from_str(&text).map_err(|_| KeeperError::InvalidMavenMetadataXml.into_report())
 }

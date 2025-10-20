@@ -4,7 +4,7 @@ use crate::models::Task;
 use crate::runners::RUNNERS;
 use crate::{managers, runners};
 use colored::Colorize;
-use error_stack::Result;
+use error_stack::{Report};
 use std::collections::HashMap;
 
 pub fn run_tasks(
@@ -13,7 +13,7 @@ pub fn run_tasks(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<i32, KeeperError> {
+) -> core::result::Result<i32, Report<KeeperError>> {
     let mut task_count = 0;
     let all_tasks = list_all_runner_tasks(true);
     if let Ok(tasks_hashmap) = all_tasks {
@@ -106,7 +106,7 @@ pub fn run_manager_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<(), KeeperError> {
+) -> Result<(), Report<KeeperError>> {
     managers::run_task(runner, task_name, task_args, global_args, verbose)
 }
 

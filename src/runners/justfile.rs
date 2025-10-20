@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
@@ -35,7 +35,7 @@ pub fn is_command_available() -> bool {
     which("just").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let json_text = capture_command_output("just", &["--unstable", "--dump", "--dump-format=json"])
         .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))?;
     serde_json::from_str::<JustfileJson>(&json_text)
@@ -76,7 +76,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     args.push("--unstable");
     args.extend(global_args);

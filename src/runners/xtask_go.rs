@@ -2,8 +2,8 @@ use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Result;
 use std::io::{BufRead, BufReader};
+use error_stack::Report;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -11,7 +11,7 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let tasks_text = capture_command_output("go", &["run", "xtask/main.go", "--help"])
         .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let tasks: Vec<Task> = BufReader::new(tasks_text.as_bytes())
@@ -40,7 +40,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     args.push("run");
     args.push("xtask/main.go");

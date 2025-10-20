@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -126,7 +126,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let run_json = parse_run_json();
     let result = run_json
         .configurations
@@ -142,7 +142,7 @@ pub fn run_task(
 fn run_configuration(
     configuration: &Configuration,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let command_name = get_command_name(configuration);
     let args = get_command_args(configuration);
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
@@ -153,8 +153,7 @@ fn run_configuration(
             &configuration.working_dir,
             &configuration.environment,
             verbose,
-        )
-        .unwrap())
+        )?)
     } else {
         println!(
             "{}",

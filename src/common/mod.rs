@@ -1,8 +1,8 @@
-pub mod pyproject;
 pub mod notification;
+pub mod pyproject;
 
 use crate::errors::KeeperError;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs};
 
@@ -14,7 +14,7 @@ pub struct PackageJson {
     pub package_manager: Option<String>,
 }
 
-pub fn parse_package_json() -> Result<PackageJson, KeeperError> {
+pub fn parse_package_json() -> core::result::Result<PackageJson, Report<KeeperError>> {
     let content = fs::read_to_string(
         &std::env::current_dir()
             .expect("Failed to get current directory")

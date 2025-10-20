@@ -1,6 +1,6 @@
 use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
 use which::which;
 
@@ -28,7 +28,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {

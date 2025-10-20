@@ -2,7 +2,7 @@ use crate::command_utils::CommandOutput;
 use crate::common::notification::send_notification;
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::Result;
+use error_stack::{Report};
 use std::collections::HashMap;
 
 pub mod amper;
@@ -224,10 +224,10 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<(), KeeperError> {
+) -> Result<(), Report<KeeperError>> {
     let mut queue: HashMap<
         &str,
-        fn(&str, &[&str], &[&str], bool) -> Result<CommandOutput, KeeperError>,
+        fn(&str, &[&str], &[&str], bool) -> Result<CommandOutput, Report<KeeperError>>,
     > = HashMap::new();
     if maven::is_available() {
         if maven::is_command_available() {
@@ -509,7 +509,7 @@ pub fn run_task(
                     .bold()
                     .blue()
             );
-            task(task_name, task_args, global_args, verbose).unwrap();
+            task(task_name, task_args, global_args, verbose)?;
         } else {
             println!(
                 "{}",

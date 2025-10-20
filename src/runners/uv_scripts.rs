@@ -4,7 +4,7 @@ use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use toml::Value;
@@ -12,16 +12,14 @@ use which::which;
 
 /// implement feature from https://rye.astral.sh/guide/pyproject/#toolryescripts
 pub fn is_available() -> bool {
-    std::env::current_dir()
-        .map(|dir| pyproject_toml_has_tool("uv"))
-        .unwrap_or(false)
+    pyproject_toml_has_tool("uv")
 }
 
 pub fn is_command_available() -> bool {
     which("uv").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let mut tasks = vec![];
     if let Ok(pyproject) = PyProjectToml::get_default_project() {
         if let Some(scripts) = pyproject.get_uv_scripts() {
@@ -38,7 +36,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let project = PyProjectToml::get_default_project().unwrap();
     if let Some(script_value) = project.get_uv_script(task) {
         let script = get_script_cmd(&script_value);
@@ -140,7 +138,7 @@ fn invoke_script(
     pyproject: &PyProjectToml,
     script: &Script,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     match script {
         Script::Call(entry, env_vars, env_file) => {
             let args: Vec<String> = if let Some((module, func)) = entry.split_once(':') {
@@ -234,10 +232,6 @@ fn invoke_script(
             }
             std::process::exit(0);
         }
-        _ => {
-            eprintln!("invalid or unknown script");
-            std::process::exit(1);
-        }
     }
 }
 
@@ -304,6 +298,6 @@ mod tests {
     #[test]
     fn test_run_task() {
         let task_name = "hello";
-        run_task("hello", &[], &[], true).unwrap();
+        run_task(task_name, &[], &[], true).unwrap();
     }
 }

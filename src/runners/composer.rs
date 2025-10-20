@@ -2,7 +2,7 @@ use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use which::which;
@@ -23,7 +23,7 @@ pub fn is_command_available() -> bool {
     which("composer").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     parse_composer_json().map(|composer_json| {
         composer_json
             .scripts
@@ -44,7 +44,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     })
 }
 
-fn parse_composer_json() -> Result<ComposerJson, KeeperError> {
+fn parse_composer_json() -> Result<ComposerJson, Report<KeeperError>> {
     std::env::current_dir()
         .map(|dir| dir.join("composer.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
@@ -57,7 +57,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     args.extend(global_args);
     args.push("run-script");

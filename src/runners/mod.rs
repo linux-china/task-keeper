@@ -31,7 +31,7 @@ pub mod uv_scripts;
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 
 pub const RUNNERS: &'static [&'static str] = &[
     "ant",
@@ -70,7 +70,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     println!(
         "{}",
         format!("[tk] execute {} from {}", task_name, runner)

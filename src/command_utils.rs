@@ -1,6 +1,6 @@
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::{IntoReport, Result, ResultExt};
+use error_stack::{IntoReport, Report, ResultExt};
 use std::collections::HashMap;
 use std::io;
 use std::io::{Read, Write};
@@ -39,11 +39,11 @@ pub fn run_command(
     command_name: &str,
     args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     run_command_with_env_vars(command_name, args, &None, &None, verbose)
 }
 
-pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, KeeperError> {
+pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
     let command_and_args = shlex::split(command_line).unwrap();
     // command line contains pipe or not
     if command_and_args
@@ -66,9 +66,7 @@ pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutp
             .bold()
             .red()
         );
-        Err(KeeperError::CommandNotFound(
-            command_name.to_string()
-        ).into_report())
+        Err(KeeperError::CommandNotFound(command_name.to_string()).into_report())
     }
 }
 
@@ -76,7 +74,7 @@ pub fn run_command_line_from_stdin(
     command_line: &str,
     input: &str,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let command_and_args = shlex::split(command_line).unwrap();
     let command_name = &command_and_args[0];
     let args: Vec<&str> = if command_and_args.len() > 1 {
@@ -117,9 +115,7 @@ pub fn run_command_line_from_stdin(
             .bold()
             .red()
         );
-        Err(KeeperError::CommandNotFound(
-            command_name.to_string()
-        ).into_report())
+        Err(KeeperError::CommandNotFound(command_name.to_string()).into_report())
     }
 }
 
@@ -129,7 +125,7 @@ pub fn run_command_with_env_vars(
     working_dir: &Option<String>,
     env_vars: &Option<HashMap<String, String>>,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut command = Command::new(command_name);
     command.envs(std::env::vars());
     if args.len() > 0 {
@@ -161,7 +157,7 @@ pub fn run_command_with_env_vars(
 pub fn run_command_by_shell(
     command_line: &str,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut command = if cfg!(target_os = "windows") {
         Command::new("cmd")
     } else {
@@ -186,7 +182,7 @@ pub fn run_command_by_shell(
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
 }
 
-pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, KeeperError> {
+pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<KeeperError>> {
     let mut child = command
         .stdin(Stdio::inherit())
         .stdout(Stdio::piped())
@@ -244,7 +240,7 @@ pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, KeeperEr
     })
 }
 
-pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, KeeperError> {
+pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, Report<KeeperError>> {
     let mut command = Command::new(command_name);
     if args.len() > 0 {
         command.args(args);

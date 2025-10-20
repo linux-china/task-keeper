@@ -2,9 +2,9 @@ use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Result;
 use regex::Regex;
 use std::io::{BufRead, BufReader};
+use error_stack::Report;
 use which::which;
 
 pub fn is_available() -> bool {
@@ -17,7 +17,7 @@ pub fn is_command_available() -> bool {
     which("make").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     if which::which("mmake").is_ok() {
         return list_tasks_by_mmake();
     }
@@ -35,7 +35,7 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
     Ok(tasks)
 }
 
-fn list_tasks_by_mmake() -> Result<Vec<Task>, KeeperError> {
+fn list_tasks_by_mmake() -> Result<Vec<Task>, Report<KeeperError>> {
     let makefile_meta_text = capture_command_output("mmake", &["help"])
         .map(|output| String::from_utf8(output.stdout).unwrap_or("".to_owned()))?;
     let re = Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*.*").unwrap();
@@ -58,7 +58,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     args.extend(global_args);
     args.push(task);

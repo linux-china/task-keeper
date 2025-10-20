@@ -2,7 +2,7 @@ use crate::command_utils::{run_command_line, run_command_line_from_stdin, Comman
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use logos::Logos;
 use std::collections::HashMap;
 use std::env::temp_dir;
@@ -17,7 +17,7 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let readme_md = std::env::current_dir()
         .map(|dir| dir.join("README.md"))
         .map(|path| std::fs::read_to_string(path).unwrap())
@@ -176,7 +176,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let tasks = list_tasks()?;
     let task = tasks
         .iter()

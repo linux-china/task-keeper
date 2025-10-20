@@ -57,7 +57,9 @@ pub fn run_snippet(args: &[&str]) {
     let snippet_file = get_snippets_file();
     let mut just_args = vec!["just", "-f", snippet_file.to_str().unwrap()];
     just_args.extend(args.iter().skip(1));
-    std::env::set_var("JUST_UNSTABLE", "1");
+    unsafe {
+        std::env::set_var("JUST_UNSTABLE", "1");
+    }
     if let Err(code) = just::run(just_args.iter()) {
         std::process::exit(code);
     }

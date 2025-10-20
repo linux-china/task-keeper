@@ -1,8 +1,8 @@
+use error_stack::Report;
 use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Result;
 use serde::Deserialize;
 use which::which;
 
@@ -32,7 +32,7 @@ pub fn is_command_available() -> bool {
     which("ant").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     Ok(parse_build_xml()
         .targets
         .map(|targets| {
@@ -63,7 +63,7 @@ pub fn run_task(
     task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let mut args = vec![];
     //args.extend(global_args);
     args.push(task);

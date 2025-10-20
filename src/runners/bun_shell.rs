@@ -2,7 +2,7 @@ use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{Result, ResultExt};
+use error_stack::{Report, ResultExt};
 use std::io::{BufRead, BufReader};
 use which::which;
 
@@ -16,7 +16,7 @@ pub fn is_command_available() -> bool {
     which("bun").is_ok()
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let taskfile_text = std::env::current_dir()
         .map(|dir| dir.join("Taskfile.ts"))
         .map(|path| std::fs::read_to_string(path).unwrap())
@@ -48,7 +48,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let tasks = list_tasks()?;
     let task = tasks
         .iter()

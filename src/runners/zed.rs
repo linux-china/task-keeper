@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{IntoReport, Result};
+use error_stack::{IntoReport, Report};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -53,7 +53,7 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     Ok(parse_tasks_json()
         .iter()
         .map(|configuration| task!(&configuration.label, "zed", configuration.command_line()))
@@ -78,7 +78,7 @@ pub fn run_task(
     _task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let configurations = parse_tasks_json();
     let result = configurations
         .iter()
@@ -93,7 +93,7 @@ pub fn run_task(
 fn run_configuration(
     configuration: &Configuration,
     verbose: bool,
-) -> Result<CommandOutput, KeeperError> {
+) -> Result<CommandOutput, Report<KeeperError>> {
     let command_name = &configuration.command;
     let args = configuration.args.clone().unwrap_or_default();
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
