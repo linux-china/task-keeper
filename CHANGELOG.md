@@ -7,6 +7,36 @@
 - Add `tk sbom` for Maven and Gradle project to generate SBOM with CycloneDX format: `target/application.cdx.json` or
   `build/application.cdx.json`
 
+Please check `$HOME/.gradle/init.d/plugins.gradle` with the following code:
+
+```
+initscript {
+  repositories {
+     gradlePluginPortal()
+  }
+
+  dependencies {
+     classpath 'com.github.ben-manes:gradle-versions-plugin:0.53.0'
+     classpath 'org.cyclonedx.bom:org.cyclonedx.bom.gradle.plugin:3.0.1'
+  }
+}
+
+allprojects {
+  apply plugin: com.github.benmanes.gradle.versions.VersionsPlugin
+  apply plugin: org.cyclonedx.gradle.CyclonedxPlugin
+
+  tasks.named("dependencyUpdates").configure {
+    // configure the task, for example wrt. resolution strategies
+  }
+  
+  // https://github.com/CycloneDX/cyclonedx-gradle-plugin/tree/master?tab=readme-ov-file#advanced-configuration
+  tasks.named("cyclonedxDirectBom").configure {
+     jsonOutput.set(file("build/application.cdx.json"))
+     projectType = "application"
+  }
+}
+```
+
 ## [0.30.7] - 2025-10-19
 
 - Add `[tool.rye.scripts]`: https://rye.astral.sh/guide/pyproject/#toolryescripts
