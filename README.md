@@ -175,15 +175,23 @@ initscript {
   }
 
   dependencies {
-    classpath 'com.github.ben-manes:gradle-versions-plugin:+'
+     classpath 'com.github.ben-manes:gradle-versions-plugin:0.53.0'
+     classpath 'org.cyclonedx.bom:org.cyclonedx.bom.gradle.plugin:3.0.1'
   }
 }
 
 allprojects {
   apply plugin: com.github.benmanes.gradle.versions.VersionsPlugin
+  apply plugin: org.cyclonedx.gradle.CyclonedxPlugin
 
   tasks.named("dependencyUpdates").configure {
     // configure the task, for example wrt. resolution strategies
+  }
+  
+  // https://github.com/CycloneDX/cyclonedx-gradle-plugin/tree/master?tab=readme-ov-file#advanced-configuration
+  tasks.named("cyclonedxDirectBom").configure {
+     jsonOutput.set(file("build/application.cdx.json"))
+     projectType = "application"
   }
 }
 ```
