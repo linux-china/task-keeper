@@ -1,6 +1,6 @@
 [package]
 name = "task-keeper"
-version = "0.30.7"
+version = "0.30.8"
 edition = "2024"
 authors = ["linux_china <libing.chen@gmail.com>"]
 description = "Task keeper to manage tasks from different task runners"
@@ -25,7 +25,7 @@ path = "src/sq.rs"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-jsonc-parser = { version = "0.26", features = ["serde"] }
+jsonc-parser = { version = "0.27", features = ["serde"] }
 serde-xml-rs = "0.8"
 toml = "0.9"
 java-properties = "2"
