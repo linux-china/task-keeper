@@ -50,6 +50,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         "outdated".to_string(),
         format!("{} versions:display-dependency-updates", mvn_command),
     );
+    task_command_map.insert(
+        "sbom".to_string(),
+        format!("{} -DprojectType=application -DoutputName=application.cdx -DoutputFormat=json org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom", mvn_command),
+    );
     if std::env::current_dir()
         .map(|dir| dir.join(".mvn/wrapper").exists())
         .unwrap_or(false)
