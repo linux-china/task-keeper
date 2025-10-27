@@ -52,6 +52,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         "outdated".to_string(),
         format!("{} dependencyUpdates", gradle_command),
     );
+    task_command_map.insert(
+        "sbom".to_string(),
+        format!("{} cyclonedxDirectBom", gradle_command),
+    );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
         if !code.contains("gradle-9.0.0") {
             task_command_map.insert(
@@ -72,10 +76,7 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(
-            task.to_owned(),
-            "gradle".to_string()
-        ).into_report())
+        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "gradle".to_string()).into_report())
     }
 }
 
