@@ -90,6 +90,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
             task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
         }
     }
+    task_command_map.insert("sbom".to_string(), "npx @cyclonedx/cyclonedx-npm -o application.cdx.json".to_string());
     task_command_map
 }
 

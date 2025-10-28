@@ -3,6 +3,7 @@ use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
 use which::which;
+use crate::task;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -32,6 +33,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     if cargo_bin {
         task_command_map.insert("start".to_string(), "cargo run".to_string());
     }
+    task_command_map.insert("sbom".to_string(), "cargo-cyclonedx cyclonedx -v --format json".to_string());
     task_command_map
 }
 
