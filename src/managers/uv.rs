@@ -29,6 +29,11 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         "build".to_string(),
         "uvx --from build pyproject-build --installer uv".to_string(),
     );
+    task_command_map.insert(
+        "sbom".to_string(),
+        "uvx --from cyclonedx-bom cyclonedx-py environment .venv -o application.cdx.json"
+            .to_string(),
+    );
     task_command_map
 }
 
@@ -41,9 +46,6 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(
-            task.to_owned(),
-            "uv".to_string()
-        ).into_report())
+        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "uv".to_string()).into_report())
     }
 }
