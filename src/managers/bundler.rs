@@ -23,6 +23,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("clean".to_string(), "bundle clean".to_string());
     task_command_map.insert("outdated".to_string(), "bundle outdated".to_string());
     task_command_map.insert("update".to_string(), "bundle update".to_string());
+    task_command_map.insert("sbom".to_string(), "cyclonedx-ruby -o application.cdx.json -p .".to_string());
     task_command_map
 }
 

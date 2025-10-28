@@ -44,6 +44,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("clean".to_string(), "composer clear-cache".to_string());
     task_command_map.insert("outdated".to_string(), "composer outdated".to_string());
     task_command_map.insert("update".to_string(), "composer update".to_string());
+    task_command_map.insert("sbom".to_string(), "composer CycloneDX:make-sbom --output-format=json --output-file=application.cdx.json".to_string());
     task_command_map
 }
 
