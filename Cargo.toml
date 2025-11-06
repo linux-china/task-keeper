@@ -48,7 +48,7 @@ just = "1.43"
 reqwest = { version = "0.12", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.48", features = ["full"] }
-async-nats = "0.44"
+async-nats = "0.45"
 minio = "0.3"
 
 [profile.release]
@@ -66,7 +66,7 @@ lto = true
 # Config for 'dist'
 [workspace.metadata.dist]
 # The preferred dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "0.30.1"
+cargo-dist-version = "0.30.2"
 # CI backends to support
 ci = "github"
 # The installers to generate for each app
