@@ -6,7 +6,7 @@ use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("conanfile.txt").exists())
+        .map(|dir| dir.join("conanfile.txt").exists() || dir.join("CMakeLists.txt").exists())
         .unwrap_or(false)
 }
 
