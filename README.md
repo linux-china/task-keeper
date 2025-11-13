@@ -71,6 +71,8 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * nur: a task runner based on nu shell https://github.com/ddanier/nur
 * cargo-xtask: https://github.com/linux-china/xtask-demo
 * go-xtask: https://github.com/linux-china/xtask-go-demo
+* grunt: https://gruntjs.com/
+* gulp: https://gulpjs.com/
 
 ### Bun Shell - Taskfile.ts
 
@@ -352,9 +354,8 @@ console.log("hello world");
 
 ## Task Runners
 
-* grunt: https://gruntjs.com/
-* gulp: https://gulpjs.com/
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
+* Pants Build System: https://github.com/pantsbuild/pants
 
 # Package Managers
 
@@ -433,6 +434,7 @@ Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notifica
 * Learn Makefiles With the tastiest examples: https://makefiletutorial.com/
 * Taskfile: a modern alternative to Makefile - https://itnext.io/taskfile-a-modern-alternative-to-makefile-6b3f545f77bd
 * Task Runner Census 2025: https://aleyan.com/blog/2025-task-runners-census/
+* [vstask](https://lib.rs/crates/vstask): A command-line tool to run VS Code tasks from the terminal.
 
 # Task scripts demo in Markdown
 
