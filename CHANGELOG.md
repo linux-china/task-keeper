@@ -2,6 +2,13 @@
 
 # Task Keeper Changelog
 
+## [0.30.9] - 2025-12-06
+
+- Fix cmake project detection
+- VS Code Task enhancement
+- Update to amper 0.9.1
+- Update to just 1.44
+
 ## [0.30.8] - 2025-10-26
 
 - Add `tk sbom` for Maven and Gradle project to generate SBOM with CycloneDX format: `target/application.cdx.json` or
