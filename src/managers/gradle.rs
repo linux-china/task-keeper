@@ -57,10 +57,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         format!("{} cyclonedxDirectBom", gradle_command),
     );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
-        if !code.contains("gradle-9.2.0") {
+        if !code.contains("gradle-9.2.1") {
             task_command_map.insert(
                 "self-update".to_string(),
-                format!("{} wrapper --gradle-version=9.2.0", gradle_command),
+                format!("{} wrapper --gradle-version=9.2.1", gradle_command),
             );
         }
     }
