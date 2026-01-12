@@ -2,6 +2,22 @@
 
 # Task Keeper Changelog
 
+
+## [0.31.0] - 2026-01-12
+
+- Add [usql](https://github.com/xo/usql) support: please create `queries.sql` with the following code:
+
+```sql
+-- DSN_URL=duck://data/demo.db
+
+-- QUERY now
+select now();
+
+-- Query all_user
+select * from user;
+```
+
+
 ## [0.30.9] - 2025-12-06
 
 - Fix cmake project detection
