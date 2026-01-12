@@ -420,6 +420,15 @@ fn diagnose() {
             );
         }
     }
+    if runners::usql::is_available() {
+        if !runners::usql::is_command_available() {
+            problems_count += 1;
+            println!(
+                "{} usql(https://github.com/xo/usql/) command not available for queries.sql",
+                "Warning:".bold().yellow()
+            );
+        }
+    }
     if runners::makefiletoml::is_available() {
         if !runners::makefiletoml::is_command_available() {
             problems_count += 1;
