@@ -61,6 +61,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * JBang(jbang-catalog.json): https://www.jbang.dev/documentation/guide/latest/alias_catalogs.html
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 * Bun Shell(Taskfile.ts): https://bun.sh/docs/runtime/shell
+* usql(queries.sql): https://github.com/xo/usql/
 * markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 * fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
@@ -327,6 +328,26 @@ tasks:
 
 * cargo-xtask: https://github.com/linux-china/xtask-demo
 * go-xtask: https://github.com/linux-china/xtask-go-demo
+
+### usql with  queries.sql
+
+You can run [usql](https://github.com/xo/usql/) with `queries.sql`:
+
+```sql
+-- DSN_URL=sqlite://demo.sqlite3
+
+-- QUERY all_users
+SELECT * FROM users;
+
+-- QUERY get_user :one
+SELECT * FROM users WHERE id = 1;
+```
+
+SQL Types support now:
+
+- QUERY: query data
+- EXEC: update data
+- MIGRATE: schema migration
 
 ### Tasks from README.md
 
