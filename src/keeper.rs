@@ -4,7 +4,7 @@ use crate::models::Task;
 use crate::runners::RUNNERS;
 use crate::{managers, runners};
 use colored::Colorize;
-use error_stack::{Report};
+use error_stack::Report;
 use std::collections::HashMap;
 
 pub fn run_tasks(
@@ -13,7 +13,7 @@ pub fn run_tasks(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> core::result::Result<i32, Report<KeeperError>> {
+) -> Result<i32, Report<KeeperError>> {
     let mut task_count = 0;
     let all_tasks = list_all_runner_tasks(true);
     if let Ok(tasks_hashmap) = all_tasks {
@@ -470,6 +470,24 @@ pub fn list_all_runner_tasks(
                 println!(
                     "{}",
                     "[tk] nur(https://github.com/ddanier/nur) command not available for nurfile"
+                        .bold()
+                        .red()
+                );
+            }
+        }
+    }
+    if runners::usql::is_available() {
+        if runners::usql::is_command_available() {
+            if let Ok(runner_tasks) = runners::usql::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("usql".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!(
+                    "{}",
+                    "[tk] usql(https://github.com/xo/usql/) command not available for queries.sql"
                         .bold()
                         .red()
                 );

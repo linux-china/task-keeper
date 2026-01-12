@@ -27,6 +27,7 @@ pub mod jakefile;
 pub mod gulpfile;
 pub mod gruntfile;
 pub mod uv_scripts;
+pub mod usql;
 
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
@@ -61,7 +62,8 @@ pub const RUNNERS: &'static [&'static str] = &[
     "xtask",
     "xtask-go",
     "nur",
-    "uvs"
+    "uvs",
+    "usql"
 ];
 
 pub fn run_task(
@@ -94,6 +96,7 @@ pub fn run_task(
         "invoke" => taskspy::run_task(task_name, task_args, global_args, verbose),
         "cargo-make" => makefiletoml::run_task(task_name, task_args, global_args, verbose),
         "procfile" => procfile::run_task(task_name, task_args, global_args, verbose),
+        "usql" => usql::run_task(task_name, task_args, global_args, verbose),
         "composer" => composer::run_task(task_name, task_args, global_args, verbose),
         "markdown" => markdown::run_task(task_name, task_args, global_args, verbose),
         "shell" => taskshell::run_task(task_name, task_args, global_args, verbose),
@@ -126,6 +129,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "just" => "Justfile",
         "make" => "Makefile",
         "proc" => "Procfile",
+        "usql" => "queries.sql",
         "npm" => "package.json",
         "deno" => "deno.json",
         "composer" => "composer.json",
@@ -158,6 +162,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "task" => "https://taskfile.dev",
         "cargo-make" => "https://github.com/sagiegurari/cargo-make",
         "just" => "https://github.com/casey/just",
+        "usql" => "https://github.com/xo/usql/",
         "make" => "https://www.gnu.org/software/make",
         "proc" => "https://devcenter.heroku.com/articles/procfile",
         "npm" => "https://nodejs.org",

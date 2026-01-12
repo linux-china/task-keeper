@@ -59,4 +59,7 @@ pub enum KeeperError {
     InvalidTasksJson,
     #[error("TK-302001: failed to list uv tasks")]
     InvalidUvTasks,
+
+    #[error("TK-303001: failed to read queries.sql")]
+    InvalidQueriesSQL,
 }
