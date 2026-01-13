@@ -8,7 +8,7 @@
 - Add [usql](https://github.com/xo/usql) support: please create `queries.sql` with the following code:
 
 ```sql
--- DSN_URL=duck://data/demo.db
+-- DSN_URL=duck://./data/demo.db
 
 -- QUERY now
 select now();
