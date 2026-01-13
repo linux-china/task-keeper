@@ -24,7 +24,6 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 
 * Install by cargo: `cargo install task-keeper` (or `cargo binstall task-keeper`)
 * Mac: `brew tap linux-china/tap; brew install --no-quarantine task-keeper`
-* Windows: `scoop install task-keeper`
 * Using [nix](https://nix.dev/):
     * try without installing: `nix shell github:linux-china/task-keeper`
     * install: e.g. `nix profile install github:linux-china/task-keeper`
