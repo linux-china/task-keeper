@@ -56,11 +56,15 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         "sbom".to_string(),
         format!("{} cyclonedxDirectBom", gradle_command),
     );
+    task_command_map.insert(
+        "skills".to_string(),
+        format!("{} extractSkillsJars", gradle_command),
+    );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
-        if !code.contains("gradle-9.3.0") {
+        if !code.contains("gradle-9.3.1") {
             task_command_map.insert(
                 "self-update".to_string(),
-                format!("{} wrapper --gradle-version=9.3.0", gradle_command),
+                format!("{} wrapper --gradle-version=9.3.1", gradle_command),
             );
         }
     }
@@ -69,12 +73,49 @@ pub fn get_task_command_map() -> HashMap<String, String> {
 
 pub fn run_task(
     task: &str,
-    _task_args: &[&str],
+    task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     if let Some(command_line) = get_task_command_map().get(task) {
-        run_command_line(command_line, verbose)
+        if task == "sbom" {
+            // generate temp file
+            let temp_file = std::env::temp_dir().join("init-cyclonedx.gradle");
+            std::fs::write(
+                &temp_file,
+                include_bytes!("./gradle_scripts/init-cyclonedx.gradle"),
+            )
+            .expect("Failed to write temp file");
+            let mut additional_args = task_args.join(" ");
+            let command_line = format!(
+                "{} --init-script {} {}",
+                command_line,
+                temp_file.to_str().unwrap(),
+                additional_args
+            );
+            run_command_line(&command_line, verbose)
+        } else if task == "skills" {
+            // generate temp file
+            let temp_file = std::env::temp_dir().join("init-skillsjars.gradle");
+            std::fs::write(
+                &temp_file,
+                include_bytes!("./gradle_scripts/init-skillsjars.gradle"),
+            )
+            .expect("Failed to write temp file");
+            let mut additional_args = task_args.join(" ");
+            if additional_args.is_empty() {
+                additional_args = "-Pdir=.agents/skills".to_string();
+            }
+            let command_line = format!(
+                "{} --init-script {} {}",
+                command_line,
+                temp_file.to_str().unwrap(),
+                additional_args
+            );
+            run_command_line(&command_line, verbose)
+        } else {
+            run_command_line(command_line, verbose)
+        }
     } else {
         Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "gradle".to_string()).into_report())
     }
