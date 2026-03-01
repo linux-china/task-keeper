@@ -86,7 +86,7 @@ pub fn run_task(
                 include_bytes!("./gradle_scripts/init-cyclonedx.gradle"),
             )
             .expect("Failed to write temp file");
-            let mut additional_args = task_args.join(" ");
+            let additional_args = task_args.join(" ");
             let command_line = format!(
                 "{} --init-script {} {}",
                 command_line,
