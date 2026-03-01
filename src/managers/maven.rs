@@ -54,6 +54,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         "sbom".to_string(),
         format!("{} -DprojectType=application -DoutputName=application.cdx -DoutputFormat=json org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom", mvn_command),
     );
+    task_command_map.insert(
+        "skills".to_string(),
+        format!("{} com.skillsjars:maven-plugin:0.0.5:extract", mvn_command),
+    );
     if std::env::current_dir()
         .map(|dir| dir.join(".mvn/wrapper").exists())
         .unwrap_or(false)
@@ -69,12 +73,21 @@ pub fn get_task_command_map() -> HashMap<String, String> {
 
 pub fn run_task(
     task: &str,
-    _task_args: &[&str],
+    task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     if let Some(command_line) = get_task_command_map().get(task) {
-        run_command_line(command_line, verbose)
+        if task == "skills" {
+            let mut additional_args = task_args.join(" ");
+            if additional_args.is_empty() {
+                additional_args = "-Pdir=.agents/skills".to_string();
+            }
+            let command_line = format!("{} {}", command_line, additional_args);
+            run_command_line(&command_line, verbose)
+        } else {
+            run_command_line(command_line, verbose)
+        }
     } else {
         Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "maven".to_string()).into_report())
     }
