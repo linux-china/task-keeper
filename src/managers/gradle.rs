@@ -78,7 +78,23 @@ pub fn run_task(
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     if let Some(command_line) = get_task_command_map().get(task) {
-        if task == "sbom" {
+        if task == "update" || task == "outdated" {
+            // generate temp file
+            let temp_file = std::env::temp_dir().join("init-versions.gradle");
+            std::fs::write(
+                &temp_file,
+                include_bytes!("./gradle_scripts/init-versions.gradle"),
+            )
+            .expect("Failed to write temp file");
+            let additional_args = task_args.join(" ");
+            let command_line = format!(
+                "{} --init-script {} {}",
+                command_line,
+                temp_file.to_str().unwrap(),
+                additional_args
+            );
+            run_command_line(&command_line, verbose)
+        } else if task == "sbom" {
             // generate temp file
             let temp_file = std::env::temp_dir().join("init-cyclonedx.gradle");
             std::fs::write(
