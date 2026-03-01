@@ -81,7 +81,10 @@ pub fn run_task(
         if task == "skills" {
             let mut additional_args = task_args.join(" ");
             if additional_args.is_empty() {
-                additional_args = "-Pdir=.agents/skills".to_string();
+                additional_args = "-Ddir=.agents/skills".to_string();
+            }
+            if additional_args.contains("-Pdir") {
+                additional_args = additional_args.replace("-Pdir", "-Ddir");
             }
             let command_line = format!("{} {}", command_line, additional_args);
             run_command_line(&command_line, verbose)
