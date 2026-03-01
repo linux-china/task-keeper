@@ -44,7 +44,8 @@ pub const COMMANDS: &'static [&'static str] = &[
     "outdated",
     "update",
     "self-update",
-    "sbom"
+    "sbom",
+    "skills"
 ];
 pub const MANAGERS: &'static [&'static str] = &[
     "maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer",
