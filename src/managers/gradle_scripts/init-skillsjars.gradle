@@ -1,0 +1,12 @@
+initscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.skillsjars.gradle-plugin:com.skillsjars.gradle-plugin.gradle.plugin:0.0.2'
+    }
+}
+
+allprojects {
+    apply plugin: com.skillsjars.gradleplugin.SkillsJarsGradlePlugin
+}

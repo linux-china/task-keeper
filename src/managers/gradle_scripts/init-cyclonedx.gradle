@@ -1,0 +1,13 @@
+initscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'org.cyclonedx.bom:org.cyclonedx.bom.gradle.plugin:3.2.0'
+    }
+}
+
+allprojects {
+    // output dir: build/reports/cyclonedx-direct/bom.json
+    apply plugin: org.cyclonedx.gradle.CyclonedxPlugin
+}
