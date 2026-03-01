@@ -25,3 +25,7 @@ build:
 release:
   cargo build --release --bin tk
   cp target/release/tk ~/.cargo/bin/tk
+
+# use alpine/git container to push the repo
+push:
+   docker run --rm -it -v "$(pwd)":/repo -v "$HOME/.ssh":/root/.ssh:ro -w /repo alpine/git push origin master
