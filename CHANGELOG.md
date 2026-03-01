@@ -2,7 +2,16 @@
 
 # Task Keeper Changelog
 
+## [0.32.0] - 2026-03-01
 
+- Optimize `update`, `outdated` and `sbom` for Gradle with init-script and no configuration required now.
+- Add `skills` for Maven/Gradle projects to generate [SkillsJars](https://www.skillsjars.com/)
+
+```shell
+$ tk skills 
+$ # generate all skills under .agents/skill
+$ tk skills -Pdir=.qoder/skills
+```
 ## [0.31.0] - 2026-01-12
 
 - Add [usql](https://github.com/xo/usql) support: please create `queries.sql` with the following code:
