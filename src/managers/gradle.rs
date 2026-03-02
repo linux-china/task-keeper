@@ -122,8 +122,10 @@ pub fn run_task(
             if additional_args.is_empty() {
                 additional_args = "-Pdir=.agents/skills".to_string();
             }
-            if additional_args.contains("-Ddir") {
-                additional_args = additional_args.replace("-Ddir", "-Pdir");
+            if additional_args.contains("-Ddir=") {
+                additional_args = additional_args.replace("-Ddir=", "-Pdir=");
+            } else if additional_args.contains("-dir=") {
+                additional_args = additional_args.replace("-dir=", "-Pdir=");
             }
             let command_line = format!(
                 "{} --init-script {} {}",

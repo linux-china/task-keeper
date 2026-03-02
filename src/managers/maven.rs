@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command_line, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command_line};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use serde::Deserialize;
@@ -83,8 +83,10 @@ pub fn run_task(
             if additional_args.is_empty() {
                 additional_args = "-Ddir=.agents/skills".to_string();
             }
-            if additional_args.contains("-Pdir") {
-                additional_args = additional_args.replace("-Pdir", "-Ddir");
+            if additional_args.contains("-Pdir=") {
+                additional_args = additional_args.replace("-Pdir=", "-Ddir=");
+            } else if additional_args.contains("-dir=") {
+                additional_args = additional_args.replace("-dir=", "-Ddir=");
             }
             let command_line = format!("{} {}", command_line, additional_args);
             run_command_line(&command_line, verbose)
