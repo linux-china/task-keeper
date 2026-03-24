@@ -63,8 +63,8 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         .unwrap_or(false)
     {
         if let Ok(code) = std::fs::read_to_string(".mvn/wrapper/maven-wrapper.properties") {
-            if !code.contains("apache-maven-3.9.12") {
-                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dmaven=3.9.12", mvn_command));
+            if !code.contains("apache-maven-3.9.14") {
+                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dmaven=3.9.14", mvn_command));
             }
         }
     }
