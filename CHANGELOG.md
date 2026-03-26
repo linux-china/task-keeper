@@ -2,6 +2,13 @@
 
 # Task Keeper Changelog
 
+## [0.33.0] - 2026-03-26
+
+- Add `:xxx` for `queries.sql`
+- Update to gradle 9.4.1
+- Update to maven 3.9.14
+- Update to just 1.48
+
 ## [0.32.0] - 2026-03-01
 
 - Optimize `update`, `outdated` and `sbom` for Gradle with init-script and no configuration required now.
