@@ -113,8 +113,7 @@ fn parse_run_json() -> FleetRunJson {
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
         .map(|data| {
-            parse_to_serde_value(&data, &Default::default())
-                .unwrap()
+            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
                 .unwrap()
         })
         .map(|json_value| serde_json::from_value::<FleetRunJson>(json_value).unwrap())

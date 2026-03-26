@@ -65,8 +65,7 @@ fn parse_tasks_json() -> Vec<Configuration> {
         .map(|dir| dir.join(".zed").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("[]".to_owned()))
         .map(|data| {
-            parse_to_serde_value(&data, &Default::default())
-                .unwrap()
+            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
                 .unwrap()
         })
         .map(|json_value| serde_json::from_value::<Vec<Configuration>>(json_value).unwrap())
