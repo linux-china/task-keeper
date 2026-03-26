@@ -2,9 +2,9 @@ use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use regex::Regex;
-use std::io::{BufRead, BufReader};
 use error_stack::Report;
+use regex::Regex;
+use std::io::{BufRead, BufReader, Read};
 use which::which;
 
 pub fn is_available() -> bool {
@@ -18,6 +18,16 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
+    if let Ok(file) = std::fs::File::open("Makefile") {
+        if let Ok(mf) = makefile_lossless::Makefile::read(file) {
+            return Ok(mf
+                .rules()
+                .flat_map(|r| r.targets().collect::<Vec<_>>())
+                .filter(|task_name| task_name != ".PHONY")
+                .map(|task_name| task!(task_name, "make"))
+                .collect::<Vec<_>>());
+        }
+    }
     if which::which("mmake").is_ok() {
         return list_tasks_by_mmake();
     }
