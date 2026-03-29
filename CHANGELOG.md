@@ -2,9 +2,9 @@
 
 # Task Keeper Changelog
 
-## [0.33.0] - 2026-03-26
+## [0.33.0] - 2026-03-29
 
-- Add `:xxx` for `queries.sql`
+- Add `:xxx` named parameter for `queries.sql`
 - Update to gradle 9.4.1
 - Update to maven 3.9.14
 - Update to just 1.48
