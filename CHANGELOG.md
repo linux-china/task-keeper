@@ -2,6 +2,12 @@
 
 # Task Keeper Changelog
 
+## [0.34.0] - 2026-04-21
+
+- Update to Amper 0.10.0
+- Update to Just 1.50.0
+- Update to Apache Maven 3.9.15
+
 ## [0.33.0] - 2026-03-29
 
 - Add `:xxx` named parameter for `queries.sql`
