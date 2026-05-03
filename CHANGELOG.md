@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.35.0] - 2026-05-03
+
+- Update to Gradle 9.5.0
+
 ## [0.34.0] - 2026-04-21
 
 - Update to Amper 0.10.0
