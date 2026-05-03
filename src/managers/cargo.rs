@@ -3,7 +3,6 @@ use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
 use which::which;
-use crate::task;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
