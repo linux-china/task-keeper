@@ -48,10 +48,12 @@ just = "1.50"
 reqwest = { version = "0.13", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.52", features = ["full"] }
-async-nats = "0.46"
-minio = "0.3"
+async-nats = "0.47"
+minio = "0.4"
 rprompt= "2.2"
 makefile-lossless="0.3.34"
+# crates for security from dependency tree
+rustls-webpki = "0.103.13"
 
 [profile.release]
 strip = true
