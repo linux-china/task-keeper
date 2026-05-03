@@ -1,9 +1,10 @@
 use crate::command_utils::CommandOutput;
 use minio::s3::builders::ObjectContent;
-use minio::s3::client::{Client, ClientBuilder};
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
-use minio::s3::multimap::Multimap;
+use minio::s3::multimap_ext::Multimap;
+use minio::s3::types::typed_parameters::Region;
+use minio::s3::{MinioClient, MinioClientBuilder};
 use serde::{Deserialize, Serialize};
 use std::env;
 
@@ -80,16 +81,17 @@ async fn save_oss(notification: &Notification) -> anyhow::Result<()> {
         user_metadata.insert("status".to_string(), notification.status.to_string());
         user_metadata.insert("command".to_string(), notification.command_name.to_string());
         minio_client
-            .put_object_content(&s3_bucket, object_name, content)
+            .put_object_content(&s3_bucket, object_name, content)?
             .content_type("text/plain".to_string())
             .user_metadata(Some(user_metadata))
+            .build()
             .send()
             .await?;
     }
     Ok(())
 }
 
-pub fn create_oss_client() -> Result<Client, Box<dyn std::error::Error + Send + Sync>> {
+pub fn create_oss_client() -> Result<MinioClient, Box<dyn std::error::Error + Send + Sync>> {
     let s3_endpoint_url = env::var("S3_ENDPOINT_URL")?;
     let s3_access_key = env::var("S3_ACCESS_KEY")?;
     let s3_secret_key = env::var("S3_SECRET_KEY")?;
@@ -98,7 +100,7 @@ pub fn create_oss_client() -> Result<Client, Box<dyn std::error::Error + Send + 
 
     let mut base_url = s3_endpoint_url.parse::<BaseUrl>()?;
     if let Ok(region) = s3_region {
-        base_url.region = region;
+        base_url.region = Region::new(region)?;
     }
     if s3_virtual_style == "1" {
         base_url.virtual_style = true;
@@ -106,8 +108,8 @@ pub fn create_oss_client() -> Result<Client, Box<dyn std::error::Error + Send + 
 
     let static_provider = StaticProvider::new(&s3_access_key, &s3_secret_key, None);
 
-    let client = ClientBuilder::new(base_url.clone())
-        .provider(Some(Box::new(static_provider)))
+    let client = MinioClientBuilder::new(base_url.clone())
+        .provider(Some(static_provider))
         .build()?;
     Ok(client)
 }
