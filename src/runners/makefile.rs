@@ -4,7 +4,7 @@ use crate::models::Task;
 use crate::task;
 use error_stack::Report;
 use regex::Regex;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use which::which;
 
 pub fn is_available() -> bool {

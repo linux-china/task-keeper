@@ -6,7 +6,6 @@ use error_stack::{Report, ResultExt};
 use regex::Regex;
 use std::collections::HashSet;
 use std::env;
-use std::io::BufRead;
 use std::ops::Index;
 use which::which;
 
