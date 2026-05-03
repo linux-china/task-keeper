@@ -56,7 +56,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     );
     task_command_map.insert(
         "skills".to_string(),
-        format!("{} com.skillsjars:maven-plugin:0.0.5:extract", mvn_command),
+        format!("{} com.skillsjars:maven-plugin:0.0.6:extract", mvn_command),
     );
     if std::env::current_dir()
         .map(|dir| dir.join(".mvn/wrapper").exists())
