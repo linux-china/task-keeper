@@ -44,14 +44,14 @@ uuid = { version = "1.23", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"
 bytecount = "0.6.9"
-just = "1.50"
+just = "1.51"
 reqwest = { version = "0.13", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.52", features = ["full"] }
-async-nats = "0.47"
+async-nats = "0.48"
 minio = "0.4"
 rprompt= "2.2"
-makefile-lossless="0.3.34"
+makefile-lossless="0.3.36"
 # crates for security from dependency tree
 rustls-webpki = "0.103.13"
 
