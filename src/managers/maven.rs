@@ -56,15 +56,15 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     );
     task_command_map.insert(
         "skills".to_string(),
-        format!("{} com.skillsjars:maven-plugin:0.0.6:extract", mvn_command),
+        format!("{} com.skillsjars:maven-plugin:0.0.7:extract", mvn_command),
     );
     if std::env::current_dir()
         .map(|dir| dir.join(".mvn/wrapper").exists())
         .unwrap_or(false)
     {
         if let Ok(code) = std::fs::read_to_string(".mvn/wrapper/maven-wrapper.properties") {
-            if !code.contains("apache-maven-3.9.15") {
-                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dmaven=3.9.15", mvn_command));
+            if !code.contains("apache-maven-3.9.16") {
+                task_command_map.insert("self-update".to_string(), format!("{} org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dmaven=3.9.16", mvn_command));
             }
         }
     }
