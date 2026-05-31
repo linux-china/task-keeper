@@ -1,17 +1,21 @@
-use crate::command_utils::{run_command_line, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command_line};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
-use which::which;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
-        .map(|dir| dir.join("module.yaml").exists())
+        .map(|dir| {
+            dir.join("amper").exists()
+                && (dir.join("module.yaml").exists() || dir.join("project.yaml").exists())
+        })
         .unwrap_or(false)
 }
 
 pub fn is_command_available() -> bool {
-    which("./amper").is_ok() || which("amper").is_ok()
+    std::env::current_dir()
+        .map(|dir| dir.join("amper").exists())
+        .unwrap_or(false)
 }
 
 pub fn get_task_command_map() -> HashMap<String, String> {
@@ -42,10 +46,7 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(
-            task.to_owned(),
-            "amper".to_string()
-        ).into_report())
+        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "amper".to_string()).into_report())
     }
 }
 
