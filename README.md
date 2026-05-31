@@ -165,7 +165,7 @@ command.
 
 Available
 
-### [Amper](https://amper.org/)
+### [Kotlin Toolchain](https://kotlin-toolchain.org)
 
 Available
 
@@ -418,7 +418,7 @@ Please set `TK_TASK_ID` for task unique name, and Task Keeper will send notifica
 
 # How to add a new task runner?
 
-* Create a new rust file in `src/runners` directory, such as `myrunner.rs`
+* Create a new Ruts file in `src/runners` directory, such as `myrunner.rs`
 * Add metadata for the runner in `src/runners/mod.rs`
 * Add runner's tasks in `src/keeper.rs`
 * Add runner's diagnose in `src/main.rs`
