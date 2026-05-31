@@ -1,7 +1,7 @@
 //! clap App for command cli
 use clap::{Command, Arg, ArgAction};
 
-pub const VERSION: &str = "0.33.0";
+pub const VERSION: &str = "0.34.0";
 
 pub fn build_app() -> Command {
     Command::new("tk")
