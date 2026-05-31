@@ -524,9 +524,8 @@ fn diagnose() {
         if !managers::gradle::is_command_available() {
             problems_count += 1;
             println!(
-                "{} amper(https://github.com/JetBrains/amper) command not available for {}",
+                "{} Gradle(https://gradle.org/) command not available",
                 "Warning:".bold().yellow(),
-                "module.yaml"
             );
         } else {
             //global plugins for gradle $HOME/.gradle/init.d/plugins.gradle
@@ -546,11 +545,11 @@ fn diagnose() {
             }
         }
     }
-    if managers::amper::is_available() {
-        if !managers::amper::is_command_available() {
+    if managers::kotlin_toolchain::is_available() {
+        if !managers::kotlin_toolchain::is_command_available() {
             problems_count += 1;
             println!(
-                "{} amper(https://github.com/JetBrains/amper) command not available for module.yaml",
+                "{} Kotlin Toolchain(https://kotlin-toolchain.org/) command not available",
                 "Warning:".bold().yellow()
             );
         }
