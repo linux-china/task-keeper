@@ -2,10 +2,9 @@ use crate::command_utils::CommandOutput;
 use crate::common::notification::send_notification;
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::{Report};
+use error_stack::Report;
 use std::collections::HashMap;
 
-pub mod amper;
 pub mod bazel;
 pub mod bld;
 pub mod bundler;
@@ -15,6 +14,7 @@ pub mod composer;
 pub mod dart;
 pub mod golang;
 pub mod gradle;
+pub mod kotlin_toolchain;
 pub mod lein;
 pub mod maven;
 pub mod meson;
@@ -45,10 +45,10 @@ pub const COMMANDS: &'static [&'static str] = &[
     "update",
     "self-update",
     "sbom",
-    "skills"
+    "skills",
 ];
 pub const MANAGERS: &'static [&'static str] = &[
-    "maven", "gradle", "amper", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer",
+    "maven", "gradle", "kotlin", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer",
     "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "uv", "lein", "rebar3",
     "mix", "dart", "zig", "xmake",
 ];
@@ -61,8 +61,8 @@ pub fn get_available_managers() -> Vec<String> {
     if gradle::is_available() {
         managers.push("gradle".to_string());
     }
-    if amper::is_available() {
-        managers.push("amper".to_string());
+    if kotlin_toolchain::is_available() {
+        managers.push("kotlin".to_string());
     }
     if sbt::is_available() {
         managers.push("sbt".to_string());
@@ -134,7 +134,7 @@ pub fn get_manager_file_name(runner: &str) -> &'static str {
     match runner {
         "maven" => "pom.xml",
         "gradle" => gradle::get_gradle_build_file(),
-        "amper" => "module.yaml",
+        "kotlin" => "module.yaml",
         "sbt" => "build.sbt",
         "bld" => "bld",
         "npm" => "package.json",
@@ -164,7 +164,7 @@ pub fn get_manager_web_url(runner: &str) -> &'static str {
     match runner {
         "maven" => "https://maven.apache.org",
         "gradle" => "https://gradle.org",
-        "amper" => "https://github.com/JetBrains/amper",
+        "kotlin" => "https://kotlin-toolchain.org/",
         "sbt" => "https://www.scala-sbt.org",
         "bld" => "https://rife2.com/bld",
         "npm" => "https://nodejs.org",
@@ -194,7 +194,7 @@ pub fn get_manager_command_map(runner: &str) -> HashMap<String, String> {
     match runner {
         "maven" => maven::get_task_command_map(),
         "gradle" => gradle::get_task_command_map(),
-        "amper" => amper::get_task_command_map(),
+        "kotlin" => kotlin_toolchain::get_task_command_map(),
         "sbt" => sbt::get_task_command_map(),
         "bld" => bld::get_task_command_map(),
         "npm" => npm::get_task_command_map(),
@@ -255,13 +255,13 @@ pub fn run_task(
             );
         }
     }
-    if amper::is_available() {
-        if amper::is_command_available() {
-            queue.insert("amper", amper::run_task);
+    if kotlin_toolchain::is_available() {
+        if kotlin_toolchain::is_command_available() {
+            queue.insert("kotlin", kotlin_toolchain::run_task);
         } else {
             println!(
                 "{}",
-                "[tk] amper(https://github.com/JetBrains/amper) command not available"
+                "[tk] Kotlin Toolchain(https://kotlin-toolchain.org) command not available"
                     .bold()
                     .red()
             );
