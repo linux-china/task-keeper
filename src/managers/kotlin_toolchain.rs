@@ -22,7 +22,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     let mut task_command_map = HashMap::new();
     let kotlin_command = get_kotlin_command();
     task_command_map.insert("compile".to_string(), format!("{} build", kotlin_command));
-    task_command_map.insert("build".to_string(), format!("{} build", kotlin_command));
+    task_command_map.insert("build".to_string(), format!("{} package", kotlin_command));
     task_command_map.insert("start".to_string(), format!("{} run", kotlin_command));
     task_command_map.insert("test".to_string(), format!("{} test", kotlin_command));
     task_command_map.insert("clean".to_string(), format!("{} clean", kotlin_command));
