@@ -440,6 +440,19 @@ pub fn list_all_runner_tasks(
             }
         }
     }
+    if runners::amberfile::is_available() {
+        if runners::amberfile::is_command_available() {
+            if let Ok(runner_tasks) = runners::amberfile::list_tasks() {
+                if !runner_tasks.is_empty() {
+                    all_tasks.insert("amber".to_string(), runner_tasks);
+                }
+            }
+        } else {
+            if error_display {
+                println!("{}", "[tk] Amber(https://amber-lang.com/) command not available for Amberfile".bold().red());
+            }
+        }
+    }
     if runners::uv_scripts::is_available() {
         if runners::uv_scripts::is_command_available() {
             if let Ok(runner_tasks) = runners::uv_scripts::list_tasks() {

@@ -501,6 +501,15 @@ fn diagnose() {
             );
         }
     }
+    if runners::amberfile::is_available() {
+        if !runners::amberfile::is_command_available() {
+            problems_count += 1;
+            println!(
+                "{} amber(https://amber-lang.com/) command not available for Amberfile",
+                "Warning:".bold().yellow()
+            );
+        }
+    }
     if runners::nurfile::is_available() {
         if !runners::nurfile::is_command_available() {
             problems_count += 1;

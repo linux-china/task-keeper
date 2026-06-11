@@ -28,6 +28,7 @@ pub mod gulpfile;
 pub mod gruntfile;
 pub mod uv_scripts;
 pub mod usql;
+pub mod amberfile;
 
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
@@ -59,6 +60,7 @@ pub const RUNNERS: &'static [&'static str] = &[
     "poetry",
     "bun-shell",
     "argc",
+    "amber",
     "xtask",
     "xtask-go",
     "nur",
@@ -104,6 +106,7 @@ pub fn run_task(
         "poe" => poe::run_task(task_name, task_args, global_args, verbose),
         "poetry" => poetry::run_task(task_name, task_args, global_args, verbose),
         "argc" => argcfile::run_task(task_name, task_args, global_args, verbose),
+        "amber" => amberfile::run_task(task_name, task_args, global_args, verbose),
         "nur" => nurfile::run_task(task_name, task_args, global_args, verbose),
         "uvs" => uv_scripts::run_task(task_name, task_args, global_args, verbose),
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
@@ -143,6 +146,7 @@ pub fn get_runner_file_name(runner: &str) -> &'static str {
         "poetry" => "pyproject.toml",
         "bun-shell" => "Taskfile.ts",
         "argc" => "Argcfile.sh",
+        "amber" => "Amberfile",
         "nur" => "nurfile",
         "uvs" => "pyproject.toml",
         "xtask" => "xtask/",
@@ -178,6 +182,7 @@ pub fn get_runner_web_url(runner: &str) -> &'static str {
         "poetry" => "https://python-poetry.org",
         "bun-shell" => "https://bun.sh/docs/runtime/shell",
         "argc" => "https://github.com/sigoden/argc",
+        "amber" => "https://amber-lang.com",
         "nur" => "https://github.com/ddanier/nur",
         "uvs" => "https://rye.astral.sh/guide/pyproject/#toolryescripts",
         "xtask" => "https://github.com/matklad/cargo-xtask",
