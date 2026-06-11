@@ -70,6 +70,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * zed Tasks: https://zed.dev/docs/tasks
 * poe: batteries included task runner that works well with pyproject.toml https://github.com/nat-n/poethepoet
 * argc: a Bash-based command runner https://github.com/sigoden/argc
+* Amber: A language compiled to bsh/zsh/ksh https://amber-lang.com/
 * nur: a task runner based on nu shell https://github.com/ddanier/nur
 * cargo-xtask: https://github.com/linux-china/xtask-demo
 * go-xtask: https://github.com/linux-china/xtask-go-demo
@@ -294,6 +295,20 @@ tasks:
     cmds:
       - echo 'Hello World from Task!'
     silent: true
+```
+
+### Amber - Amberfile
+
+```
+/// hello task
+pub fun hello() {
+  echo("hello")
+}
+
+/// world task
+pub fun world() {
+  echo("world")
+}
 ```
 
 ### xtask for Rust and Golang
