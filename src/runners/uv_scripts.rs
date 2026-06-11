@@ -12,7 +12,7 @@ use which::which;
 
 /// implement feature from https://rye.astral.sh/guide/pyproject/#toolryescripts
 pub fn is_available() -> bool {
-    pyproject_toml_has_tool("uv")
+    pyproject_toml_has_tool("rye")
 }
 
 pub fn is_command_available() -> bool {
@@ -67,7 +67,7 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
             Some(Script::Cmd(command_and_args, HashMap::new(), None))
         }
         Value::Array(arr) => {
-            let command_and_args: Vec<String> = arr.iter().map(|item| item.to_string()).collect();
+            let command_and_args: Vec<String> = arr.iter().map(|item| item.to_string().trim_matches( &['"', '\'']).to_string()).collect();
             Some(Script::Cmd(command_and_args, HashMap::new(), None))
         }
         Value::Table(table) => {
@@ -96,7 +96,7 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
                     }
                     Value::Array(arr) => {
                         let command_and_args: Vec<String> =
-                            arr.iter().map(|item| item.to_string()).collect();
+                            arr.iter().map(|item| item.to_string().trim_matches( &['"', '\'']).to_string()).collect();
                         Some(Script::Cmd(command_and_args, env_hash_map, None))
                     }
                     _ => None,

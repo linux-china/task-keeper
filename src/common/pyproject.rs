@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
+use toml::Value;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PyProjectToml {
@@ -30,7 +31,7 @@ pub struct PeoTasks {
 
 impl ToolUv {
     pub fn get_scripts(&self) -> Option<HashMap<String, String>> {
-        self.scripts.as_ref().map(|scripts| {
+       let scripts =  self.scripts.as_ref().map(|scripts| {
             scripts
                 .iter()
                 .map(|(key, value)| {
@@ -38,14 +39,31 @@ impl ToolUv {
                         toml::Value::String(value) => value.to_string(),
                         toml::Value::Table(table) => table
                             .get("cmd")
-                            .unwrap_or(&toml::Value::String("".to_owned()))
-                            .to_string(),
+                            .map(|value| convert_toml_value(&value))
+                            .unwrap_or("".to_owned()),
                         _ => "".to_owned(),
                     };
                     return (key.clone(), description);
                 })
                 .collect()
-        })
+        });
+        scripts
+    }
+}
+
+fn convert_toml_value(value: &toml::Value) -> String {
+    match value {
+        Value::String(text) => text.to_owned().trim_matches('"').to_owned(),
+        Value::Integer(num) => num.to_string(),
+        Value::Float(num) => num.to_string(),
+        Value::Boolean(bool_value) => bool_value.to_string(),
+        Value::Datetime(datetime) => datetime.to_string(),
+        Value::Array(arr) => arr
+            .iter()
+            .map(|v| convert_toml_value(v))
+            .collect::<Vec<String>>()
+            .join(" "),
+        Value::Table(_) => "".to_owned(),
     }
 }
 
@@ -154,7 +172,8 @@ impl PyProjectToml {
         if let Some(tool) = self.tool.as_ref()
             && let Some(uv) = tool.uv.as_ref()
             && let Some(scripts) = uv.scripts.as_ref()
-            && let Some(script) = scripts.get(script_name) {
+            && let Some(script) = scripts.get(script_name)
+        {
             Some(script.clone())
         } else {
             None
