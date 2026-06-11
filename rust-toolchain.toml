@@ -1,4 +1,3 @@
 [toolchain]
 # Define your version: "stable", "beta", "nightly", or an exact version like "1.84"
-channel = "stable"
-version = "1.96"
+channel = "1.96.0"
