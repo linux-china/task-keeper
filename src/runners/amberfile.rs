@@ -32,6 +32,7 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
         let amberfile_text =
             std::fs::read_to_string(env::current_dir().unwrap().join(&amberfile)).unwrap();
         let mut tasks: Vec<Task> = vec![];
+        let mut previous_line: &str = "";
         for line in amberfile_text.lines() {
             if line.starts_with("pub fun ") {
                 // extract function name from `pub fun xxxx() {`
@@ -40,9 +41,18 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 let offset = declaration.rfind(' ').unwrap();
                 if offset > 0 {
                     let task_name = declaration[offset + 1..].trim().to_string();
-                    tasks.push(task!(task_name, "amber"))
+                    let description = {
+                        let trimmed = previous_line.trim();
+                        if trimmed.starts_with("///") {
+                            trimmed[3..].trim().to_string()
+                        } else {
+                            "".to_string()
+                        }
+                    };
+                    tasks.push(task!(task_name, "amber", description))
                 }
             }
+            previous_line = line;
         }
         Ok(tasks)
     } else {
