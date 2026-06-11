@@ -5,6 +5,7 @@
 ## [0.35.0] - 2026-06-10
 
 - Update to Just 1.52.2
+- Fix [tool.rye.scripts cmd format with lists fails](https://github.com/linux-china/task-keeper/issues/21)
 - Add `Amberfile` support by [Amber Language](https://amber-lang.com/)
 
 Example of `Amberfile`:
@@ -45,6 +46,7 @@ $ tk skills
 $ # generate all skills under .agents/skill
 $ tk skills -Pdir=.qoder/skills
 ```
+
 ## [0.31.0] - 2026-01-12
 
 - Add [usql](https://github.com/xo/usql) support: please create `queries.sql` with the following code:
@@ -56,9 +58,9 @@ $ tk skills -Pdir=.qoder/skills
 select now();
 
 -- Query all_user
-select * from user;
+select *
+from user;
 ```
-
 
 ## [0.30.9] - 2025-12-06
 
