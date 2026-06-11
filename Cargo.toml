@@ -44,7 +44,7 @@ uuid = { version = "1.23", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"
 bytecount = "0.6.9"
-just = "1.51"
+just = "1.52"
 reqwest = { version = "0.13", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.52", features = ["full"] }
