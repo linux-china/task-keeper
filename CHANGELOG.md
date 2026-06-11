@@ -2,6 +2,23 @@
 
 # Task Keeper Changelog
 
+## [0.35.0] - 2026-06-10
+
+- Update to Just 1.52.2
+- Add `Amberfile` support by [Amber Language](https://amber-lang.com/)
+
+Example of `Amberfile`:
+
+```
+pub fun hello() {
+  echo("hello")
+}
+
+pub fun world() {
+  echo("world")
+}
+```
+
 ## [0.34.0] - 2026-05-31
 
 - Add [Kotlin Toolchain](https://kotlin-toolchain.org/) support
