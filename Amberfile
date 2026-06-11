@@ -1,0 +1,7 @@
+pub fun hello() {
+  echo("hello")
+}
+
+pub fun world() {
+  echo("world")
+}
