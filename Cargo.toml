@@ -11,6 +11,7 @@ readme = "README.md"
 homepage = "https://github.com/linux-china/task-keeper"
 repository = "https://github.com/linux-china/task-keeper"
 license = "Apache-2.0"
+rust-version = "1.91.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
