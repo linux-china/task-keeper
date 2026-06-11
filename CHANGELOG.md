@@ -2,7 +2,7 @@
 
 # Task Keeper Changelog
 
-## [0.35.1] - 2026-06-10
+## [0.35.2] - 2026-06-10
 
 - Update to Just 1.52.2
 - Fix [tool.rye.scripts cmd format with lists fails](https://github.com/linux-china/task-keeper/issues/21)
