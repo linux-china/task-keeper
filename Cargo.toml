@@ -52,7 +52,7 @@ tokio = { version = "1.52", features = ["full"] }
 async-nats = "0.49"
 minio = "0.4"
 rprompt= "2.2"
-makefile-lossless="0.3.38"
+makefile-lossless="0.3.40"
 # crates for security from dependency tree
 rustls-webpki = "0.103.13"
 
