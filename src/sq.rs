@@ -1,13 +1,27 @@
+use clap::{Arg, ArgAction, ArgMatches, Command};
+use colored::Colorize;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::io;
 use std::io::{BufRead, BufReader, Stdin, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Stdio};
-use clap::{Command, Arg, ArgAction, ArgMatches};
-use colored::Colorize;
-use just::summary::Summary;
-
+use std::process::{Output, Stdio};
 pub const VERSION: &str = "0.1.0";
 
 const SUB_COMMANDS: [&str; 5] = ["list", "add", "edit", "completion", "help"];
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct JustfileJson {
+    pub recipes: HashMap<String, JustRecipe>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct JustRecipe {
+    pub name: String,
+    pub doc: Option<String>,
+}
 
 fn main() {
     let args = Vec::from_iter(std::env::args());
@@ -47,7 +61,11 @@ fn get_snippets_file() -> PathBuf {
         if !tk_home.exists() {
             std::fs::create_dir_all(tk_home).unwrap();
         }
-        std::fs::write(&snippets_file_path, include_bytes!("templates/just/snippets.just")).unwrap();
+        std::fs::write(
+            &snippets_file_path,
+            include_bytes!("templates/just/snippets.just"),
+        )
+        .unwrap();
     }
     snippets_file_path
 }
@@ -75,7 +93,19 @@ fn list_snippets() {
 
 fn add_snippet(matches: &ArgMatches) {
     let snippets_file_path = get_snippets_file();
-    let summary = just::summary::summary(&snippets_file_path).unwrap().unwrap();
+    let json_text = capture_command_output(
+        "just",
+        &[
+            "--unstable",
+            "--dump",
+            "--dump-format=json",
+            "-f",
+            snippets_file_path.to_str().unwrap(),
+        ],
+    )
+    .map(|output| String::from_utf8(output.stdout).unwrap_or("{}".to_owned()))
+    .unwrap();
+    let jsonfile_json = serde_json::from_str::<JustfileJson>(&json_text).unwrap();
     let mut cli = String::new();
     let mut name = if let Some(name) = matches.get_one::<String>("name") {
         name.clone()
@@ -90,11 +120,18 @@ fn add_snippet(matches: &ArgMatches) {
     stdin.read_line(&mut cli).unwrap();
     // read name
     if name.is_empty() {
-        name = read_snippet_name(&stdin, &summary);
+        name = read_snippet_name(&stdin, &jsonfile_json);
     } else {
-        if summary.recipes.contains_key("name") {
-            println!("{}", format!("Snippet of {} exits already, please input another name", name).red());
-            name = read_snippet_name(&stdin, &summary);
+        if jsonfile_json.recipes.contains_key(name.as_str()) {
+            println!(
+                "{}",
+                format!(
+                    "Snippet of {} exits already, please input another name",
+                    name
+                )
+                .red()
+            );
+            name = read_snippet_name(&stdin, &jsonfile_json);
         }
     }
     // read description
@@ -107,18 +144,26 @@ fn add_snippet(matches: &ArgMatches) {
         .append(true)
         .open(&snippets_file_path)
         .unwrap();
-    file.write(format!("\n# {}\n{}:\n  {}\n", description.trim(), name.trim(), cli).as_bytes()).unwrap();
+    file.write(format!("\n# {}\n{}:\n  {}\n", description.trim(), name.trim(), cli).as_bytes())
+        .unwrap();
     println!("{} added successfully", name.trim());
 }
 
-fn read_snippet_name(stdin: &Stdin, summary: &Summary) -> String {
+fn read_snippet_name(stdin: &Stdin, summary: &JustfileJson) -> String {
     let mut name = String::new();
     print!("{}", "Name: ".bold());
     std::io::stdout().flush().unwrap();
     stdin.read_line(&mut name).unwrap();
     let temp_name = name.trim();
     if summary.recipes.contains_key(temp_name) {
-        println!("{}", format!("Snippet of {} exits already, please input another name", temp_name).red());
+        println!(
+            "{}",
+            format!(
+                "Snippet of {} exits already, please input another name",
+                temp_name
+            )
+            .red()
+        );
         return read_snippet_name(stdin, summary);
     }
     name
@@ -152,13 +197,16 @@ fn edit_snippet(matches: &ArgMatches) {
         0
     };
     if line_number > 0 {
-        if editor_name == "code" { // open with code
+        if editor_name == "code" {
+            // open with code
             let location = format!("{}:{}", snippets_file, line_number);
             run_command("code", &["--goto", &location]);
-        } else if editor_name == "zed" { // open with zed
+        } else if editor_name == "zed" {
+            // open with zed
             let location = format!("{}:{}", snippets_file, line_number);
             run_command("zed", &[&location]);
-        } else if editor_name.starts_with("vi") || editor_name.ends_with("vim") { // open with vi
+        } else if editor_name.starts_with("vi") || editor_name.ends_with("vim") {
+            // open with vi
             let location = format!("+{}", line_number);
             run_command(editor_name, &[&location, snippets_file]);
         } else {
@@ -219,40 +267,58 @@ fn complete_shell(matches: &ArgMatches) {
     if matches.get_flag("zsh") {
         println!("{}", include_str!("templates/completion/sq-completion.zsh"));
     } else if matches.get_flag("oh-my-zsh") {
-        let seq_plugin_dir = dirs::home_dir().unwrap().join(".oh-my-zsh")
-            .join("custom").join("plugins").join("sq");
+        let seq_plugin_dir = dirs::home_dir()
+            .unwrap()
+            .join(".oh-my-zsh")
+            .join("custom")
+            .join("plugins")
+            .join("sq");
         if !seq_plugin_dir.exists() {
             std::fs::create_dir_all(&seq_plugin_dir).unwrap();
         }
         let sq_plugin_file = seq_plugin_dir.join("_sq");
         // write completion script to file
-        std::fs::write(&sq_plugin_file,
-                       include_bytes!("templates/completion/sq-completion.zsh")).unwrap();
-        println!("Completion script has been written to {}", sq_plugin_file.to_str().unwrap());
+        std::fs::write(
+            &sq_plugin_file,
+            include_bytes!("templates/completion/sq-completion.zsh"),
+        )
+        .unwrap();
+        println!(
+            "Completion script has been written to {}",
+            sq_plugin_file.to_str().unwrap()
+        );
         println!("Please add sq to plugins in your .zshrc file.");
     } else {
         println!("Only zsh and oh-my-zsh support now.")
     }
 }
 
+pub fn capture_command_output(command_name: &str, args: &[&str]) -> io::Result<Output> {
+    let mut command = std::process::Command::new(command_name);
+    if args.len() > 0 {
+        command.args(args);
+    }
+    command
+        .envs(std::env::vars())
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+}
+
 pub fn build_sq_app() -> Command {
     Command::new("sq")
         .version(VERSION)
         .about("Command-line snippets keeper")
+        .subcommand(Command::new("list").about("List cli snippets"))
         .subcommand(
-            Command::new("list")
-                .about("List cli snippets")
-        )
-        .subcommand(
-            Command::new("add")
-                .about("Add a new snippet")
-                .arg(
-                    Arg::new("name")
-                        .help("Snippet name")
-                        .num_args(1)
-                        .index(1)
-                        .required(false)
-                )
+            Command::new("add").about("Add a new snippet").arg(
+                Arg::new("name")
+                    .help("Snippet name")
+                    .num_args(1)
+                    .index(1)
+                    .required(false),
+            ),
         )
         .subcommand(
             Command::new("edit")
@@ -286,8 +352,8 @@ pub fn build_sq_app() -> Command {
                         .help("Open editor to edit snippet")
                         .num_args(1)
                         .index(1)
-                        .required(false)
-                )
+                        .required(false),
+                ),
         )
         .subcommand(
             Command::new("completion")
@@ -307,7 +373,7 @@ pub fn build_sq_app() -> Command {
                         .num_args(0)
                         .action(ArgAction::SetTrue)
                         .required(false),
-                )
+                ),
         )
 }
 
