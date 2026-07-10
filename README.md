@@ -368,6 +368,7 @@ console.log("hello world");
 
 * mask(maskfile.md): https://github.com/jacobdeichert/mask
 * Pants Build System: https://github.com/pantsbuild/pants
+* [Jake](https://github.com/AstraBert/jake): Make-like task executor for Unix OS
 
 # Package Managers
 
