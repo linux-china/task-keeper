@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command_line, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command_line};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
@@ -143,13 +143,24 @@ pub fn run_task(
 }
 
 fn get_gradle_command() -> &'static str {
-    let wrapper_available = std::env::current_dir()
-        .map(|dir| dir.join("gradlew").exists())
-        .unwrap_or(false);
-    if wrapper_available {
-        "./gradlew"
+    if cfg!(windows) {
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("gradlew.bat").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            ".\\gradlew.bat"
+        } else {
+            "gradle"
+        }
     } else {
-        "gradle"
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("gradlew").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            "./gradlew"
+        } else {
+            "gradle"
+        }
     }
 }
 
