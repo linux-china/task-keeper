@@ -2,6 +2,10 @@
 
 # Task Keeper Changelog
 
+## [0.35.3] - 2026-08-02
+
+- Fix gradle, maven, kotlin wrapper path problem for Windows
+
 ## [0.35.2] - 2026-06-10
 
 - Update to Just 1.52.2
