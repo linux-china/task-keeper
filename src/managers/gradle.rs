@@ -142,21 +142,24 @@ pub fn run_task(
     }
 }
 
-fn get_gradle_command() -> String {
+fn get_gradle_command() -> &'static str {
     if cfg!(windows) {
-        if let Ok(wrapper_path) = std::env::current_dir().map(|dir| dir.join("gradlew.bat")) {
-            wrapper_path.to_str().unwrap().to_string()
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("gradlew.bat").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            ".\\gradlew.bat"
         } else {
-            "gradle.bat".to_string()
+            "gradle.bat"
         }
     } else {
         let wrapper_available = std::env::current_dir()
             .map(|dir| dir.join("gradlew").exists())
             .unwrap_or(false);
         if wrapper_available {
-            "./gradlew".to_string()
+            "./gradlew"
         } else {
-            "gradle".to_string()
+            "gradle"
         }
     }
 }
