@@ -51,12 +51,23 @@ pub fn run_task(
 }
 
 fn get_kotlin_command() -> &'static str {
-    let wrapper_available = std::env::current_dir()
-        .map(|dir| dir.join("kotlin").exists())
-        .unwrap_or(false);
-    if wrapper_available {
-        "./kotlin"
+    if cfg!(windows) {
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("kotlin.bat").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            ".\\kotlin.bat"
+        } else {
+            "kotlin.bat"
+        }
     } else {
-        "kotlin"
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("kotlin").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            "./kotlin"
+        } else {
+            "kotlin"
+        }
     }
 }
