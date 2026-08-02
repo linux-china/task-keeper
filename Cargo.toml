@@ -40,6 +40,7 @@ thiserror = "2"
 error-stack = "0.8"
 dotenvx-rs = "0.4.31"
 shlex = "2.0.1"
+windows-args = "0.2"
 cfg-if = "1"
 uuid = { version = "1.24", features = ["v4", "v7"] }
 logos = "0.16"
