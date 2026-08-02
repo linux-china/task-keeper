@@ -150,7 +150,7 @@ fn get_gradle_command() -> &'static str {
         if wrapper_available {
             ".\\gradlew.bat"
         } else {
-            "gradle"
+            "gradle.bat"
         }
     } else {
         let wrapper_available = std::env::current_dir()

@@ -99,10 +99,21 @@ pub fn run_task(
 }
 
 fn get_mvn_command() -> &'static str {
-    let wrapper_available = std::env::current_dir()
-        .map(|dir| dir.join("mvnw").exists())
-        .unwrap_or(false);
-    if wrapper_available { "./mvnw" } else { "mvn" }
+    if cfg!(windows) {
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("mvnw.cmd").exists())
+            .unwrap_or(false);
+        if wrapper_available {
+            ".\\mvnw.cmd"
+        } else {
+            "mvn.cmd"
+        }
+    } else {
+        let wrapper_available = std::env::current_dir()
+            .map(|dir| dir.join("mvnw").exists())
+            .unwrap_or(false);
+        if wrapper_available { "./mvnw" } else { "mvn" }
+    }
 }
 
 fn get_start_command_line() -> String {
