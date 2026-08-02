@@ -35,6 +35,18 @@ pub fn is_command_available(command_name: &str) -> bool {
     which(command_name).is_ok()
 }
 
+/// Split a command line into command name and arguments.
+/// On Windows, cmd.exe/PowerShell command lines follow different quoting rules
+/// than POSIX shells (`shlex` targets), so a dedicated Windows-style splitter
+/// is used there; on other platforms, `shlex::split` is used as before.
+pub fn split_command_line(command_line: &str) -> Option<Vec<String>> {
+    if cfg!(target_os = "windows") {
+        Some(windows_args::Args::parse_cmd(command_line).collect::<Vec<String>>())
+    } else {
+        shlex::split(command_line)
+    }
+}
+
 pub fn run_command(
     command_name: &str,
     args: &[&str],
@@ -44,7 +56,7 @@ pub fn run_command(
 }
 
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
-    let command_and_args = shlex::split(command_line).unwrap();
+    let command_and_args = split_command_line(command_line).unwrap();
     // command line contains pipe or not
     if command_and_args
         .iter()
@@ -75,7 +87,7 @@ pub fn run_command_line_from_stdin(
     input: &str,
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let command_and_args = shlex::split(command_line).unwrap();
+    let command_and_args = split_command_line(command_line).unwrap();
     let command_name = &command_and_args[0];
     let args: Vec<&str> = if command_and_args.len() > 1 {
         command_and_args[1..].iter().map(AsRef::as_ref).collect()
