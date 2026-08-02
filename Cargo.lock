@@ -4389,7 +4389,7 @@ dependencies = [
 
 [[package]]
 name = "task-keeper"
-version = "0.35.2"
+version = "0.35.3"
 dependencies = [
  "anyhow",
  "async-nats",
