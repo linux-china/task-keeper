@@ -61,10 +61,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         format!("{} extractSkillsJars", gradle_command),
     );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
-        if !code.contains("gradle-9.6.0") {
+        if !code.contains("gradle-9.6.1") {
             task_command_map.insert(
                 "self-update".to_string(),
-                format!("{} wrapper --gradle-version=9.6.0", gradle_command),
+                format!("{} wrapper --gradle-version=9.6.1", gradle_command),
             );
         }
     }
@@ -142,24 +142,21 @@ pub fn run_task(
     }
 }
 
-fn get_gradle_command() -> &'static str {
+fn get_gradle_command() -> String {
     if cfg!(windows) {
-        let wrapper_available = std::env::current_dir()
-            .map(|dir| dir.join("gradlew.bat").exists())
-            .unwrap_or(false);
-        if wrapper_available {
-            ".\\gradlew.bat"
+        if let Ok(wrapper_path) = std::env::current_dir().map(|dir| dir.join("gradlew.bat")) {
+            wrapper_path.to_str().unwrap().to_string()
         } else {
-            "gradle.bat"
+            "gradle.bat".to_string()
         }
     } else {
         let wrapper_available = std::env::current_dir()
             .map(|dir| dir.join("gradlew").exists())
             .unwrap_or(false);
         if wrapper_available {
-            "./gradlew"
+            "./gradlew".to_string()
         } else {
-            "gradle"
+            "gradle".to_string()
         }
     }
 }
