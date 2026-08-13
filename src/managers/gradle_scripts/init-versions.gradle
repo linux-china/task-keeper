@@ -3,7 +3,7 @@ initscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.53.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.61.0'
     }
 }
 
