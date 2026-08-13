@@ -52,7 +52,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     );
     task_command_map.insert(
         "sbom".to_string(),
-        format!("{} -DprojectType=application -DoutputName=application.cdx -DoutputFormat=json org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom", mvn_command),
+        format!("{} -DprojectType=application -DoutputName=application.cdx -DoutputFormat=json org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeAggregateBom", mvn_command),
     );
     task_command_map.insert(
         "skills".to_string(),
