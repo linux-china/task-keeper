@@ -2,7 +2,7 @@
 
 # Task Keeper Changelog
 
-## [0.35.4] - 2026-08-02
+## [0.35.4] - 2026-08-24
 
 - Update stub for `Taskfile.ts` with Bun
 - Fix tool.rye.scripts arguments not being passed
