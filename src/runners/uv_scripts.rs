@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command};
 use crate::common::pyproject::PyProjectToml;
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
@@ -33,14 +33,14 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
 
 pub fn run_task(
     task: &str,
-    _task_args: &[&str],
-    _global_args: &[&str],
+    task_args: &[&str],
+    global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     let project = PyProjectToml::get_default_project().unwrap();
     if let Some(script_value) = project.get_uv_script(task) {
         let script = get_script_cmd(&script_value);
-        invoke_script(&project, &script.unwrap(), verbose)
+        invoke_script(&project, &script.unwrap(), task_args, global_args, verbose)
     } else {
         Err(KeeperError::TaskNotFound(task.to_owned()).into_report())
     }
@@ -67,7 +67,10 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
             Some(Script::Cmd(command_and_args, HashMap::new(), None))
         }
         Value::Array(arr) => {
-            let command_and_args: Vec<String> = arr.iter().map(|item| item.to_string().trim_matches( &['"', '\'']).to_string()).collect();
+            let command_and_args: Vec<String> = arr
+                .iter()
+                .map(|item| item.to_string().trim_matches(&['"', '\'']).to_string())
+                .collect();
             Some(Script::Cmd(command_and_args, HashMap::new(), None))
         }
         Value::Table(table) => {
@@ -95,8 +98,10 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
                         Some(Script::Cmd(command_and_args, env_hash_map, None))
                     }
                     Value::Array(arr) => {
-                        let command_and_args: Vec<String> =
-                            arr.iter().map(|item| item.to_string().trim_matches( &['"', '\'']).to_string()).collect();
+                        let command_and_args: Vec<String> = arr
+                            .iter()
+                            .map(|item| item.to_string().trim_matches(&['"', '\'']).to_string())
+                            .collect();
                         Some(Script::Cmd(command_and_args, env_hash_map, None))
                     }
                     _ => None,
@@ -137,6 +142,8 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
 fn invoke_script(
     pyproject: &PyProjectToml,
     script: &Script,
+    task_args: &[&str],
+    global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     match script {
@@ -194,11 +201,19 @@ fn invoke_script(
             let script_target = std::env::current_dir().unwrap().join(&script_args[0]);
             if script_target.exists() && script_target.is_file() {
                 let args: Vec<&str> = script_args.into_iter().map(String::as_str).collect();
-                run_command("python3", &args, verbose)
+                let mut real_args: Vec<&str> = vec![];
+                real_args.extend(global_args);
+                real_args.extend(args);
+                real_args.extend(task_args);
+                run_command("python3", &real_args, verbose)
             } else {
                 let args: Vec<&str> = script_args[1..].iter().map(String::as_str).collect();
+                let mut real_args: Vec<&str> = vec![];
+                real_args.extend(global_args);
+                real_args.extend(args);
+                real_args.extend(task_args);
                 let command_name = &script_args[0];
-                run_command(command_name, &args, verbose)
+                run_command(command_name, &real_args, verbose)
             }
         }
         Script::Chain(commands) => {
@@ -211,7 +226,8 @@ fn invoke_script(
                 let script_name = &command_and_args[0];
                 if let Some(script_value) = pyproject.get_uv_script(script_name) {
                     if let Some(script_cmd) = get_script_cmd(&script_value) {
-                        let result = invoke_script(pyproject, &script_cmd, verbose);
+                        let result =
+                            invoke_script(pyproject, &script_cmd, task_args, global_args, verbose);
                         if index == commands.len() - 1 {
                             return result;
                         }
@@ -274,7 +290,7 @@ mod tests {
         let script_value = project.get_uv_script("python-version").unwrap();
         let script = get_script_cmd(&script_value);
         println!("script: {:?}", script);
-        invoke_script(&project, &script.unwrap(), true).unwrap();
+        invoke_script(&project, &script.unwrap(), &[], &[], true).unwrap();
     }
 
     #[test]
@@ -283,7 +299,7 @@ mod tests {
         let script_value = project.get_uv_script("hello-world").unwrap();
         let script = get_script_cmd(&script_value);
         println!("Script: {:?}", script);
-        invoke_script(&project, &script.unwrap(), true).unwrap();
+        invoke_script(&project, &script.unwrap(), &[], &[], true).unwrap();
     }
 
     #[test]
@@ -292,7 +308,7 @@ mod tests {
         let script_value = project.get_uv_script("all").unwrap();
         let script = get_script_cmd(&script_value);
         println!("Script: {:?}", script);
-        invoke_script(&project, &script.unwrap(), true).unwrap();
+        invoke_script(&project, &script.unwrap(), &[], &[], true).unwrap();
     }
 
     #[test]
