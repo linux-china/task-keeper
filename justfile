@@ -17,6 +17,9 @@ hello:
 hello2:
   echo "hello2"
 
+minify-bunt:
+  esbuild --minify src/runners/stubs/bunt.js > src/runners/stubs/bunt.min.js
+
 build:
   cargo build --bin tk
   cp target/debug/tk ~/bin
