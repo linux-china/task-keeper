@@ -42,7 +42,7 @@ dotenvx-rs = "0.4.31"
 shlex = "2.0.1"
 windows-args = "0.2"
 cfg-if = "1"
-uuid = { version = "1.24", features = ["v4", "v7"] }
+uuid = { version = "1.25", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"
 bytecount = "0.6.9"
@@ -50,12 +50,12 @@ just = "1.58"
 reqwest = { version = "0.13", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.53", features = ["full"] }
-async-nats = "0.49"
+async-nats = "0.50"
 minio = "0.4"
 rprompt= "2.2"
 makefile-lossless="0.3.41"
 # crates for security from dependency tree
-rustls-webpki = "0.103.14"
+rustls-webpki = "0.103.15"
 
 [profile.release]
 strip = true
