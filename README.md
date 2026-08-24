@@ -361,8 +361,8 @@ console.log("hello world");
 # Task options/params and global options
 
 * Task options: `tk hello --name linux_china`
-* Task params: `tk hello - Jackie`, use `-` to separate task params
-* Global options for command:  `tk hello --name Jack -- --verbose`, use `--` double dash to separate global options
+* Task params: `tk hello - Jackie --option1`, use `-` to separate task params
+* Global options for command:  `tk hello -name Jack -- --verbose`, use `--` double dash to separate global options
 
 # Todo
 
