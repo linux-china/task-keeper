@@ -54,7 +54,8 @@ pub fn run_task(
         .iter()
         .find(|t| t.name == task)
         .ok_or_else(|| KeeperError::TaskNotFound(task.to_string()))?;
-    let mut full_command = r#"bun -e 'if (await Bun.file("Taskfile.ts").exists()) {let module = await import("./Taskfile.ts");if (Bun.argv.length >= 3) {let taskName = Bun.argv[2];taskName in module ? (await module[taskName]()) : console.error(`Task not found: ${taskName}`);} else {console.log("Available tasks:");Object.keys(module).filter(k => typeof module[k] === "function").forEach(k => console.log(" " + k));}} else {console.error("Taskfile.ts not found");}' 0 "#.to_string();
+    let stub = include_str!("./stubs/bunt.min.js").trim();
+    let mut full_command = format!("bun -e '{}' 0 ", stub);
     full_command.push_str(task.name.as_str());
     run_command_line(&full_command, verbose)
 }
