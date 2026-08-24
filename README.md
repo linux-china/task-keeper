@@ -98,6 +98,8 @@ export async function list_js() {
 
 Then execute `tk hello` to run the task with Bun Shell.
 
+For more, please refer [bunt.js](./src/runners/stubs/bunt.js)
+
 ### Fleet Run configurations
 
 command type support now:
