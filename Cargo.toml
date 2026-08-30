@@ -38,11 +38,11 @@ dirs-sys = "0.5"
 which = "8.0"
 thiserror = "2"
 error-stack = "0.8"
-dotenvx-rs = "0.4.31"
+dotenvx-rs = "0.4.32"
 shlex = "2.0.1"
 windows-args = "0.2"
 cfg-if = "1"
-uuid = { version = "1.25", features = ["v4", "v7"] }
+uuid = { version = "1.26", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"
 bytecount = "0.6.9"
