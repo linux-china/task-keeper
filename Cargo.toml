@@ -56,6 +56,7 @@ rprompt= "2.2"
 makefile-lossless="0.3.41"
 # crates for security from dependency tree
 rustls-webpki = "0.103.15"
+enable-ansi-support = "0.3.1"
 
 [profile.release]
 strip = true

@@ -22,7 +22,17 @@ mod models;
 mod polyglot;
 mod runners;
 
+#[cfg(windows)]
+fn enable_virtual_terminal_processing() {
+    if let Err(e) = enable_ansi_support::enable_ansi_support() {
+        eprintln!("Warning：failed to enable ANSI terminal support：{}", e);
+    }
+}
+
 fn main() {
+    #[cfg(windows)]
+    enable_virtual_terminal_processing();
+
     let app = build_app();
     let matches = app.get_matches();
     let verbose = matches.get_flag("verbose");
