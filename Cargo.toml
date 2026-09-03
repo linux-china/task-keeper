@@ -57,6 +57,9 @@ makefile-lossless="0.3.41"
 # crates for security from dependency tree
 rustls-webpki = "0.103.15"
 
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Console"] }
+
 [profile.release]
 strip = true
 lto = true

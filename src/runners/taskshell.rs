@@ -1,9 +1,9 @@
-use crate::command_utils::{capture_command_output, run_command, CommandOutput};
+use crate::command_utils::{CommandOutput, capture_command_output, run_command};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use std::io::{BufRead, BufReader};
 use error_stack::Report;
+use std::io::{BufRead, BufReader};
 
 pub fn is_available() -> bool {
     std::env::current_dir()

@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command_by_shell, run_command_with_env_vars, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command_by_shell, run_command_with_env_vars};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -140,10 +140,7 @@ fn parse_run_json() -> TasksJson {
     std::env::current_dir()
         .map(|dir| dir.join(".vscode").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| {
-            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
-                .unwrap()
-        })
+        .map(|data| parse_to_serde_value::<serde_json::Value>(&data, &Default::default()).unwrap())
         .map(|json_value| {
             serde_json::from_value::<TasksJson>(json_value).expect(".vscode/tasks.json format")
         })

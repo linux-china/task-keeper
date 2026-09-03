@@ -1,10 +1,10 @@
-use error_stack::Report;
-use crate::command_utils::{run_command, CommandOutput};
-use crate::common::pyproject::{get_uv_tool_path, PyProjectToml};
+use crate::command_utils::{CommandOutput, run_command};
+use crate::common::pyproject::{PyProjectToml, get_uv_tool_path};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
+use error_stack::Report;
 use which::which;
 
 pub fn is_available() -> bool {

@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -242,10 +242,7 @@ mod tests {
     fn test_replace_sql_parameters_with_provider() {
         // 测试基本替换 - 使用模拟输入
         let sql = "SELECT * FROM users WHERE name = :name AND age > :age";
-        let mock_inputs = std::collections::HashMap::from([
-            ("name", "Alice"),
-            ("age", "25"),
-        ]);
+        let mock_inputs = std::collections::HashMap::from([("name", "Alice"), ("age", "25")]);
         let sql_replaced = replace_sql_parameters_with_provider(sql, |param| {
             mock_inputs.get(param).unwrap_or(&"").to_string()
         });
@@ -253,15 +250,17 @@ mod tests {
             sql_replaced,
             "SELECT * FROM users WHERE name = 'Alice' AND age > '25'"
         );
-    
+
         // 测试无参数的 SQL
         let sql_no_params = "SELECT * FROM users";
-        let result_no_params = replace_sql_parameters_with_provider(sql_no_params, |_| String::new());
+        let result_no_params =
+            replace_sql_parameters_with_provider(sql_no_params, |_| String::new());
         assert_eq!(result_no_params, "SELECT * FROM users");
-    
+
         // 测试单引号转义
         let sql_quote = "SELECT * FROM users WHERE name = :name";
-        let result_quote = replace_sql_parameters_with_provider(sql_quote, |_| "O'Brien".to_string());
+        let result_quote =
+            replace_sql_parameters_with_provider(sql_quote, |_| "O'Brien".to_string());
         assert_eq!(result_quote, "SELECT * FROM users WHERE name = 'O''Brien'");
     }
 }

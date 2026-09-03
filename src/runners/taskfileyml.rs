@@ -1,8 +1,8 @@
-use error_stack::Report;
-use crate::command_utils::{capture_command_output, run_command, CommandOutput};
+use crate::command_utils::{CommandOutput, capture_command_output, run_command};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
+use error_stack::Report;
 use regex::Regex;
 use which::which;
 

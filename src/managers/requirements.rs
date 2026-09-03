@@ -1,4 +1,4 @@
-use crate::command_utils::{run_command_line, CommandOutput};
+use crate::command_utils::{CommandOutput, run_command_line};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
@@ -54,9 +54,6 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(
-            task.to_owned(),
-            "pip".to_string()
-        ).into_report())
+        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "pip".to_string()).into_report())
     }
 }

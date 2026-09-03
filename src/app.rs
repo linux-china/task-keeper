@@ -1,5 +1,5 @@
 //! clap App for command cli
-use clap::{Command, Arg, ArgAction};
+use clap::{Arg, ArgAction, Command};
 
 pub const VERSION: &str = "0.35.4";
 
@@ -41,7 +41,9 @@ pub fn build_app() -> Command {
             Arg::new("init")
                 .long("init")
                 .num_args(1)
-                .value_parser(["shell", "make", "jbang", "just","vscode","pipenv","deno","argc","nur"])
+                .value_parser([
+                    "shell", "make", "jbang", "just", "vscode", "pipenv", "deno", "argc", "nur",
+                ])
                 .help("Create a new task file by runner name")
                 .required(false),
         )
@@ -75,10 +77,11 @@ pub fn build_app() -> Command {
                 .help("Target Runner")
                 .required(false),
         )
-        .arg(Arg::new("tasks")
-                 .required(false)
-                 .help("Run task")
-                 .index(1)
-                 .num_args(1..),
+        .arg(
+            Arg::new("tasks")
+                .required(false)
+                .help("Run task")
+                .index(1)
+                .num_args(1..),
         )
 }

@@ -449,7 +449,12 @@ pub fn list_all_runner_tasks(
             }
         } else {
             if error_display {
-                println!("{}", "[tk] Amber(https://amber-lang.com/) command not available for Amberfile".bold().red());
+                println!(
+                    "{}",
+                    "[tk] Amber(https://amber-lang.com/) command not available for Amberfile"
+                        .bold()
+                        .red()
+                );
             }
         }
     }

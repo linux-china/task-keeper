@@ -1,6 +1,6 @@
+use crate::polyglot::PATH_SEPARATOR;
 use std::env;
 use std::path::PathBuf;
-use crate::polyglot::PATH_SEPARATOR;
 
 pub fn is_available() -> bool {
     let current_dir = env::current_dir().unwrap();
@@ -38,7 +38,6 @@ fn extract_java_version_from_pom(xml: &str) -> Option<String> {
     None
 }
 
-
 fn extract_java_version_from_gradle(code: &str) -> Option<String> {
     if let Some(offset) = code.find("JavaLanguageVersion.of(") {
         let start = offset + 23;
@@ -56,16 +55,19 @@ pub fn find_sdk_home() -> Option<PathBuf> {
         let java_version = text.trim();
         if let Some(java_home) = dirs::home_dir()
             .map(|dir| {
-                dir.join(".jbang").join("cache").join("jdks").join(java_version)
+                dir.join(".jbang")
+                    .join("cache")
+                    .join("jdks")
+                    .join(java_version)
             })
-            .filter(|dir| dir.exists()) {
+            .filter(|dir| dir.exists())
+        {
             return Some(java_home);
         }
         if let Some(java_candidates_home) = dirs::home_dir()
-            .map(|dir| {
-                dir.join(".sdkman").join("candidates").join("java")
-            })
-            .filter(|dir| dir.exists()) {
+            .map(|dir| dir.join(".sdkman").join("candidates").join("java"))
+            .filter(|dir| dir.exists())
+        {
             if let Ok(paths) = std::fs::read_dir(java_candidates_home) {
                 for path in paths {
                     if let Ok(path) = path {
@@ -101,7 +103,10 @@ fn reset_java_home(java_home_path: &PathBuf) {
     if let Ok(path) = env::var("PATH") {
         let java_bin_path = java_home_path.join("bin").to_string_lossy().to_string();
         unsafe {
-            env::set_var("PATH", format!("{}{}{}", java_bin_path, PATH_SEPARATOR, path));
+            env::set_var(
+                "PATH",
+                format!("{}{}{}", java_bin_path, PATH_SEPARATOR, path),
+            );
         }
     }
 }
@@ -141,6 +146,9 @@ mod tests {
                 }
             }
         "#;
-        assert_eq!(Some("11".to_string()), extract_java_version_from_gradle(code));
+        assert_eq!(
+            Some("11".to_string()),
+            extract_java_version_from_gradle(code)
+        );
     }
 }

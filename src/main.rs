@@ -2,8 +2,8 @@ use crate::app::build_app;
 use crate::keeper::{list_all_runner_tasks, run_tasks};
 use crate::models::TaskContext;
 use crate::polyglot::PATH_SEPARATOR;
-use crate::runners::justfile::init_justfile;
 use crate::runners::RUNNERS;
+use crate::runners::justfile::init_justfile;
 use colored::Colorize;
 use dotenvx_rs::dotenvx;
 use std::collections::HashSet;
@@ -11,6 +11,11 @@ use std::env;
 use std::fs::Permissions;
 use std::io::Write;
 use std::path::Path;
+#[cfg(windows)]
+use windows_sys::Win32::System::Console::{
+    ENABLE_VIRTUAL_TERMINAL_PROCESSING, GetConsoleMode, GetStdHandle, STD_ERROR_HANDLE,
+    STD_OUTPUT_HANDLE, SetConsoleMode,
+};
 
 mod app;
 mod command_utils;
@@ -22,7 +27,13 @@ mod models;
 mod polyglot;
 mod runners;
 
+#[cfg(all(test, not(windows)))]
+const ENABLE_VIRTUAL_TERMINAL_PROCESSING_FLAG: u32 = 0x0004;
+#[cfg(windows)]
+const ENABLE_VIRTUAL_TERMINAL_PROCESSING_FLAG: u32 = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
 fn main() {
+    enable_virtual_terminal_processing();
     let app = build_app();
     let matches = app.get_matches();
     let verbose = matches.get_flag("verbose");
@@ -203,6 +214,31 @@ fn main() {
 
     // display tasks
     list_tasks(None);
+}
+
+#[cfg(windows)]
+fn enable_virtual_terminal_processing() {
+    for handle in [STD_OUTPUT_HANDLE, STD_ERROR_HANDLE] {
+        let std_handle = unsafe { GetStdHandle(handle) };
+        let mut mode = 0;
+        if unsafe { GetConsoleMode(std_handle, &mut mode) } == 0 {
+            continue;
+        }
+        let new_mode = with_virtual_terminal_processing(mode);
+        if new_mode != mode {
+            unsafe {
+                SetConsoleMode(std_handle, new_mode);
+            }
+        }
+    }
+}
+
+#[cfg(not(windows))]
+fn enable_virtual_terminal_processing() {}
+
+#[cfg(any(test, windows))]
+fn with_virtual_terminal_processing(mode: u32) -> u32 {
+    mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING_FLAG
 }
 
 fn reset_path_env() {
@@ -815,3 +851,24 @@ fn set_executable<P: AsRef<Path>>(path: P) {
 
 #[cfg(not(unix))]
 fn set_executable<P: AsRef<Path>>(path: P) {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_with_virtual_terminal_processing_sets_flag() {
+        assert_eq!(
+            with_virtual_terminal_processing(0),
+            ENABLE_VIRTUAL_TERMINAL_PROCESSING_FLAG
+        );
+    }
+
+    #[test]
+    fn test_with_virtual_terminal_processing_preserves_existing_flags() {
+        assert_eq!(
+            with_virtual_terminal_processing(0x0001),
+            0x0001 | ENABLE_VIRTUAL_TERMINAL_PROCESSING_FLAG
+        );
+    }
+}

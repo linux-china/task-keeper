@@ -31,7 +31,7 @@ pub struct PeoTasks {
 
 impl ToolUv {
     pub fn get_scripts(&self) -> Option<HashMap<String, String>> {
-       let scripts =  self.scripts.as_ref().map(|scripts| {
+        let scripts = self.scripts.as_ref().map(|scripts| {
             scripts
                 .iter()
                 .map(|(key, value)| {
