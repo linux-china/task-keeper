@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.35.5] - 2026-09-03
+
+- Fix `tk outdated` for Gradle project
+- Enable ANSI rendering in Windows 
+
 ## [0.35.4] - 2026-08-24
 
 - Update stub for `Taskfile.ts` with Bun
