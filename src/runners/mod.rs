@@ -1,14 +1,10 @@
 pub mod fleet;
 
-pub mod amberfile;
 pub mod ant;
 pub mod argcfile;
 pub mod bun_shell;
 pub mod composer;
 pub mod denojson;
-pub mod gruntfile;
-pub mod gulpfile;
-pub mod jakefile;
 pub mod jbang;
 pub mod justfile;
 pub mod makefile;
@@ -23,12 +19,16 @@ pub mod rakefile;
 pub mod taskfileyml;
 pub mod taskshell;
 pub mod taskspy;
-pub mod usql;
-pub mod uv_scripts;
 pub mod vstasks;
 pub mod xtask;
 pub mod xtask_go;
 pub mod zed;
+pub mod jakefile;
+pub mod gulpfile;
+pub mod gruntfile;
+pub mod uv_scripts;
+pub mod usql;
+pub mod amberfile;
 
 use crate::command_utils::CommandOutput;
 use crate::errors::KeeperError;
@@ -65,7 +65,7 @@ pub const RUNNERS: &'static [&'static str] = &[
     "xtask-go",
     "nur",
     "uvs",
-    "usql",
+    "usql"
 ];
 
 pub fn run_task(
@@ -112,9 +112,10 @@ pub fn run_task(
         "bun-shell" => bun_shell::run_task(task_name, task_args, global_args, verbose),
         "xtask" => xtask::run_task(task_name, task_args, global_args, verbose),
         "xtask-go" => xtask_go::run_task(task_name, task_args, global_args, verbose),
-        _ => {
-            Err(KeeperError::FailedToRunTasks(format!("Unknown runner: {}", runner)).into_report())
-        }
+        _ => Err(KeeperError::FailedToRunTasks(format!(
+            "Unknown runner: {}",
+            runner
+        )).into_report()),
     }
 }
 

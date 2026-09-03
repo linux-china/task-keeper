@@ -1,4 +1,4 @@
-use crate::command_utils::{CommandOutput, run_command_line};
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};

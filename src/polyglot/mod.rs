@@ -1,8 +1,8 @@
 pub mod java;
 pub mod node;
 pub mod python;
-pub mod ruby;
 pub mod sdkman;
+pub mod ruby;
 
 cfg_if::cfg_if! {
     if #[cfg(target_os = "windows")] {

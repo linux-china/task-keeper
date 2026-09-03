@@ -1,10 +1,10 @@
-use crate::command_utils::{CommandOutput, capture_command_output, run_command};
+use crate::command_utils::{capture_command_output, run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Report;
 use regex::Regex;
 use std::io::{BufRead, BufReader};
+use error_stack::Report;
 use which::which;
 
 pub fn is_available() -> bool {

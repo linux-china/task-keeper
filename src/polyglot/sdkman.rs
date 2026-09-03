@@ -1,8 +1,9 @@
-use crate::polyglot::PATH_SEPARATOR;
-use colored::Colorize;
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
+use crate::polyglot::PATH_SEPARATOR;
+use colored::Colorize;
+
 
 pub fn is_available() -> bool {
     env::current_dir()
@@ -21,10 +22,7 @@ pub fn init_env() {
         if candidate_home_path.exists() {
             // set candidate home env variable
             unsafe {
-                env::set_var(
-                    &candidate_home_name,
-                    &candidate_home_path.to_string_lossy().to_string(),
-                );
+                env::set_var(&candidate_home_name, &candidate_home_path.to_string_lossy().to_string());
             }
             // Add candidate bin path to PATH env variable on first position
             let candidate_bin_path = candidates_home.join(key).join(value).join("bin");
@@ -51,17 +49,14 @@ pub fn diagnose() -> i32 {
         let candidate_home_path = candidates_home.join(key).join(value);
         if !candidate_home_path.exists() {
             problems_count += 1;
-            println!(
-                "{} {} found in .sdkmanrc, but not installed, please use `sdk install {} {}` to install it.",
-                "Warning:".bold().yellow(),
-                key,
-                key,
-                value
-            );
+            println!("{} {} found in .sdkmanrc, but not installed, please use `sdk install {} {}` to install it.",
+                     "Warning:".bold().yellow(),
+                     key, key, value);
         }
     }
     problems_count
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -70,14 +65,8 @@ mod tests {
     #[test]
     fn test_init_env() {
         init_env();
-        println!(
-            "JAVA_HOME: {}",
-            env::var("JAVA_HOME").expect("env: JAVA_HOME")
-        );
-        println!(
-            "JBANG_HOME: {}",
-            env::var("JBANG_HOME").expect("env: JBANG_HOME")
-        );
+        println!("JAVA_HOME: {}", env::var("JAVA_HOME").expect("env: JAVA_HOME"));
+        println!("JBANG_HOME: {}", env::var("JBANG_HOME").expect("env: JBANG_HOME"));
         println!("PATH: {}", env::var("PATH").expect("env: PATH"));
     }
 }

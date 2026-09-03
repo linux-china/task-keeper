@@ -1,4 +1,4 @@
-use crate::command_utils::{CommandOutput, run_command_line};
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
@@ -23,10 +23,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
     task_command_map.insert("clean".to_string(), "bundle clean".to_string());
     task_command_map.insert("outdated".to_string(), "bundle outdated".to_string());
     task_command_map.insert("update".to_string(), "bundle update".to_string());
-    task_command_map.insert(
-        "sbom".to_string(),
-        "cyclonedx-ruby -o application.cdx.json -p .".to_string(),
-    );
+    task_command_map.insert("sbom".to_string(), "cyclonedx-ruby -o application.cdx.json -p .".to_string());
     task_command_map
 }
 
@@ -39,6 +36,9 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "bundler".to_string()).into_report())
+        Err(KeeperError::ManagerTaskNotFound(
+            task.to_owned(),
+            "bundler".to_string()
+        ).into_report())
     }
 }

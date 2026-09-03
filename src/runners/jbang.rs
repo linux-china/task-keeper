@@ -1,4 +1,4 @@
-use crate::command_utils::{CommandOutput, run_command};
+use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;

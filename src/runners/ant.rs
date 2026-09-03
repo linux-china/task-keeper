@@ -1,8 +1,8 @@
-use crate::command_utils::{CommandOutput, run_command};
+use error_stack::Report;
+use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Report;
 use serde::Deserialize;
 use which::which;
 

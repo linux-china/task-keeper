@@ -1,4 +1,4 @@
-use crate::command_utils::{CommandOutput, run_command_line};
+use crate::command_utils::{run_command_line, CommandOutput};
 use crate::common::{get_npm_command, parse_package_json};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
@@ -90,10 +90,7 @@ pub fn get_task_command_map() -> HashMap<String, String> {
             task_command_map.insert("outdated".to_string(), "npm-check -u".to_string());
         }
     }
-    task_command_map.insert(
-        "sbom".to_string(),
-        "npx @cyclonedx/cyclonedx-npm -o application.cdx.json".to_string(),
-    );
+    task_command_map.insert("sbom".to_string(), "npx @cyclonedx/cyclonedx-npm -o application.cdx.json".to_string());
     task_command_map
 }
 
@@ -106,6 +103,9 @@ pub fn run_task(
     if let Some(command_line) = get_task_command_map().get(task) {
         run_command_line(command_line, verbose)
     } else {
-        Err(KeeperError::ManagerTaskNotFound(task.to_owned(), "npm".to_string()).into_report())
+        Err(KeeperError::ManagerTaskNotFound(
+            task.to_owned(),
+            "npm".to_string()
+        ).into_report())
     }
 }

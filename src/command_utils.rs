@@ -55,10 +55,7 @@ pub fn run_command(
     run_command_with_env_vars(command_name, args, &None, &None, verbose)
 }
 
-pub fn run_command_line(
-    command_line: &str,
-    verbose: bool,
-) -> Result<CommandOutput, Report<KeeperError>> {
+pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
     let command_and_args = split_command_line(command_line).unwrap();
     // command line contains pipe or not
     if command_and_args
@@ -255,10 +252,7 @@ pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<K
     })
 }
 
-pub fn capture_command_output(
-    command_name: &str,
-    args: &[&str],
-) -> Result<Output, Report<KeeperError>> {
+pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, Report<KeeperError>> {
     let mut command = Command::new(command_name);
     if args.len() > 0 {
         command.args(args);
