@@ -1,7 +1,7 @@
 //! clap App for command cli
 use clap::{Command, Arg, ArgAction};
 
-pub const VERSION: &str = "0.35.4";
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn build_app() -> Command {
     Command::new("tk")
