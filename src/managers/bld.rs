@@ -15,43 +15,43 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn get_task_command_map() -> HashMap<String, String> {
-    let gradle_command = get_bld_command();
+    let bld_command = get_bld_command();
     let mut task_command_map = HashMap::new();
     task_command_map.insert(
         "install".to_string(),
-        format!("{} download", gradle_command).to_owned(),
+        format!("{} download", bld_command).to_owned(),
     );
     task_command_map.insert(
         "compile".to_string(),
-        format!("{} compile", gradle_command).to_owned(),
+        format!("{} compile", bld_command).to_owned(),
     );
     task_command_map.insert(
         "build".to_string(),
-        format!("{} jar", gradle_command).to_owned(),
+        format!("{} jar", bld_command).to_owned(),
     );
     task_command_map.insert(
         "release".to_string(),
-        format!("{} uberjar", gradle_command).to_owned(),
+        format!("{} uberjar", bld_command).to_owned(),
     );
     task_command_map.insert(
         "start".to_string(),
-        format!("{} run", gradle_command).to_owned(),
+        format!("{} run", bld_command).to_owned(),
     );
     task_command_map.insert(
         "test".to_string(),
-        format!("{} test", gradle_command).to_owned(),
+        format!("{} test", bld_command).to_owned(),
     );
     task_command_map.insert(
         "deps".to_string(),
-        format!("{} dependency-tree", gradle_command).to_owned(),
+        format!("{} dependency-tree", bld_command).to_owned(),
     );
     task_command_map.insert(
         "outdated".to_string(),
-        format!("{} updates", gradle_command).to_owned(),
+        format!("{} updates", bld_command).to_owned(),
     );
     task_command_map.insert(
         "clean".to_string(),
-        format!("{} clean", gradle_command).to_owned(),
+        format!("{} clean", bld_command).to_owned(),
     );
     task_command_map
 }
@@ -68,7 +68,7 @@ fn get_bld_command() -> &'static str {
         }
     } else {
         let wrapper_available = std::env::current_dir()
-            .map(|dir| dir.join("gradlew").exists())
+            .map(|dir| dir.join("bld").exists())
             .unwrap_or(false);
         if wrapper_available { "./bld" } else { "bld" }
     }
