@@ -181,7 +181,7 @@ pub fn run_command_with_env_vars(
     if verbose {
         println!("[tk] command line:  {:?}", command);
     }
-    if std::env::var("TK_TASK_NAME").is_ok() {
+    if std::env::var("TK_TASK_ID").is_ok() {
         return intercept_output(&mut command);
     }
     command
@@ -267,7 +267,7 @@ pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<K
 
     let stdout_thread = std::thread::spawn(move || {
         let mut stdout_bytes = Vec::new();
-        let mut buffer = [0; 32];
+        let mut buffer = [0; 8192];
         while let Ok(n) = stdout.read(&mut buffer) {
             if n == 0 {
                 break;

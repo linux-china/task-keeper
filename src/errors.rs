@@ -59,10 +59,10 @@ pub enum KeeperError {
 
     #[error("TK-300001: failed to read pom.xml")]
     InvalidPomXml,
+    
     #[error("TK-300002: failed to read maven-metadata.xml")]
     InvalidMavenMetadataXml,
-    #[error("TK-301001: failed to parse package.json")]
-    InvalidTasksJson,
+
     #[error("TK-302001: failed to list uv tasks")]
     InvalidUvTasks,
 
