@@ -183,7 +183,7 @@ fn get_start_command_line() -> Option<String> {
     {
         let gradle_build_code = std::env::current_dir()
             .map(|dir| dir.join(build_gradle_file))
-            .map(|path| std::fs::read_to_string(path).unwrap())
+            .and_then(std::fs::read_to_string)
             .unwrap_or("".to_owned());
         if (build_gradle_file == "build.gradle.kt"
             && gradle_build_code.contains(r#"id("org.springframework.boot")"#))

@@ -48,8 +48,10 @@ fn parse_composer_json() -> Result<ComposerJson, Report<KeeperError>> {
     std::env::current_dir()
         .map(|dir| dir.join("composer.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<ComposerJson>(&data).unwrap())
         .change_context(KeeperError::InvalidComposerJson)
+        .and_then(|data| {
+            serde_json::from_str::<ComposerJson>(&data).change_context(KeeperError::InvalidComposerJson)
+        })
 }
 
 pub fn run_task(

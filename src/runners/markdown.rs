@@ -21,8 +21,8 @@ pub fn is_available() -> bool {
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let readme_md = std::env::current_dir()
         .map(|dir| dir.join("README.md"))
-        .map(|path| std::fs::read_to_string(path).unwrap())
-        .change_context(KeeperError::InvalidProcfile)?;
+        .and_then(std::fs::read_to_string)
+        .change_context(KeeperError::InvalidReadmeMd)?;
     let mut tasks: Vec<Task> = vec![];
     let mut offset = find_shell_code_offset(&readme_md);
     while offset.is_some() {

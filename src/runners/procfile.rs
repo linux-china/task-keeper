@@ -15,7 +15,7 @@ pub fn is_available() -> bool {
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let procfile_text = env::current_dir()
         .map(|dir| dir.join("Procfile"))
-        .map(|path| std::fs::read_to_string(path).unwrap())
+        .and_then(std::fs::read_to_string)
         .change_context(KeeperError::InvalidProcfile)?;
     let tasks: Vec<Task> = BufReader::new(procfile_text.as_bytes())
         .lines()

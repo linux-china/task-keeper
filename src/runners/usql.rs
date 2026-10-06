@@ -21,7 +21,7 @@ pub fn is_command_available() -> bool {
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     let queries_sql_text = env::current_dir()
         .map(|dir| dir.join("queries.sql"))
-        .map(|path| std::fs::read_to_string(path).unwrap())
+        .and_then(std::fs::read_to_string)
         .change_context(KeeperError::InvalidQueriesSQL)?;
     let mut tasks: Vec<Task> = vec![];
     let mut sentence_lines: Vec<&str> = vec![];
@@ -52,8 +52,8 @@ fn get_dsn_url() -> Option<String> {
     } else {
         env::current_dir()
             .map(|dir| dir.join("queries.sql"))
-            .map(|path| std::fs::read_to_string(path).unwrap())
-            .unwrap()
+            .and_then(std::fs::read_to_string)
+            .ok()?
             .lines()
             .find(|line| line.starts_with("-- DSN_URL="))
             .map(|line| line[line.find('=').unwrap() + 1..].trim().to_string())

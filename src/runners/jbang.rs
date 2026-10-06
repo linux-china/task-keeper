@@ -39,7 +39,11 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     std::env::current_dir()
         .map(|dir| dir.join("jbang-catalog.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<JbangCatalogJson>(&data).unwrap())
+        .change_context(KeeperError::InvalidJBangCatalogJson)
+        .and_then(|data| {
+            serde_json::from_str::<JbangCatalogJson>(&data)
+                .change_context(KeeperError::InvalidJBangCatalogJson)
+        })
         .map(|jbang_catalog_json| {
             jbang_catalog_json
                 .aliases
@@ -51,7 +55,6 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .change_context(KeeperError::InvalidJBangCatalogJson)
 }
 
 pub fn run_task(

@@ -119,7 +119,7 @@ fn get_mvn_command() -> &'static str {
 fn get_start_command_line() -> String {
     let pom_xml = std::env::current_dir()
         .map(|dir| dir.join("pom.xml"))
-        .map(|path| std::fs::read_to_string(path).unwrap())
+        .and_then(std::fs::read_to_string)
         .unwrap_or("<project></project>".to_owned());
     if pom_xml.contains("<artifactId>spring-boot-starter-web</artifactId>")
         || pom_xml.contains("<artifactId>spring-boot-starter-webflux</artifactId>")

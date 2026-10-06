@@ -37,7 +37,10 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     std::env::current_dir()
         .map(|dir| dir.join("Makefile.toml"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| toml::from_str::<MakefileToml>(&data).unwrap())
+        .change_context(KeeperError::InvalidMakefileToml)
+        .and_then(|data| {
+            toml::from_str::<MakefileToml>(&data).change_context(KeeperError::InvalidMakefileToml)
+        })
         .map(|makefile_toml| {
             makefile_toml
                 .tasks
@@ -55,7 +58,6 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .change_context(KeeperError::InvalidMakefileToml)
 }
 
 pub fn run_task(

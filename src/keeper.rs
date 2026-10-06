@@ -130,11 +130,7 @@ pub fn list_all_runner_tasks(
     let mut all_tasks = HashMap::new();
     if runners::ant::is_available() {
         if runners::ant::is_command_available() {
-            if let Ok(runner_tasks) = runners::ant::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("ant".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "ant", runners::ant::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -147,54 +143,26 @@ pub fn list_all_runner_tasks(
         }
     }
     if runners::fleet::is_available() {
-        if let Ok(runner_tasks) = runners::fleet::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("fleet".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "fleet", runners::fleet::list_tasks(), error_display);
     }
     if runners::vstasks::is_available() {
-        if let Ok(runner_tasks) = runners::vstasks::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("vscode".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "vscode", runners::vstasks::list_tasks(), error_display);
     }
     if runners::zed::is_available() {
-        if let Ok(runner_tasks) = runners::zed::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("zed".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "zed", runners::zed::list_tasks(), error_display);
     }
     if runners::procfile::is_available() {
-        if let Ok(runner_tasks) = runners::procfile::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("procfile".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "procfile", runners::procfile::list_tasks(), error_display);
     }
     if runners::markdown::is_available() {
-        if let Ok(runner_tasks) = runners::markdown::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("markdown".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "markdown", runners::markdown::list_tasks(), error_display);
     }
     if runners::taskshell::is_available() {
-        if let Ok(runner_tasks) = runners::taskshell::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("shell".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "shell", runners::taskshell::list_tasks(), error_display);
     }
     if runners::justfile::is_available() {
         if runners::justfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::justfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("just".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "just", runners::justfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -208,18 +176,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::packagejson::is_available() {
         if runners::packagejson::is_command_available() {
-            match runners::packagejson::list_tasks() {
-                Ok(runner_tasks) => {
-                    if !runner_tasks.is_empty() {
-                        all_tasks.insert("npm".to_string(), runner_tasks);
-                    }
-                }
-                Err(err) => {
-                    if error_display {
-                        println!("{}", format!("[tk] {:#}", err).bold().red());
-                    }
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "npm", runners::packagejson::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -233,11 +190,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::denojson::is_available() {
         if runners::denojson::is_command_available() {
-            if let Ok(runner_tasks) = runners::denojson::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("deno".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "deno", runners::denojson::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -251,11 +204,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::makefile::is_available() {
         if runners::makefile::is_command_available() {
-            if let Ok(runner_tasks) = runners::makefile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("make".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "make", runners::makefile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] make(https://www.gnu.org/software/make) command not available for makefile".bold().red());
@@ -264,11 +213,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::rakefile::is_available() {
         if runners::rakefile::is_command_available() {
-            if let Ok(runner_tasks) = runners::rakefile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("rake".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "rake", runners::rakefile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -282,11 +227,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::jakefile::is_available() {
         if runners::jakefile::is_command_available() {
-            if let Ok(runner_tasks) = runners::jakefile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("jake".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "jake", runners::jakefile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -300,11 +241,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::gulpfile::is_available() {
         if runners::gulpfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::gulpfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("gulp".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "gulp", runners::gulpfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -318,11 +255,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::gruntfile::is_available() {
         if runners::gruntfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::gruntfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("grunt".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "grunt", runners::gruntfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -336,11 +269,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::taskfileyml::is_available() {
         if runners::taskfileyml::is_command_available() {
-            if let Ok(runner_tasks) = runners::taskfileyml::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("task".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "task", runners::taskfileyml::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -354,11 +283,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::makefiletoml::is_available() {
         if runners::makefiletoml::is_command_available() {
-            if let Ok(runner_tasks) = runners::makefiletoml::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("cargo-make".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "cargo-make", runners::makefiletoml::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] cargo-make(https://github.com/sagiegurari/cargo-make) command not available for Makefile.toml".bold().red());
@@ -367,11 +292,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::bun_shell::is_available() {
         if runners::bun_shell::is_command_available() {
-            if let Ok(runner_tasks) = runners::bun_shell::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("bun-shell".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "bun-shell", runners::bun_shell::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] bun(https://bun.sh/docs/runtime/shell) command not available for Taskfile.ts".bold().red());
@@ -380,11 +301,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::taskspy::is_available() {
         if runners::taskspy::is_command_available() {
-            if let Ok(runner_tasks) = runners::taskspy::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("invoke".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "invoke", runners::taskspy::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -398,11 +315,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::composer::is_available() {
         if runners::composer::is_command_available() {
-            if let Ok(runner_tasks) = runners::composer::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("composer".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "composer", runners::composer::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] composer(https://getcomposer.org/) command not available for composer.json".bold().red());
@@ -411,11 +324,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::jbang::is_available() {
         if runners::jbang::is_command_available() {
-            if let Ok(runner_tasks) = runners::jbang::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("jbang".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "jbang", runners::jbang::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] jbang(https://www.jbang.dev/) command not available for jbang-catalog.json".bold().red());
@@ -424,11 +333,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::poetry::is_available() {
         if runners::poetry::is_command_available() {
-            if let Ok(runner_tasks) = runners::poetry::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("poetry".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "poetry", runners::poetry::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] poetry(https://python-poetry.org/) command not available for pyproject.toml".bold().red());
@@ -437,11 +342,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::poe::is_available() {
         if runners::poe::is_command_available() {
-            if let Ok(runner_tasks) = runners::poe::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("poe".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "poe", runners::poe::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] poe(https://github.com/nat-n/poethepoet) command not available for pyproject.toml".bold().red());
@@ -450,11 +351,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::argcfile::is_available() {
         if runners::argcfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::argcfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("argc".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "argc", runners::argcfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] argc(https://github.com/sigoden/argc) command not available for Argcfile.sh".bold().red());
@@ -463,11 +360,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::amberfile::is_available() {
         if runners::amberfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::amberfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("amber".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "amber", runners::amberfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!("{}", "[tk] Amber(https://amber-lang.com/) command not available for Amberfile".bold().red());
@@ -476,11 +369,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::uv_scripts::is_available() {
         if runners::uv_scripts::is_command_available() {
-            if let Ok(runner_tasks) = runners::uv_scripts::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("uvs".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "uvs", runners::uv_scripts::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -494,11 +383,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::nurfile::is_available() {
         if runners::nurfile::is_command_available() {
-            if let Ok(runner_tasks) = runners::nurfile::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("nur".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "nur", runners::nurfile::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -512,11 +397,7 @@ pub fn list_all_runner_tasks(
     }
     if runners::usql::is_available() {
         if runners::usql::is_command_available() {
-            if let Ok(runner_tasks) = runners::usql::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("usql".to_string(), runner_tasks);
-                }
-            }
+            insert_runner_tasks(&mut all_tasks, "usql", runners::usql::list_tasks(), error_display);
         } else {
             if error_display {
                 println!(
@@ -529,18 +410,10 @@ pub fn list_all_runner_tasks(
         }
     }
     if runners::xtask::is_available() {
-        if let Ok(runner_tasks) = runners::xtask::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("xtask".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "xtask", runners::xtask::list_tasks(), error_display);
     }
     if runners::xtask_go::is_available() {
-        if let Ok(runner_tasks) = runners::xtask_go::list_tasks() {
-            if !runner_tasks.is_empty() {
-                all_tasks.insert("xtask-go".to_string(), runner_tasks);
-            }
-        }
+        insert_runner_tasks(&mut all_tasks, "xtask-go", runners::xtask_go::list_tasks(), error_display);
     }
     /*all_tasks.iter().for_each(|(runner, tasks)| {
         println!("{}", format!("[tk] {} tasks:", runner).bold().green());
@@ -549,6 +422,27 @@ pub fn list_all_runner_tasks(
         });
     });*/
     Ok(all_tasks)
+}
+
+/// Add tasks of a runner, or display the error, such as invalid task file, instead of ignoring it
+fn insert_runner_tasks<E: std::fmt::Display>(
+    all_tasks: &mut HashMap<String, Vec<Task>>,
+    runner: &str,
+    result: Result<Vec<Task>, E>,
+    error_display: bool,
+) {
+    match result {
+        Ok(runner_tasks) => {
+            if !runner_tasks.is_empty() {
+                all_tasks.insert(runner.to_string(), runner_tasks);
+            }
+        }
+        Err(err) => {
+            if error_display {
+                println!("{}", format!("[tk] {:#}", err).bold().red());
+            }
+        }
+    }
 }
 
 #[cfg(test)]

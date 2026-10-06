@@ -24,13 +24,13 @@ pub enum KeeperError {
     #[error("TK-202001: failed to parse package.json")]
     InvalidPackageJson,
 
-    #[error("TK-203001: failed to parse deno.json: {0}")]
-    InvalidDenoJson(String),
+    #[error("TK-203001: failed to parse deno.json")]
+    InvalidDenoJson,
 
     #[error("TK-204001: failed to parse fleet.json: {0}")]
     InvalidFleetRunJson(String),
 
-    #[error("TK-206001: failed to parse Makefile")]
+    #[error("TK-206001: failed to parse Makefile.toml")]
     InvalidMakefileToml,
 
     #[error("TK-206002: failed to parse Justfile")]
@@ -50,6 +50,12 @@ pub enum KeeperError {
 
     #[error("TK-211001: failed to read Argcfile.sh")]
     InvalidArgcFile,
+
+    #[error("TK-212001: failed to parse build.xml")]
+    InvalidBuildXml,
+
+    #[error("TK-213001: failed to read README.md")]
+    InvalidReadmeMd,
 
     #[error("TK-300001: failed to read pom.xml")]
     InvalidPomXml,

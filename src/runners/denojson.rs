@@ -26,7 +26,10 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     std::env::current_dir()
         .map(|dir| dir.join("deno.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| serde_json::from_str::<DenoJson>(&data).unwrap())
+        .change_context(KeeperError::InvalidDenoJson)
+        .and_then(|data| {
+            serde_json::from_str::<DenoJson>(&data).change_context(KeeperError::InvalidDenoJson)
+        })
         .map(|deno_json| {
             deno_json
                 .tasks
@@ -38,7 +41,6 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 })
                 .unwrap_or_else(|| vec![])
         })
-        .change_context(KeeperError::InvalidPackageJson)
 }
 
 pub fn run_task(

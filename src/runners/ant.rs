@@ -1,4 +1,4 @@
-use error_stack::Report;
+use error_stack::{Report, ResultExt};
 use crate::command_utils::{run_command, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -33,7 +33,7 @@ pub fn is_command_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
-    Ok(parse_build_xml()
+    Ok(parse_build_xml()?
         .targets
         .map(|targets| {
             targets
@@ -50,12 +50,12 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
         .unwrap_or_else(|| vec![]))
 }
 
-fn parse_build_xml() -> Project {
-    std::env::current_dir()
+fn parse_build_xml() -> Result<Project, Report<KeeperError>> {
+    let data = std::env::current_dir()
         .map(|dir| dir.join("build.xml"))
-        .map(|path| std::fs::read_to_string(path).unwrap())
-        .map(|data| serde_xml_rs::from_str(&data).unwrap())
-        .unwrap()
+        .and_then(std::fs::read_to_string)
+        .change_context(KeeperError::InvalidBuildXml)?;
+    serde_xml_rs::from_str(&data).change_context(KeeperError::InvalidBuildXml)
 }
 
 pub fn run_task(
