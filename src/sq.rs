@@ -6,7 +6,8 @@ use std::io;
 use std::io::{BufRead, BufReader, Stdin, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Output, Stdio};
-pub const VERSION: &str = "0.1.0";
+/// version from Cargo.toml, same as tk because sq is released with task-keeper
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 const SUB_COMMANDS: [&str; 5] = ["list", "add", "edit", "completion", "help"];
 

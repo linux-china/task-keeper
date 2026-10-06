@@ -1,7 +1,8 @@
 //! clap App for command cli
 use clap::{Command, Arg, ArgAction};
 
-pub const VERSION: &str = "0.35.7";
+/// version from Cargo.toml, so `tk --version` is always in sync with the release
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn build_app() -> Command {
     Command::new("tk")
