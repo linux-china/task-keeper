@@ -4,7 +4,7 @@ use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::{IntoReport, Report};
+use error_stack::{IntoReport, Report, ResultExt};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use toml::Value;
@@ -37,13 +37,25 @@ pub fn run_task(
     global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let project = PyProjectToml::get_default_project().unwrap();
-    if let Some(script_value) = project.get_uv_script(task) {
-        let script = get_script_cmd(&script_value);
-        invoke_script(&project, &script.unwrap(), task_args, global_args, verbose)
-    } else {
-        Err(KeeperError::TaskNotFound(task.to_owned()).into_report())
-    }
+    let project = PyProjectToml::get_default_project()
+        .change_context(KeeperError::FailedToRunTasks("failed to parse pyproject.toml".to_owned()))?;
+    let script = find_script(&project, task)?;
+    invoke_script(&project, &script, task_args, global_args, verbose)
+}
+
+/// Find script by name from `[tool.rye.scripts]`
+fn find_script(pyproject: &PyProjectToml, script_name: &str) -> Result<Script, Report<KeeperError>> {
+    let script_value = pyproject
+        .get_uv_script(script_name)
+        .ok_or_else(|| KeeperError::TaskNotFound(script_name.to_owned()).into_report())?;
+    get_script_cmd(&script_value).ok_or_else(|| {
+        KeeperError::FailedToRunTasks(format!("invalid script definition: {}", script_name))
+            .into_report()
+    })
+}
+
+fn script_error(message: &str) -> Report<KeeperError> {
+    KeeperError::FailedToRunTasks(message.to_owned()).into_report()
 }
 
 type EnvVars = HashMap<String, String>;
@@ -63,7 +75,7 @@ pub enum Script {
 pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
     match &tom_value {
         Value::String(cmd_text) => {
-            let command_and_args = shlex::split(cmd_text).unwrap();
+            let command_and_args = shlex::split(cmd_text)?;
             Some(Script::Cmd(command_and_args, HashMap::new(), None))
         }
         Value::Array(arr) => {
@@ -94,7 +106,7 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
             if let Some(cmd) = table.get("cmd") {
                 match cmd {
                     Value::String(cmd_text) => {
-                        let command_and_args = shlex::split(cmd_text).unwrap();
+                        let command_and_args = shlex::split(cmd_text)?;
                         Some(Script::Cmd(command_and_args, env_hash_map, None))
                     }
                     Value::Array(arr) => {
@@ -120,9 +132,11 @@ pub fn get_script_cmd(tom_value: &Value) -> Option<Script> {
                         let commands: Vec<Vec<String>> = chain_arr
                             .iter()
                             .filter_map(|item| match item {
-                                Value::Array(arr) => {
-                                    Some(arr.iter().map(|v| v.to_string()).collect::<Vec<String>>())
-                                }
+                                Value::Array(arr) => Some(
+                                    arr.iter()
+                                        .map(|v| v.as_str().map(str::to_owned).unwrap_or_else(|| v.to_string()))
+                                        .collect::<Vec<String>>(),
+                                ),
                                 Value::String(s) => Some(vec![s.to_string()]),
                                 _ => None,
                             })
@@ -150,8 +164,9 @@ fn invoke_script(
         Script::Call(entry, env_vars, env_file) => {
             let args: Vec<String> = if let Some((module, func)) = entry.split_once(':') {
                 if module.is_empty() || func.is_empty() {
-                    eprintln!("Python callable must be in the form <module_name>:<callable_name> or <module_name>");
-                    std::process::exit(1)
+                    return Err(script_error(
+                        "Python callable must be in the form <module_name>:<callable_name> or <module_name>",
+                    ));
                 }
                 let call = if !func.contains('(') {
                     format!("{func}()")
@@ -176,7 +191,9 @@ fn invoke_script(
                 }
             }
             if let Some(env_file_path) = env_file {
-                dotenvx_rs::from_path(env_file_path).unwrap()
+                dotenvx_rs::from_path(env_file_path).change_context(KeeperError::FailedToRunTasks(
+                    format!("failed to load env file: {}", env_file_path.display()),
+                ))?;
             }
             let real_args: Vec<&str> = args.iter().map(String::as_str).collect();
             let py = pyproject.venv_bin_path().join("python3");
@@ -184,8 +201,7 @@ fn invoke_script(
         }
         Script::Cmd(script_args, env_vars, env_file) => {
             if script_args.is_empty() {
-                eprintln!("script has no arguments");
-                std::process::exit(1);
+                return Err(script_error("script has no arguments"));
             }
             // inject env variables
             if !env_vars.is_empty() {
@@ -196,7 +212,9 @@ fn invoke_script(
                 }
             }
             if let Some(env_file_path) = env_file {
-                dotenvx_rs::from_path(env_file_path).unwrap()
+                dotenvx_rs::from_path(env_file_path).change_context(KeeperError::FailedToRunTasks(
+                    format!("failed to load env file: {}", env_file_path.display()),
+                ))?;
             }
             let script_target = std::env::current_dir().unwrap().join(&script_args[0]);
             if script_target.exists() && script_target.is_file() {
@@ -218,35 +236,27 @@ fn invoke_script(
         }
         Script::Chain(commands) => {
             if commands.is_empty() {
-                eprintln!("Please supply at least one command to chain");
-                std::process::exit(1);
+                return Err(script_error("Please supply at least one command to chain"));
             }
-            let mut index = 0;
+            let mut last_output = None;
             for command_and_args in commands {
-                let script_name = &command_and_args[0];
-                if let Some(script_value) = pyproject.get_uv_script(script_name) {
-                    if let Some(script_cmd) = get_script_cmd(&script_value) {
-                        let result =
-                            invoke_script(pyproject, &script_cmd, task_args, global_args, verbose);
-                        if index == commands.len() - 1 {
-                            return result;
-                        }
-                        index += 1;
-                        if let Ok(result) = result {
-                            if result.status.success() {
-                                if let Some(stdout) = result.stdout {
-                                    if verbose {
-                                        println!("{}", stdout);
-                                    }
-                                }
-                            } else {
-                                std::process::exit(result.status.code().unwrap_or(1));
-                            }
-                        }
+                let script_name = command_and_args
+                    .first()
+                    .ok_or_else(|| script_error("empty command in chain"))?;
+                let script_cmd = find_script(pyproject, script_name)?;
+                let output = invoke_script(pyproject, &script_cmd, task_args, global_args, verbose)?;
+                // stop the chain on first failure, and let caller report the exit code
+                if !output.status.success() {
+                    return Ok(output);
+                }
+                if verbose {
+                    if let Some(stdout) = &output.stdout {
+                        println!("{}", stdout);
                     }
                 }
+                last_output = Some(output);
             }
-            std::process::exit(0);
+            Ok(last_output.unwrap())
         }
     }
 }
