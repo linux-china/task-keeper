@@ -97,6 +97,15 @@ fn find_fenced_code_blocks(text: &str) -> Vec<(&str, String)> {
     blocks
 }
 
+/// Remove the shell prompt `$ ` copied from a terminal session, but keep `$VAR` and `${VAR}`
+fn strip_prompt(line: &str) -> &str {
+    let line = line.trim();
+    match line.strip_prefix('$') {
+        Some(rest) if rest.is_empty() || rest.starts_with(char::is_whitespace) => rest.trim(),
+        _ => line,
+    }
+}
+
 fn parse_task_from_code_block(
     task_name: &str,
     code_block: &str,
@@ -107,13 +116,7 @@ fn parse_task_from_code_block(
         .lines()
         .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
         .map(|line| line.unwrap())
-        .map(|line| {
-            if line.starts_with("$") {
-                line[1..].trim().to_string()
-            } else {
-                line.trim().to_string()
-            }
-        })
+        .map(|line| strip_prompt(&line).to_string())
         .filter(|line| !line.is_empty())
         .collect::<Vec<String>>();
     let mut command_lines: Vec<String> = vec![];
@@ -274,6 +277,28 @@ mod tests {
         assert_eq!(task.code_block.as_deref(), Some(""));
         let task = parse_task_from_code_block("demo", "$\n$ echo hi\n", "sh", "");
         assert_eq!(task.code_block.as_deref(), Some("echo hi"));
+    }
+
+    #[test]
+    fn test_strip_prompt() {
+        assert_eq!(strip_prompt("$ echo hi"), "echo hi");
+        assert_eq!(strip_prompt("$\techo hi"), "echo hi");
+        assert_eq!(strip_prompt("  $ echo hi"), "echo hi");
+        assert_eq!(strip_prompt("$"), "");
+        assert_eq!(strip_prompt("$EDITOR README.md"), "$EDITOR README.md");
+        assert_eq!(strip_prompt("${CC:-cc} -o app main.c"), "${CC:-cc} -o app main.c");
+        assert_eq!(strip_prompt("$(pwd)/run.sh"), "$(pwd)/run.sh");
+        assert_eq!(strip_prompt("echo $HOME"), "echo $HOME");
+    }
+
+    #[test]
+    fn test_parse_dollar_variable_lines() {
+        let code = "$ export NAME=tk\n$EDITOR README.md\n${CC:-cc} -o app main.c";
+        let task = parse_task_from_code_block("demo", code, "sh", "");
+        assert_eq!(
+            task.code_block.as_deref(),
+            Some("export NAME=tk\n$EDITOR README.md\n${CC:-cc} -o app main.c")
+        );
     }
 
     #[test]
