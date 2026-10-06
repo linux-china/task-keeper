@@ -1,4 +1,6 @@
-use crate::command_utils::{is_command_available, run_command_with_env_vars, CommandOutput};
+use crate::command_utils::{
+    is_command_available, run_command_line_with_env_vars, run_command_with_env_vars, CommandOutput,
+};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -88,24 +90,29 @@ pub fn run_task(
     }
 }
 
+/// Zed runs a task by shell, and `command` is often a whole command line, such as `cargo run --release`,
+/// so only a single program with `args` is executed directly, which keeps argument boundaries.
 fn run_configuration(
     configuration: &Configuration,
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let command_name = &configuration.command;
+    let command_name = configuration.command.trim();
     let args = configuration.args.clone().unwrap_or_default();
+    if args.is_empty() {
+        return run_command_line_with_env_vars(command_name, &configuration.env, verbose);
+    }
+    if command_name.contains(char::is_whitespace) {
+        return run_command_line_with_env_vars(&configuration.command_line(), &configuration.env, verbose);
+    }
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-    if is_command_available(&command_name) {
-        Ok(
-            run_command_with_env_vars(&command_name, &args, &None, &configuration.env, verbose)
-                .unwrap(),
-        )
+    if is_command_available(command_name) {
+        run_command_with_env_vars(command_name, &args, &None, &configuration.env, verbose)
     } else {
         println!(
             "{}",
             format!("{} is not available", command_name).bold().red()
         );
-        Err(KeeperError::CommandNotFound(command_name.clone()).into_report())
+        Err(KeeperError::CommandNotFound(command_name.to_owned()).into_report())
     }
 }
 
@@ -124,6 +131,39 @@ mod tests {
     #[test]
     fn test_run() {
         run_task("bash echo", &[], &[], false).unwrap();
+    }
+
+    #[test]
+    fn test_run_command_line_without_args() {
+        let configuration = Configuration::new_command("version", "cargo --version", &[]);
+        let configuration = Configuration { args: None, ..configuration };
+        assert!(run_configuration(&configuration, false).unwrap().status.success());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_run_command_line_with_env() {
+        let mut env = HashMap::new();
+        env.insert("TK_ZED_ENV".to_owned(), "yes".to_owned());
+        let configuration = Configuration {
+            label: "env".to_owned(),
+            command: "test \"$TK_ZED_ENV\" = yes".to_owned(),
+            env: Some(env),
+            ..Default::default()
+        };
+        assert!(run_configuration(&configuration, false).unwrap().status.success());
+    }
+
+    #[test]
+    fn test_run_command_with_spaces_and_args() {
+        let configuration = Configuration::new_command("version", "cargo --color never", &["--version".to_owned()]);
+        assert!(run_configuration(&configuration, false).unwrap().status.success());
+    }
+
+    #[test]
+    fn test_run_unavailable_command() {
+        let configuration = Configuration::new_command("missing", "tk-no-such-command", &["x".to_owned()]);
+        assert!(run_configuration(&configuration, false).is_err());
     }
 
     #[test]

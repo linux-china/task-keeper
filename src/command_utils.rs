@@ -94,6 +94,15 @@ pub fn run_command(
 }
 
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+    run_command_line_with_env_vars(command_line, &None, verbose)
+}
+
+/// Run command line with extra environment variables, by shell only when it contains shell syntax.
+pub fn run_command_line_with_env_vars(
+    command_line: &str,
+    env_vars: &Option<HashMap<String, String>>,
+    verbose: bool,
+) -> Result<CommandOutput, Report<KeeperError>> {
     let command_and_args = split_command_line(command_line)
         .filter(|parts| !parts.is_empty())
         .ok_or_else(|| {
@@ -102,12 +111,16 @@ pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutp
         })?;
     // command line contains shell syntax, such as pipe, redirection, `&&` or `$VAR`
     if needs_shell(command_line) || starts_with_env_assignment(&command_and_args[0]) {
-        return run_command_by_shell(command_line, verbose);
+        let mut command = shell_command(command_line);
+        if let Some(vars) = env_vars {
+            command.envs(vars);
+        }
+        return execute_command(command, verbose);
     }
     let command_name = &command_and_args[0];
     let args: Vec<&str> = command_and_args[1..].iter().map(AsRef::as_ref).collect();
     if is_command_available(&command_name) {
-        run_command(&command_name, &args, verbose)
+        run_command_with_env_vars(&command_name, &args, &None, env_vars, verbose)
     } else {
         println!(
             "{}",
@@ -218,18 +231,29 @@ pub fn run_command_by_shell(
     command_line: &str,
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
+    execute_command(shell_command(command_line), verbose)
+}
+
+/// Command to run the command line by `sh -c`, or by `cmd` on Windows.
+fn shell_command(command_line: &str) -> Command {
     if cfg!(target_os = "windows") {
-        run_command_by_cmd(command_line, verbose)
+        cmd_command(command_line)
     } else {
-        run_command_with_env_vars("sh", &["-c", command_line], &None, &None, verbose)
+        let mut command = Command::new(resolve_program("sh"));
+        command.args(["-c", command_line]);
+        command
     }
 }
 
 /// Run command line by `cmd /D /S /C "<command line>"` on Windows.
+pub fn run_command_by_cmd(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+    execute_command(cmd_command(command_line), verbose)
+}
+
 /// cmd.exe doesn't parse its command line by the MSVCRT rules that `Command::arg` escapes for,
 /// e.g. `"` would become `\"`, so the command line is passed verbatim by `raw_arg`.
 /// `/S` strips only the outermost quotes, and `/D` skips AutoRun commands from the registry.
-pub fn run_command_by_cmd(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+fn cmd_command(command_line: &str) -> Command {
     let mut command = Command::new("cmd");
     command.args(["/D", "/S", "/C"]);
     #[cfg(windows)]
@@ -239,7 +263,7 @@ pub fn run_command_by_cmd(command_line: &str, verbose: bool) -> Result<CommandOu
     }
     #[cfg(not(windows))]
     command.arg(command_line);
-    execute_command(command, verbose)
+    command
 }
 
 /// Check whether command line contains shell syntax outside of quotes:
