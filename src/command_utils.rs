@@ -29,6 +29,30 @@ impl CommandOutput {
             },
         }
     }
+
+    /// Turn a non-zero exit status into `KeeperError::TaskFailed` carrying the exit code.
+    pub fn ensure_success(&self, task_name: &str) -> Result<(), Report<KeeperError>> {
+        if self.status.success() {
+            Ok(())
+        } else {
+            Err(KeeperError::TaskFailed(task_name.to_string(), exit_code(&self.status)).into_report())
+        }
+    }
+}
+
+/// Exit code of a finished process; on Unix, a process killed by a signal maps to 128 + signal.
+pub fn exit_code(status: &ExitStatus) -> i32 {
+    if let Some(code) = status.code() {
+        return code;
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::ExitStatusExt;
+        if let Some(signal) = status.signal() {
+            return 128 + signal;
+        }
+    }
+    1
 }
 
 pub fn is_command_available(command_name: &str) -> bool {

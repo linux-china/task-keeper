@@ -22,7 +22,7 @@ pub fn run_tasks(
             if let Some(runner_tasks) = tasks_hashmap.get(cli_runner) {
                 let mut runner_task_found = false;
                 for target_task_name in target_task_names {
-                    runner_tasks.iter().for_each(|task| {
+                    for task in runner_tasks {
                         if task.name.as_str() == *target_task_name {
                             task_count += 1;
                             runner_task_found = true;
@@ -32,9 +32,9 @@ pub fn run_tasks(
                                 task_args,
                                 global_args,
                                 verbose,
-                            );
+                            )?;
                         }
-                    });
+                    }
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                         task_count += 1;
@@ -52,9 +52,9 @@ pub fn run_tasks(
             //unknown runner
             for target_task_name in target_task_names {
                 let mut runner_task_found = false;
-                RUNNERS.iter().for_each(|runner| {
+                for runner in RUNNERS {
                     if let Some(tasks) = tasks_hashmap.get(*runner) {
-                        tasks.iter().for_each(|task| {
+                        for task in tasks {
                             if task.name.as_str() == *target_task_name {
                                 task_count += 1;
                                 runner_task_found = true;
@@ -64,11 +64,11 @@ pub fn run_tasks(
                                     task_args,
                                     global_args,
                                     verbose,
-                                );
+                                )?;
                             }
-                        });
+                        }
                     }
-                });
+                }
                 // execute package manager task
                 if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
                     task_count += 1;
@@ -92,12 +92,12 @@ pub fn run_runner_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) {
-    let command_output =
-        runners::run_task(runner, task_name, task_args, global_args, verbose).unwrap();
+) -> Result<(), Report<KeeperError>> {
+    let command_output = runners::run_task(runner, task_name, task_args, global_args, verbose)?;
     if std::env::var("TK_TASK_ID").is_ok() {
         send_notification(&command_output, task_name, task_args);
     }
+    command_output.ensure_success(task_name)
 }
 
 pub fn run_manager_task(
@@ -536,6 +536,6 @@ mod tests {
 
     #[test]
     fn test_run_task() {
-        run_runner_task("npm", "start", &[], &[], true);
+        let _ = run_runner_task("npm", "start", &[], &[], true);
     }
 }

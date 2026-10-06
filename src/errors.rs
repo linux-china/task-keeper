@@ -15,6 +15,9 @@ pub enum KeeperError {
     #[error("TK-100500: failed to run tasks: {0}")]
     FailedToRunTasks(String),
 
+    #[error("TK-100502: task {0} failed with exit code {1}")]
+    TaskFailed(String, i32),
+
     #[error("TK-201001: failed to parse Makefile: {0}")]
     InvalidMakefile(String),
 

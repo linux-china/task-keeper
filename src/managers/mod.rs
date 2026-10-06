@@ -511,7 +511,11 @@ pub fn run_task(
                     .bold()
                     .blue()
             );
-            task(task_name, task_args, global_args, verbose)?;
+            let command_output = task(task_name, task_args, global_args, verbose)?;
+            if std::env::var("TK_TASK_ID").is_ok() {
+                send_notification(&command_output, task_name, task_args);
+            }
+            command_output.ensure_success(task_name)?;
         } else {
             println!(
                 "{}",
@@ -536,18 +540,19 @@ pub fn run_task(
                 }
             }*/
             _ => {
-                queue.iter().for_each(|(runner_name, task)| {
+                for (runner_name, task) in &queue {
                     println!(
                         "{}",
                         format!("[tk] execute {} from {}", task_name, runner_name)
                             .bold()
                             .blue()
                     );
-                    let command_output = task(task_name, task_args, global_args, verbose).unwrap();
+                    let command_output = task(task_name, task_args, global_args, verbose)?;
                     if std::env::var("TK_TASK_ID").is_ok() {
                         send_notification(&command_output, task_name, task_args);
                     }
-                });
+                    command_output.ensure_success(task_name)?;
+                }
             }
         }
     }

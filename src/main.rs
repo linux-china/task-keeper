@@ -1,4 +1,5 @@
 use crate::app::build_app;
+use crate::errors::KeeperError;
 use crate::keeper::{list_all_runner_tasks, run_tasks};
 use crate::models::TaskContext;
 use crate::polyglot::PATH_SEPARATOR;
@@ -170,9 +171,15 @@ fn main() {
                 .skip(2)
                 .map(|arg| arg.as_str())
                 .collect::<Vec<&str>>();
-            if let Err(err) = command_utils::run_command(command, &args, false) {
-                eprintln!("{}", err.to_string());
-                std::process::exit(1);
+            match command_utils::run_command(command, &args, false) {
+                Ok(output) if !output.status.success() => {
+                    std::process::exit(command_utils::exit_code(&output.status));
+                }
+                Ok(_) => {}
+                Err(err) => {
+                    eprintln!("{}", err.to_string());
+                    std::process::exit(1);
+                }
             }
             return;
         }
@@ -204,6 +211,16 @@ fn main() {
                 }
             }
             Err(err) => {
+                // propagate the exit code of the failed task
+                if let KeeperError::TaskFailed(task_name, code) = err.current_context() {
+                    eprintln!(
+                        "{}",
+                        format!("[tk] task {} failed with exit code {}", task_name, code)
+                            .bold()
+                            .red()
+                    );
+                    std::process::exit(*code);
+                }
                 eprintln!("{}", err.to_string());
                 std::process::exit(1);
             }
