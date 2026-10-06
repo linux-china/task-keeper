@@ -20,8 +20,8 @@ pub fn run_tasks(
         if !cli_runner.is_empty() {
             //runner is specified
             if let Some(runner_tasks) = tasks_hashmap.get(cli_runner) {
-                let mut runner_task_found = false;
                 for target_task_name in target_task_names {
+                    let mut runner_task_found = false;
                     for task in runner_tasks {
                         if task.name.as_str() == *target_task_name {
                             task_count += 1;
@@ -37,6 +37,20 @@ pub fn run_tasks(
                     }
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
+                        task_count += 1;
+                        run_manager_task(
+                            cli_runner,
+                            target_task_name,
+                            task_args,
+                            global_args,
+                            verbose,
+                        )?;
+                    }
+                }
+            } else if managers::MANAGERS.contains(&cli_runner) {
+                // runner is a project/package manager, such as cargo or maven
+                for target_task_name in target_task_names {
+                    if managers::COMMANDS.contains(target_task_name) {
                         task_count += 1;
                         run_manager_task(
                             cli_runner,

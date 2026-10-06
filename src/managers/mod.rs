@@ -2,7 +2,7 @@ use crate::command_utils::CommandOutput;
 use crate::common::notification::send_notification;
 use crate::errors::KeeperError;
 use colored::Colorize;
-use error_stack::Report;
+use error_stack::{IntoReport, Report};
 use std::collections::HashMap;
 
 pub mod bazel;
@@ -49,7 +49,7 @@ pub const COMMANDS: &'static [&'static str] = &[
 ];
 pub const MANAGERS: &'static [&'static str] = &[
     "maven", "gradle", "kotlin", "sbt", "bld", "npm", "cargo", "cmake", "meson", "composer",
-    "bundle", "cmake", "go", "swift", "bazel", "poetry", "pip", "pipenv", "uv", "lein", "rebar3",
+    "bundle", "go", "swift", "bazel", "poetry", "pip", "pipenv", "uv", "lein", "rebar3",
     "mix", "dart", "zig", "xmake",
 ];
 
@@ -427,7 +427,7 @@ pub fn run_task(
     }
     if requirements::is_available() {
         if requirements::is_command_available() {
-            queue.insert("requirements", requirements::run_task);
+            queue.insert("pip", requirements::run_task);
         } else {
             println!("{}", "[tk] pip(https://pypi.org/project/pip/) command not available for requirements.txt".bold().red());
         }
@@ -517,12 +517,11 @@ pub fn run_task(
             }
             command_output.ensure_success(task_name)?;
         } else {
-            println!(
-                "{}",
-                format!("[tk] {} manager not available", runner)
-                    .bold()
-                    .red()
-            );
+            return Err(KeeperError::FailedToRunTasks(format!(
+                "{} manager not available",
+                runner
+            ))
+            .into_report());
         }
     } else {
         // run task by all available managers
