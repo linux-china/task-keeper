@@ -185,13 +185,13 @@ fn get_start_command_line() -> Option<String> {
             .map(|dir| dir.join(build_gradle_file))
             .and_then(std::fs::read_to_string)
             .unwrap_or("".to_owned());
-        if (build_gradle_file == "build.gradle.kt"
+        if (build_gradle_file == "build.gradle.kts"
             && gradle_build_code.contains(r#"id("org.springframework.boot")"#))
             || (build_gradle_file == "build.gradle"
                 && gradle_build_code.contains(r#"id 'org.springframework.boot'"#))
         {
             return Some(format!("{} bootRun", get_gradle_command()));
-        } else if (build_gradle_file == "build.gradle.kt"
+        } else if (build_gradle_file == "build.gradle.kts"
             && gradle_build_code.contains(r#"id("io.quarkus")"#))
             || (build_gradle_file == "build.gradle"
                 && gradle_build_code.contains(r#"id 'io.quarkus'"#))
