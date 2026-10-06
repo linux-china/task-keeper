@@ -9,7 +9,6 @@ use error_stack::{Report, ResultExt};
 use logos::Logos;
 use std::collections::HashMap;
 use std::io::prelude::*;
-use std::io::{BufRead, BufReader};
 use std::process::ExitStatus;
 
 pub fn is_available() -> bool {
@@ -98,13 +97,49 @@ fn find_fenced_code_blocks(text: &str) -> Vec<(&str, String)> {
     blocks
 }
 
-/// Remove the shell prompt `$ ` copied from a terminal session, but keep `$VAR` and `${VAR}`
+/// Remove the shell prompt `$ ` copied from a terminal session, but keep `$VAR` and `${VAR}`,
+/// and keep the indentation of other lines, such as the content of a heredoc.
 fn strip_prompt(line: &str) -> &str {
-    let line = line.trim();
-    match line.strip_prefix('$') {
+    match line.trim_start().strip_prefix('$') {
         Some(rest) if rest.is_empty() || rest.starts_with(char::is_whitespace) => rest.trim(),
-        _ => line,
+        _ => line.trim_end(),
     }
+}
+
+/// Remove the indentation shared by all non-blank lines, e.g. a code block nested in a list item,
+/// while the relative indentation inside the block is kept.
+fn dedent(lines: Vec<&str>) -> Vec<&str> {
+    let indent = lines
+        .iter()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| line.len() - line.trim_start().len())
+        .min()
+        .unwrap_or(0);
+    lines
+        .into_iter()
+        .map(|line| if line.trim().is_empty() { "" } else { &line[indent..] })
+        .collect()
+}
+
+/// Commands of a shell script without blank lines and comments, and with `\` continuation lines joined,
+/// for the task description and the cmd fallback on Windows, which has no heredoc or multi-line syntax.
+fn shell_command_lines(script: &str) -> Vec<String> {
+    let mut command_lines: Vec<String> = vec![];
+    let mut line_escape = false;
+    script
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with("#"))
+        .for_each(|line| {
+            let temp_line = line.strip_suffix('\\').unwrap_or(line);
+            if line_escape {
+                command_lines.last_mut().unwrap().push_str(temp_line);
+            } else {
+                command_lines.push(temp_line.to_string());
+            }
+            line_escape = line.ends_with('\\');
+        });
+    command_lines
 }
 
 fn parse_task_from_code_block(
@@ -113,42 +148,23 @@ fn parse_task_from_code_block(
     runner2: &str,
     description: &str,
 ) -> Task {
-    let lines = BufReader::new(code_block.as_bytes())
-        .lines()
-        .filter(|line| line.is_ok() && !line.as_ref().unwrap().is_empty())
-        .map(|line| line.unwrap())
-        .map(|line| strip_prompt(&line).to_string())
-        .filter(|line| !line.is_empty())
-        .collect::<Vec<String>>();
-    let mut command_lines: Vec<String> = vec![];
-    let mut line_escape = false;
-    lines
-        .iter()
-        .filter(|line| !line.starts_with("#"))
-        .for_each(|line| {
-            let mut temp_line = line.as_str();
-            if line.ends_with("\\") {
-                temp_line = line[..line.len() - 1].as_ref();
-            }
-            if line_escape {
-                command_lines.last_mut().unwrap().push_str(temp_line);
-            } else {
-                command_lines.push(temp_line.to_string());
-            }
-            line_escape = line.ends_with("\\");
-        });
+    // the script runs as it's written: blank lines, comments and indentation matter in a heredoc
+    let lines = dedent(code_block.lines().map(strip_prompt).collect());
+    let script = lines.join("\n").trim_matches('\n').to_string();
+    let command_lines = shell_command_lines(&script);
     let task_desc = if description.is_empty() {
         command_lines.join("\n")
     } else {
         description.to_string()
     };
-    let code_block = command_lines.join("\n");
+    // only comments or prompts: nothing to run
+    let code_block = if command_lines.is_empty() { String::new() } else { script };
     task!(task_name, "markdown", runner2, task_desc, Some(code_block))
 }
 
 pub fn run_task(
     task: &str,
-    _task_args: &[&str],
+    task_args: &[&str],
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
@@ -187,20 +203,27 @@ pub fn run_task(
             stderr: None,
         })
     } else {
-        run_shell_code_block(&code_block, verbose)
+        run_shell_code_block(&code_block, task_args, verbose)
     }
 }
 
 /// Run the whole block by one shell, so that `cd`, `export` and variables carry over to the next lines,
 /// and `-e` stops at the first failed line with its exit code.
 /// `-c` rather than the block on stdin, which would leave `read` or `cat` in the block reading the rest of the block.
-fn run_shell_code_block(code_block: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+/// Task arguments are the positional parameters `$1`, `$2`, `$@` of the block, and `$0` is `tk`.
+fn run_shell_code_block(
+    code_block: &str,
+    task_args: &[&str],
+    verbose: bool,
+) -> Result<CommandOutput, Report<KeeperError>> {
     if cfg!(target_os = "windows") && !is_command_available("sh") {
         // no POSIX shell, e.g. without Git for Windows: cmd stops at the first failed line too
-        let command_line = code_block.lines().collect::<Vec<&str>>().join(" && ");
+        let command_line = shell_command_lines(code_block).join(" && ");
         return run_command_by_cmd(&command_line, verbose);
     }
-    run_command_with_env_vars("sh", &["-e", "-c", code_block], &None, &None, verbose)
+    let mut args = vec!["-e", "-c", code_block, "tk"];
+    args.extend(task_args);
+    run_command_with_env_vars("sh", &args, &None, &None, verbose)
 }
 
 #[derive(Logos, Debug, PartialEq)]
@@ -290,6 +313,25 @@ mod tests {
         assert_eq!(strip_prompt("${CC:-cc} -o app main.c"), "${CC:-cc} -o app main.c");
         assert_eq!(strip_prompt("$(pwd)/run.sh"), "$(pwd)/run.sh");
         assert_eq!(strip_prompt("echo $HOME"), "echo $HOME");
+        assert_eq!(strip_prompt("  indented line  "), "  indented line");
+    }
+
+    #[test]
+    fn test_parse_heredoc_keeps_indentation() {
+        let code = "$ cat <<EOF\n  indented\n\n# not a comment\nEOF\n";
+        let task = parse_task_from_code_block("demo", code, "sh", "");
+        assert_eq!(
+            task.code_block.as_deref(),
+            Some("cat <<EOF\n  indented\n\n# not a comment\nEOF")
+        );
+        // a block nested in a list item is dedented, the relative indentation is kept
+        let code = "   if true; then\n     echo hi\n   fi\n";
+        let task = parse_task_from_code_block("demo", code, "sh", "");
+        assert_eq!(task.code_block.as_deref(), Some("if true; then\n  echo hi\nfi"));
+        // continuation lines are joined for the description only
+        let task = parse_task_from_code_block("demo", "cargo build \\\n  --release\n", "sh", "");
+        assert_eq!(task.description, "cargo build --release");
+        assert_eq!(task.code_block.as_deref(), Some("cargo build \\\n  --release"));
     }
 
     #[test]
@@ -315,11 +357,17 @@ mod tests {
     #[cfg(unix)]
     fn test_run_shell_code_block() {
         // state carries over between lines
-        let output = run_shell_code_block("cd /\nX=1\ntest \"$(pwd)\" = / && test \"$X\" = 1", false).unwrap();
+        let output = run_shell_code_block("cd /\nX=1\ntest \"$(pwd)\" = / && test \"$X\" = 1", &[], false).unwrap();
         assert!(output.status.success());
         // stops at the first failed line with its exit code
-        let output = run_shell_code_block("false\necho should-not-run", false).unwrap();
+        let output = run_shell_code_block("false\necho should-not-run", &[], false).unwrap();
         assert!(!output.status.success());
+        // task arguments are the positional parameters
+        let output = run_shell_code_block("test \"$1\" = x1 && test \"$#\" = 2", &["x1", "a b"], false).unwrap();
+        assert!(output.status.success());
+        // heredoc keeps the indentation of its content
+        let output = run_shell_code_block("test \"$(cat <<EOF\n  indented\nEOF\n)\" = \"  indented\"", &[], false).unwrap();
+        assert!(output.status.success());
     }
 
     #[test]
