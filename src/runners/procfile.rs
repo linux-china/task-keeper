@@ -29,7 +29,7 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 let port_env = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
                 command = command.replace("$PORT", &port_env);
             }
-            task!(name, "proc", command)
+            task!(name, "procfile", command)
         })
         .collect();
     Ok(tasks)
