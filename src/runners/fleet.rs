@@ -201,7 +201,7 @@ fn get_command_args(configuration: &Configuration) -> Vec<String> {
                     "compile".to_owned(),
                     "exec:java".to_owned(),
                     format!(
-                        "-Dexec.mainClass='{}'",
+                        "-Dexec.mainClass={}",
                         configuration.main_class.clone().unwrap_or_default()
                     ),
                     format!("-Dexec.args='{}'", args_text),
