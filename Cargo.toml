@@ -42,6 +42,7 @@ dotenvx-rs = "0.4.33"
 shlex = "2.0.1"
 windows-args = "0.2"
 cfg-if = "1"
+tempfile = "3.27"
 uuid = { version = "1.27", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"

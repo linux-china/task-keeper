@@ -1,16 +1,15 @@
-use crate::command_utils::{run_command_line, run_command_line_from_stdin, CommandOutput};
+use crate::command_utils::{
+    is_command_available, run_command, run_command_line_from_stdin, run_command_with_env_vars, CommandOutput,
+};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use error_stack::{Report, ResultExt};
 use logos::Logos;
 use std::collections::HashMap;
-use std::env::temp_dir;
-use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use std::process::ExitStatus;
-use uuid::Uuid;
 
 pub fn is_available() -> bool {
     std::env::current_dir()
@@ -24,108 +23,78 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
         .and_then(std::fs::read_to_string)
         .change_context(KeeperError::InvalidReadmeMd)?;
     let mut tasks: Vec<Task> = vec![];
-    let mut offset = find_shell_code_offset(&readme_md);
-    while offset.is_some() {
-        let mut offset_num = offset.unwrap() + 3;
-        let end = readme_md[offset_num..].find("```").map(|x| x + offset_num);
-        if end.is_none() {
-            break;
+    for (info, code) in find_fenced_code_blocks(&readme_md) {
+        // format as {#name first=second} {#name}
+        let Some(brace) = info.find('{') else { continue };
+        let markdown_attributes = info[brace..].trim();
+        if !(markdown_attributes.ends_with('}') && markdown_attributes.contains('#')) {
+            continue;
         }
-        let end_num = end.unwrap();
-        let line_break_offset = readme_md[offset_num..]
-            .find('\n')
-            .map(|x| x + offset_num)
-            .unwrap();
-        let language_and_attributes: &str =
-            readme_md.get(offset_num..line_break_offset).unwrap().trim();
-        if language_and_attributes.contains('{')
-            && language_and_attributes.ends_with('}')
-            && language_and_attributes.contains('#')
-        {
-            // format as {#name first=second} {#name}
-            let language = language_and_attributes.split('{').next().unwrap().trim();
-            let markdown_attributes =
-                language_and_attributes[language_and_attributes.find('{').unwrap()..].trim();
-            let attributes = parse_markdown_attributes(markdown_attributes);
-            if attributes.contains_key("id") {
-                let name = attributes.get("id").unwrap();
-                let code_runner = attributes.get("class").cloned().unwrap_or("".to_string());
-                let description = attributes.get("desc").cloned().unwrap_or("".to_string());
-                let code = readme_md
-                    .get((line_break_offset + 1)..end_num)
-                    .unwrap()
-                    .trim();
-                if !code.is_empty() {
-                    if language == "javascript" || language == "typescript" {
-                        let runner2 = if !code_runner.is_empty() {
-                            code_runner.split(' ').next().unwrap().to_owned()
-                        } else {
-                            // make bun as default JS/TS engine
-                            if which::which("bun").is_ok() {
-                                "bun".to_owned()
-                            } else {
-                                "node".to_owned()
-                            }
-                        };
-                        tasks.push(parse_task_from_code_block(
-                            &name,
-                            code,
-                            &runner2,
-                            &description,
-                        ));
-                    } else if language == "shell" {
-                        tasks.push(parse_task_from_code_block(&name, code, "sh", &description));
-                    } else if language == "java" || language == "jshelllanguage" {
-                        tasks.push(parse_task_from_code_block(
-                            &name,
-                            code,
-                            "java",
-                            &description,
-                        ));
-                    } else if language == "kotlin" {
-                        tasks.push(parse_task_from_code_block(&name, code, "kt", &description));
-                    } else if language == "groovy" {
-                        tasks.push(parse_task_from_code_block(
-                            &name,
-                            code,
-                            "groovy",
-                            &description,
-                        ));
-                    }
+        let language = info[..brace].trim();
+        let attributes = parse_markdown_attributes(markdown_attributes);
+        let Some(name) = attributes.get("id") else { continue };
+        let code_runner = attributes.get("class").cloned().unwrap_or("".to_string());
+        let description = attributes.get("desc").cloned().unwrap_or("".to_string());
+        let code = code.trim();
+        if code.is_empty() {
+            continue;
+        }
+        let runner2 = match language {
+            "javascript" | "typescript" => {
+                if !code_runner.is_empty() {
+                    code_runner.split(' ').next().unwrap().to_owned()
+                } else if which::which("bun").is_ok() {
+                    // make bun as default JS/TS engine
+                    "bun".to_owned()
+                } else {
+                    "node".to_owned()
                 }
             }
-        }
-        offset_num = end_num + 3;
-        offset = find_shell_code_offset(&readme_md[offset_num..]).map(|x| x + offset_num);
+            "shell" | "sh" => "sh".to_owned(),
+            "java" | "jshelllanguage" => "java".to_owned(),
+            "kotlin" => "kt".to_owned(),
+            "groovy" => "groovy".to_owned(),
+            _ => continue,
+        };
+        tasks.push(parse_task_from_code_block(name, code, &runner2, &description));
     }
     Ok(tasks)
 }
 
-fn find_shell_code_offset(text: &str) -> Option<usize> {
-    let mut offset = text.find("```shell");
-    if offset.is_none() {
-        offset = text.find("```sh");
+/// Fenced code blocks of the markdown text in document order, as (info string, code).
+/// Lines are scanned so that a block is matched by its whole language, i.e. `java` never matches `javascript`.
+fn find_fenced_code_blocks(text: &str) -> Vec<(&str, String)> {
+    let mut blocks = vec![];
+    let mut lines = text.lines();
+    while let Some(line) = lines.next() {
+        let trimmed = line.trim_start();
+        let fence_char = match trimmed.chars().next() {
+            Some(c @ ('`' | '~')) => c,
+            _ => continue,
+        };
+        let fence_len = trimmed.chars().take_while(|c| *c == fence_char).count();
+        if fence_len < 3 {
+            continue;
+        }
+        let info = trimmed[fence_len..].trim();
+        // a backtick fence can't have backticks in its info string, so it's inline code
+        if fence_char == '`' && info.contains('`') {
+            continue;
+        }
+        let mut code = String::new();
+        for line in lines.by_ref() {
+            let trimmed = line.trim();
+            let closing_len = trimmed.chars().take_while(|c| *c == fence_char).count();
+            if closing_len >= fence_len && closing_len == trimmed.len() {
+                break;
+            }
+            code.push_str(line);
+            code.push('\n');
+        }
+        // an unclosed block runs to the end of the document, as in CommonMark
+        blocks.push((info, code));
     }
-    if offset.is_none() {
-        offset = text.find("```javascript");
-    }
-    if offset.is_none() {
-        offset = text.find("```typescript");
-    }
-    if offset.is_none() {
-        offset = text.find("```java");
-    }
-    if offset.is_none() {
-        offset = text.find("```kotlin");
-    }
-    if offset.is_none() {
-        offset = text.find("```groovy");
-    }
-    if offset.is_none() {
-        offset = text.find("```jshelllanguage");
-    }
-
-    offset
+    blocks
 }
 
 fn parse_task_from_code_block(
@@ -190,28 +159,44 @@ pub fn run_task(
         run_command_line_from_stdin("node -", &code_block, verbose)
     } else if runner2 == "deno" {
         run_command_line_from_stdin("deno run -", &code_block, verbose)
+    } else if runner2 == "bun" {
+        run_command_line_from_stdin("bun run -", &code_block, verbose)
     } else if runner2 == "java" {
         run_command_line_from_stdin("jbang run -", &code_block, verbose)
     } else if runner2 == "groovy" || runner2 == "kt" {
-        let file_name = format!("{}.{}", Uuid::new_v4(), runner2);
-        let file_path = temp_dir().join(&file_name);
-        let mut file = File::create(file_path.as_path()).unwrap();
-        file.write_all(code_block.as_bytes()).unwrap();
-        file.sync_all().unwrap();
-        let command_line = format!("jbang run {}", file_path.to_str().unwrap());
-        run_command_line(&command_line, verbose)
-    } else {
-        let mut last_output = None;
-        for line in code_block.lines().map(str::trim).filter(|line| !line.is_empty()) {
-            last_output = Some(run_command_line(line, verbose)?);
-        }
+        // jbang picks the language by the file extension; the file is removed when it's dropped
+        let mut file = tempfile::Builder::new()
+            .prefix("tk_")
+            .suffix(&format!(".{}", runner2))
+            .tempfile()
+            .change_context(KeeperError::FailedToRunTasks(task.name.clone()))?;
+        file.write_all(code_block.as_bytes())
+            .and_then(|_| file.flush())
+            .change_context(KeeperError::FailedToRunTasks(task.name.clone()))?;
+        let script = file.path().to_string_lossy().to_string();
+        run_command("jbang", &["run", &script], verbose)
+    } else if code_block.trim().is_empty() {
         // empty code block, such as only comments: nothing to run
-        Ok(last_output.unwrap_or_else(|| CommandOutput {
+        Ok(CommandOutput {
             status: ExitStatus::default(),
             stdout: None,
             stderr: None,
-        }))
+        })
+    } else {
+        run_shell_code_block(&code_block, verbose)
     }
+}
+
+/// Run the whole block by one shell, so that `cd`, `export` and variables carry over to the next lines,
+/// and `-e` stops at the first failed line with its exit code.
+/// `-c` rather than the block on stdin, which would leave `read` or `cat` in the block reading the rest of the block.
+fn run_shell_code_block(code_block: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+    if cfg!(target_os = "windows") && !is_command_available("sh") {
+        // no POSIX shell, e.g. without Git for Windows: cmd stops at the first failed line too
+        let command_line = code_block.lines().collect::<Vec<&str>>().join(" && ");
+        return run_command_with_env_vars("cmd", &["/C", &command_line], &None, &None, verbose);
+    }
+    run_command_with_env_vars("sh", &["-e", "-c", code_block], &None, &None, verbose)
 }
 
 #[derive(Logos, Debug, PartialEq)]
@@ -274,6 +259,7 @@ fn parse_markdown_attributes(markdown_attributes: &str) -> HashMap<String, Strin
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::command_utils::run_command_line;
 
     #[test]
     fn test_parse_markdown_attributes() {
@@ -288,6 +274,26 @@ mod tests {
         assert_eq!(task.code_block.as_deref(), Some(""));
         let task = parse_task_from_code_block("demo", "$\n$ echo hi\n", "sh", "");
         assert_eq!(task.code_block.as_deref(), Some("echo hi"));
+    }
+
+    #[test]
+    fn test_find_fenced_code_blocks_in_order() {
+        let text = "```javascript {#js}\nconsole.log(1)\n```\n\n~~~java {#java}\nSystem.out.println(1);\n~~~\n\n````shell {#sh}\necho '```'\n````\n";
+        let blocks = find_fenced_code_blocks(text);
+        let infos: Vec<&str> = blocks.iter().map(|(info, _)| *info).collect();
+        assert_eq!(infos, vec!["javascript {#js}", "java {#java}", "shell {#sh}"]);
+        assert_eq!(blocks[2].1, "echo '```'\n");
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn test_run_shell_code_block() {
+        // state carries over between lines
+        let output = run_shell_code_block("cd /\nX=1\ntest \"$(pwd)\" = / && test \"$X\" = 1", false).unwrap();
+        assert!(output.status.success());
+        // stops at the first failed line with its exit code
+        let output = run_shell_code_block("false\necho should-not-run", false).unwrap();
+        assert!(!output.status.success());
     }
 
     #[test]
