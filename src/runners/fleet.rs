@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{IntoReport, Report};
+use error_stack::{IntoReport, Report, ResultExt};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -93,13 +93,13 @@ pub fn is_available() -> bool {
         .unwrap_or(false)
 }
 
-pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
-    Ok(parse_run_json()
+pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
+    Ok(parse_run_json()?
         .configurations
         .iter()
         .map(|configuration| {
             let description = if &configuration.type_value == "command" {
-                configuration.program.clone().unwrap()
+                configuration.program.clone().unwrap_or_default()
             } else {
                 configuration.type_value.clone()
             };
@@ -108,16 +108,14 @@ pub fn list_tasks() -> Result<Vec<Task>, KeeperError> {
         .collect())
 }
 
-fn parse_run_json() -> FleetRunJson {
-    std::env::current_dir()
+fn parse_run_json() -> Result<FleetRunJson, Report<KeeperError>> {
+    let data = std::env::current_dir()
         .map(|dir| dir.join(".fleet").join("run.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| {
-            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
-                .unwrap()
-        })
-        .map(|json_value| serde_json::from_value::<FleetRunJson>(json_value).unwrap())
-        .unwrap()
+        .change_context(KeeperError::InvalidFleetRunJson)?;
+    let json_value = parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
+        .change_context(KeeperError::InvalidFleetRunJson)?;
+    serde_json::from_value::<FleetRunJson>(json_value).change_context(KeeperError::InvalidFleetRunJson)
 }
 
 pub fn run_task(
@@ -126,7 +124,7 @@ pub fn run_task(
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let run_json = parse_run_json();
+    let run_json = parse_run_json()?;
     let result = run_json
         .configurations
         .iter()
@@ -143,6 +141,13 @@ fn run_configuration(
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     let command_name = get_command_name(configuration);
+    if command_name.is_empty() {
+        return Err(KeeperError::FailedToRunTasks(format!(
+            "no program for fleet configuration '{}' of type '{}'",
+            configuration.name, configuration.type_value
+        ))
+        .into_report());
+    }
     let args = get_command_args(configuration);
     let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
     if is_command_available(&command_name) {

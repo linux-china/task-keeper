@@ -2,7 +2,7 @@ use crate::command_utils::{run_command_by_shell, run_command_with_env_vars, Comm
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
-use error_stack::Report;
+use error_stack::{IntoReport, Report, ResultExt};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -111,43 +111,34 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
-    Ok(parse_run_json()
+    Ok(parse_run_json()?
         .tasks
         .map(|tasks| {
             tasks
                 .into_iter()
-                .map(|task| {
+                // skip tasks without label or command, such as compound tasks with dependsOn
+                .filter_map(|task| {
+                    let label = task.label.as_ref()?;
+                    let command = task.command.as_ref()?;
                     if task.task_type == "shell" {
-                        Some(task!(
-                            &task.label.clone().unwrap(),
-                            "vscode",
-                            "shell",
-                            &task.command.clone().unwrap()
-                        ))
-                    } else if let Some(cmd) = task.command {
-                        Some(task!(&task.label.clone().unwrap(), "vscode", &cmd))
+                        Some(task!(label, "vscode", "shell", command))
                     } else {
-                        None
+                        Some(task!(label, "vscode", command))
                     }
                 })
-                .flatten()
                 .collect()
         })
         .unwrap_or_else(|| vec![]))
 }
 
-fn parse_run_json() -> TasksJson {
-    std::env::current_dir()
+fn parse_run_json() -> Result<TasksJson, Report<KeeperError>> {
+    let data = std::env::current_dir()
         .map(|dir| dir.join(".vscode").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("{}".to_owned()))
-        .map(|data| {
-            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
-                .unwrap()
-        })
-        .map(|json_value| {
-            serde_json::from_value::<TasksJson>(json_value).expect(".vscode/tasks.json format")
-        })
-        .unwrap()
+        .change_context(KeeperError::InvalidVsCodeTasksJson)?;
+    let json_value = parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
+        .change_context(KeeperError::InvalidVsCodeTasksJson)?;
+    serde_json::from_value::<TasksJson>(json_value).change_context(KeeperError::InvalidVsCodeTasksJson)
 }
 
 pub fn run_task(
@@ -156,17 +147,23 @@ pub fn run_task(
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let tasks_json = parse_run_json();
+    let tasks_json = parse_run_json()?;
     let task = tasks_json
         .find_task(task_name)
         .ok_or_else(|| KeeperError::TaskNotFound(task_name.to_string()))?;
-    let command = task.command.clone().unwrap();
+    let no_command = || {
+        KeeperError::FailedToRunTasks(format!("no command for vscode task: {}", task_name))
+            .into_report()
+    };
+    let command = task.command.clone().ok_or_else(no_command)?;
     if task.task_type == "shell" {
         run_command_by_shell(&command, verbose)
     } else {
-        let mut workspace_root = env::current_dir().unwrap().to_str().unwrap().to_string();
+        let mut workspace_root = env::current_dir()
+            .map(|dir| dir.to_string_lossy().to_string())
+            .change_context(KeeperError::FailedToRunTasks(task_name.to_string()))?;
         let mut command_env_vars: Option<HashMap<String, String>> = None;
-        let command = task.get_command().unwrap();
+        let command = task.get_command().ok_or_else(no_command)?;
         let options = task.get_command_options();
         if let Some(options) = &options {
             if let Some(cwd) = &options.cwd {
@@ -176,8 +173,13 @@ pub fn run_task(
                 command_env_vars = Some(env_vars.clone());
             }
         }
-        let command_and_args = shlex::split(&command).unwrap();
-        let command_name = command_and_args.get(0).unwrap();
+        let command_and_args = shlex::split(&command)
+            .filter(|parts| !parts.is_empty())
+            .ok_or_else(|| {
+                KeeperError::FailedToRunTasks(format!("invalid command line: '{}'", command))
+                    .into_report()
+            })?;
+        let command_name = &command_and_args[0];
         let mut command_args: Vec<&str> = command_and_args[1..].iter().map(AsRef::as_ref).collect();
         if let Some(args) = &task.args {
             for arg in args {

@@ -27,8 +27,14 @@ pub enum KeeperError {
     #[error("TK-203001: failed to parse deno.json")]
     InvalidDenoJson,
 
-    #[error("TK-204001: failed to parse fleet.json: {0}")]
-    InvalidFleetRunJson(String),
+    #[error("TK-204001: failed to parse .fleet/run.json")]
+    InvalidFleetRunJson,
+
+    #[error("TK-205001: failed to parse .vscode/tasks.json")]
+    InvalidVsCodeTasksJson,
+
+    #[error("TK-205002: failed to parse .zed/tasks.json")]
+    InvalidZedTasksJson,
 
     #[error("TK-206001: failed to parse Makefile.toml")]
     InvalidMakefileToml,

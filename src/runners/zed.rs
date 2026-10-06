@@ -3,7 +3,7 @@ use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
 use colored::Colorize;
-use error_stack::{IntoReport, Report};
+use error_stack::{IntoReport, Report, ResultExt};
 use jsonc_parser::parse_to_serde_value;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -54,22 +54,21 @@ pub fn is_available() -> bool {
 }
 
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
-    Ok(parse_tasks_json()
+    Ok(parse_tasks_json()?
         .iter()
         .map(|configuration| task!(&configuration.label, "zed", configuration.command_line()))
         .collect())
 }
 
-fn parse_tasks_json() -> Vec<Configuration> {
-    std::env::current_dir()
+fn parse_tasks_json() -> Result<Vec<Configuration>, Report<KeeperError>> {
+    let data = std::env::current_dir()
         .map(|dir| dir.join(".zed").join("tasks.json"))
         .map(|path| std::fs::read_to_string(path).unwrap_or("[]".to_owned()))
-        .map(|data| {
-            parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
-                .unwrap()
-        })
-        .map(|json_value| serde_json::from_value::<Vec<Configuration>>(json_value).unwrap())
-        .unwrap()
+        .change_context(KeeperError::InvalidZedTasksJson)?;
+    let json_value = parse_to_serde_value::<serde_json::Value>(&data, &Default::default())
+        .change_context(KeeperError::InvalidZedTasksJson)?;
+    serde_json::from_value::<Vec<Configuration>>(json_value)
+        .change_context(KeeperError::InvalidZedTasksJson)
 }
 
 pub fn run_task(
@@ -78,7 +77,7 @@ pub fn run_task(
     _global_args: &[&str],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let configurations = parse_tasks_json();
+    let configurations = parse_tasks_json()?;
     let result = configurations
         .iter()
         .find(|configuration| configuration.label == task_name);
