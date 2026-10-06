@@ -1,5 +1,6 @@
 use crate::command_utils::{
-    is_command_available, run_command, run_command_line_from_stdin, run_command_with_env_vars, CommandOutput,
+    is_command_available, run_command, run_command_by_cmd, run_command_line_from_stdin, run_command_with_env_vars,
+    CommandOutput,
 };
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -197,7 +198,7 @@ fn run_shell_code_block(code_block: &str, verbose: bool) -> Result<CommandOutput
     if cfg!(target_os = "windows") && !is_command_available("sh") {
         // no POSIX shell, e.g. without Git for Windows: cmd stops at the first failed line too
         let command_line = code_block.lines().collect::<Vec<&str>>().join(" && ");
-        return run_command_with_env_vars("cmd", &["/C", &command_line], &None, &None, verbose);
+        return run_command_by_cmd(&command_line, verbose);
     }
     run_command_with_env_vars("sh", &["-e", "-c", code_block], &None, &None, verbose)
 }
