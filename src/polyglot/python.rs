@@ -21,27 +21,38 @@ pub fn find_sdk_home() -> Option<PathBuf> {
         let home_dir = dirs_sys::home_dir().unwrap();
         let python_version = text.trim();
         // find python from uv
-        let python_versions_dir = home_dir
-            .join(".local")
-            .join("share")
-            .join("uv")
-            .join("python");
-        if python_versions_dir.exists() {
-            let prefix = format!("cpython-{}", python_version);
-            if let Some(path) = find_sub_directory(&python_versions_dir, &prefix) {
-                return Some(path);
+        if let Some(python_versions_dir) = uv_python_dir(&home_dir) {
+            if python_versions_dir.exists() {
+                let prefix = format!("cpython-{}", python_version);
+                if let Some(path) = find_sub_directory(&python_versions_dir, &prefix) {
+                    return Some(path);
+                }
             }
         }
-        // find python from pyenv
-        let python_home = home_dir
-            .join(".pyenv")
-            .join("versions")
-            .join(python_version);
+        // find python from pyenv, or pyenv-win on Windows
+        let pyenv_root = if cfg!(windows) {
+            home_dir.join(".pyenv").join("pyenv-win")
+        } else {
+            home_dir.join(".pyenv")
+        };
+        let python_home = pyenv_root.join("versions").join(python_version);
         if python_home.exists() {
             return Some(python_home);
         }
     }
     None
+}
+
+/// uv's managed Python install directory: `%APPDATA%\uv\python` on Windows, `~/.local/share/uv/python` elsewhere
+fn uv_python_dir(home_dir: &Path) -> Option<PathBuf> {
+    if let Ok(dir) = env::var("UV_PYTHON_INSTALL_DIR") {
+        return Some(PathBuf::from(dir));
+    }
+    if cfg!(windows) {
+        dirs::data_dir().map(|dir| dir.join("uv").join("python"))
+    } else {
+        Some(home_dir.join(".local").join("share").join("uv").join("python"))
+    }
 }
 
 pub fn init_env() {
@@ -57,12 +68,18 @@ pub fn init_env() {
 
 fn reset_python_home(python_home_path: &PathBuf) {
     if let Ok(path) = env::var("PATH") {
-        let node_bin_path = python_home_path.join("bin").to_string_lossy().to_string();
+        // Windows: python.exe lives in the home dir itself, tools in `Scripts`
+        let bin_paths = if cfg!(windows) {
+            vec![python_home_path.clone(), python_home_path.join("Scripts")]
+        } else {
+            vec![python_home_path.join("bin")]
+        };
+        let mut new_path = path;
+        for bin_path in bin_paths {
+            new_path = format!("{}{}{}", bin_path.to_string_lossy(), PATH_SEPARATOR, new_path);
+        }
         unsafe {
-            env::set_var(
-                "PATH",
-                format!("{}{}{}", node_bin_path, PATH_SEPARATOR, path),
-            );
+            env::set_var("PATH", new_path);
         }
     }
 }

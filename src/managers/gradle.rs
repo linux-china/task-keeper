@@ -143,7 +143,7 @@ fn skills_args(task_args: &[&str]) -> Vec<String> {
         .collect()
 }
 
-fn get_gradle_command() -> &'static str {
+pub fn get_gradle_command() -> &'static str {
     if cfg!(windows) {
         let wrapper_available = std::env::current_dir()
             .map(|dir| dir.join("gradlew.bat").exists())

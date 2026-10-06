@@ -195,7 +195,12 @@ impl PyProjectToml {
     }
 
     pub fn venv_bin_path(&self) -> PathBuf {
-        std::env::current_dir().unwrap().join(".venv").join("bin")
+        let bin_dir = if cfg!(windows) { "Scripts" } else { "bin" };
+        self.venv_path().join(bin_dir)
+    }
+
+    pub fn venv_python_path(&self) -> PathBuf {
+        self.venv_bin_path().join(python_command())
     }
 
     pub fn venv_path(&self) -> PathBuf {
@@ -203,10 +208,17 @@ impl PyProjectToml {
     }
 }
 
+/// Python interpreter command: Windows venvs and official installers only ship `python.exe`
+pub fn python_command() -> &'static str {
+    if cfg!(windows) { "python" } else { "python3" }
+}
+
 pub fn get_uv_tool_path(tool_name: &str) -> Option<String> {
     let user_home = dirs::home_dir();
     if let Some(user_home) = user_home {
-        let tool_bin = user_home.join(".local").join("bin").join(tool_name);
+        // uv installs tools as `<tool>.exe` on Windows
+        let tool_file = format!("{}{}", tool_name, std::env::consts::EXE_SUFFIX);
+        let tool_bin = user_home.join(".local").join("bin").join(tool_file);
         if tool_bin.exists() {
             return Some(tool_bin.to_string_lossy().to_string());
         }

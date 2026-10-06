@@ -1,4 +1,6 @@
-use crate::command_utils::{run_command_by_shell, run_command_with_env_vars, CommandOutput};
+use crate::command_utils::{
+    run_command_by_shell, run_command_with_env_vars, split_command_line, CommandOutput,
+};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -173,7 +175,7 @@ pub fn run_task(
                 command_env_vars = Some(env_vars.clone());
             }
         }
-        let command_and_args = shlex::split(&command)
+        let command_and_args = split_command_line(&command)
             .filter(|parts| !parts.is_empty())
             .ok_or_else(|| {
                 KeeperError::FailedToRunTasks(format!("invalid command line: '{}'", command))

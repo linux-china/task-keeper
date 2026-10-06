@@ -8,6 +8,7 @@ use crate::runners::RUNNERS;
 use colored::Colorize;
 use dotenvx_rs::dotenvx;
 use std::collections::HashSet;
+use std::path::PathBuf;
 use std::env;
 use std::fs::Permissions;
 use std::io::Write;
@@ -235,13 +236,15 @@ fn main() {
 fn reset_path_env() {
     let current_dir = env::current_dir().unwrap();
     let mut new_path = env::var("PATH").unwrap_or_else(|_| "".to_string());
+    // Windows venvs put executables in `Scripts` instead of `bin`
+    let venv_bin = if cfg!(windows) { "Scripts" } else { "bin" };
     for dir in [
-        "bin",
-        ".bin",
-        "node_modules/.bin",
-        "venv/bin",
-        ".venv/bin",
-        "vendor/bin",
+        PathBuf::from("bin"),
+        PathBuf::from(".bin"),
+        PathBuf::from("node_modules").join(".bin"),
+        PathBuf::from("venv").join(venv_bin),
+        PathBuf::from(".venv").join(venv_bin),
+        PathBuf::from("vendor").join("bin"),
     ]
     .iter()
     {

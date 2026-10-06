@@ -1,5 +1,5 @@
 use crate::command_utils::{CommandOutput, run_command_with_env_vars};
-use crate::common::pyproject::PyProjectToml;
+use crate::common::pyproject::{PyProjectToml, python_command};
 use crate::common::pyproject_toml_has_tool;
 use crate::errors::KeeperError;
 use crate::models::Task;
@@ -205,7 +205,7 @@ fn invoke_script(
                 .collect();
             let env_vars = script_env_vars(env_vars, env_file)?;
             let real_args: Vec<&str> = args.iter().map(String::as_str).collect();
-            let py = pyproject.venv_bin_path().join("python3");
+            let py = pyproject.venv_python_path();
             run_command_with_env_vars(&py.to_string_lossy(), &real_args, &None, &env_vars, verbose)
         }
         Script::Cmd(script_args, env_vars, env_file) => {
@@ -220,7 +220,7 @@ fn invoke_script(
                 real_args.extend(global_args);
                 real_args.extend(args);
                 real_args.extend(task_args);
-                run_command_with_env_vars("python3", &real_args, &None, &env_vars, verbose)
+                run_command_with_env_vars(python_command(), &real_args, &None, &env_vars, verbose)
             } else {
                 let args: Vec<&str> = script_args[1..].iter().map(String::as_str).collect();
                 let mut real_args: Vec<&str> = vec![];

@@ -1,7 +1,7 @@
 use crate::command_utils::{is_command_available, run_command_with_env_vars, CommandOutput};
 use crate::errors::KeeperError;
 use crate::models::Task;
-use crate::task;
+use crate::{managers, task};
 use colored::Colorize;
 use error_stack::{IntoReport, Report, ResultExt};
 use jsonc_parser::parse_to_serde_value;
@@ -172,7 +172,7 @@ fn get_command_name(configuration: &Configuration) -> String {
     match configuration.type_value.as_str() {
         "cargo" => "cargo".to_owned(),
         "maven" | "maven-run" => "mvn".to_owned(),
-        "gradle" => "./gradlew".to_owned(),
+        "gradle" => managers::gradle::get_gradle_command().to_string(),
         "docker-run" => "docker".to_owned(),
         "python" => "python".to_owned(),
         "flask" => "python".to_owned(),
