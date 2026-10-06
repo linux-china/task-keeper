@@ -208,9 +208,16 @@ pub fn list_all_runner_tasks(
     }
     if runners::packagejson::is_available() {
         if runners::packagejson::is_command_available() {
-            if let Ok(runner_tasks) = runners::packagejson::list_tasks() {
-                if !runner_tasks.is_empty() {
-                    all_tasks.insert("npm".to_string(), runner_tasks);
+            match runners::packagejson::list_tasks() {
+                Ok(runner_tasks) => {
+                    if !runner_tasks.is_empty() {
+                        all_tasks.insert("npm".to_string(), runner_tasks);
+                    }
+                }
+                Err(err) => {
+                    if error_display {
+                        println!("{}", format!("[tk] {:#}", err).bold().red());
+                    }
                 }
             }
         } else {

@@ -59,7 +59,7 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
                 })
                 .unwrap_or_else(Vec::new)
         })
-        .change_context(KeeperError::InvalidJustfile)
+        .change_context(KeeperError::InvalidTasksPy)
 }
 
 pub fn run_task(

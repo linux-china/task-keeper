@@ -309,7 +309,7 @@ fn list_tasks(task_runner: Option<&String>) {
         managers.into_iter().for_each(|manager_name| {
             if task_runner.is_none() || task_runner.unwrap() == &manager_name {
                 if manager_name == "npm" {
-                    let package_json = common::parse_package_json().unwrap();
+                    let package_json = common::parse_package_json().unwrap_or_default();
                     let package_command = common::get_npm_command(&package_json);
                     println!(
                         "{}",

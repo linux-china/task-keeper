@@ -13,7 +13,7 @@ pub fn is_available() -> bool {
 }
 
 pub fn is_command_available() -> bool {
-    let package_json = parse_package_json().unwrap();
+    let package_json = parse_package_json().unwrap_or_default();
     let package_manager = get_npm_command(&package_json);
     which(package_manager).is_ok()
 }

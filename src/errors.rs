@@ -24,25 +24,22 @@ pub enum KeeperError {
     #[error("TK-202001: failed to parse package.json")]
     InvalidPackageJson,
 
-    #[error("TK-203001: failed to parse package.json: {0}")]
+    #[error("TK-203001: failed to parse deno.json: {0}")]
     InvalidDenoJson(String),
 
-    #[error("TK-204001: failed to parse package.json: {0}")]
+    #[error("TK-204001: failed to parse fleet.json: {0}")]
     InvalidFleetRunJson(String),
 
-    #[error("TK-205001: failed to parse Justfile: {0}")]
-    InvalidCodeLaunchJson(String),
-
-    #[error("TK-206001: failed to parse Justfile")]
+    #[error("TK-206001: failed to parse Makefile")]
     InvalidMakefileToml,
 
-    #[error("TK-206001: failed to parse Makefile.toml")]
+    #[error("TK-206002: failed to parse Justfile")]
     InvalidJustfile,
 
-    #[error("TK-207001: failed to read Procfile")]
+    #[error("TK-207001: failed to read composer.json")]
     InvalidComposerJson,
 
-    #[error("TK-208001: failed to read composer.json")]
+    #[error("TK-208001: failed to read Procfile")]
     InvalidProcfile,
 
     #[error("TK-209001: failed to read jbang-catalog.json")]
@@ -65,4 +62,7 @@ pub enum KeeperError {
 
     #[error("TK-303001: failed to read queries.sql")]
     InvalidQueriesSQL,
+
+    #[error("TK-304001: failed to parse tasks.py")]
+    InvalidTasksPy,
 }

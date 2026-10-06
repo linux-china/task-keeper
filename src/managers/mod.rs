@@ -302,7 +302,7 @@ pub fn run_task(
         } else {
             println!(
                 "{}",
-                "[tk] cargo(https://gradle.org/) command not available for Cargo.toml"
+                "[tk] cargo(https://doc.rust-lang.org/cargo/) command not available for Cargo.toml"
                     .bold()
                     .red()
             );
@@ -316,7 +316,7 @@ pub fn run_task(
         } else {
             println!(
                 "{}",
-                "[tk] gradle(https://gradle.org/) command not available for composer.json"
+                "[tk] composer(https://getcomposer.org) command not available for composer.json"
                     .bold()
                     .red()
             );
