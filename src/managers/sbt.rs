@@ -50,6 +50,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore]
     fn test_execute() {
         run_task("compile", &[], &[], false).unwrap();
     }

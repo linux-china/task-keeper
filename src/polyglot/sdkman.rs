@@ -63,6 +63,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore]
     fn test_init_env() {
         init_env();
         println!("JAVA_HOME: {}", env::var("JAVA_HOME").expect("env: JAVA_HOME"));

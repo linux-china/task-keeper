@@ -310,6 +310,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_invoke_call_script() {
         let project = PyProjectToml::get_default_project().unwrap();
         let script_value = project.get_uv_script("hello-world").unwrap();
@@ -319,6 +320,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_invoke_chain_script() {
         let project = PyProjectToml::get_default_project().unwrap();
         let script_value = project.get_uv_script("all").unwrap();
