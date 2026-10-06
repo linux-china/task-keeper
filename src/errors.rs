@@ -42,37 +42,37 @@ pub enum KeeperError {
     #[error("TK-206002: failed to parse Justfile")]
     InvalidJustfile,
 
-    #[error("TK-207001: failed to read composer.json")]
+    #[error("TK-207001: failed to parse composer.json")]
     InvalidComposerJson,
 
-    #[error("TK-208001: failed to read Procfile")]
+    #[error("TK-208001: failed to parse Procfile")]
     InvalidProcfile,
 
-    #[error("TK-209001: failed to read jbang-catalog.json")]
+    #[error("TK-209001: failed to parse jbang-catalog.json")]
     InvalidJBangCatalogJson,
 
-    #[error("TK-210001: failed to read Taskfile.ts")]
+    #[error("TK-210001: failed to parse Taskfile.ts")]
     InvalidTaskFileTs,
 
-    #[error("TK-211001: failed to read Argcfile.sh")]
+    #[error("TK-211001: failed to parse Argcfile.sh")]
     InvalidArgcFile,
 
     #[error("TK-212001: failed to parse build.xml")]
     InvalidBuildXml,
 
-    #[error("TK-213001: failed to read README.md")]
+    #[error("TK-213001: failed to parse README.md")]
     InvalidReadmeMd,
 
-    #[error("TK-300001: failed to read pom.xml")]
+    #[error("TK-300001: failed to parse pom.xml")]
     InvalidPomXml,
     
-    #[error("TK-300002: failed to read maven-metadata.xml")]
+    #[error("TK-300002: failed to parse maven-metadata.xml")]
     InvalidMavenMetadataXml,
 
     #[error("TK-302001: failed to list uv tasks")]
     InvalidUvTasks,
 
-    #[error("TK-303001: failed to read queries.sql")]
+    #[error("TK-303001: failed to parse queries.sql")]
     InvalidQueriesSQL,
 
     #[error("TK-304001: failed to parse tasks.py")]
