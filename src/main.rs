@@ -812,14 +812,13 @@ fn diagnose() {
     }
 }
 
+/// Keep the first line of description and at most 60 characters (not bytes, to be safe for UTF-8)
 fn format_description(description: &str) -> String {
-    let mut short_desc = description.to_string();
-    if description.contains("\n") {
-        short_desc = description.split("\n").next().unwrap().to_string();
-        short_desc = format!("{} ...", short_desc);
-    }
-    if short_desc.len() > 60 {
-        short_desc = format!("{} ...", &short_desc[0..60]);
+    const MAX_CHARS: usize = 60;
+    let first_line = description.lines().next().unwrap_or("");
+    let mut short_desc: String = first_line.chars().take(MAX_CHARS).collect();
+    if short_desc.len() < description.len() {
+        short_desc.push_str(" ...");
     }
     short_desc
 }
@@ -842,3 +841,23 @@ fn set_executable<P: AsRef<Path>>(path: P) {
 
 #[cfg(not(unix))]
 fn set_executable<P: AsRef<Path>>(path: P) {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_format_description() {
+        assert_eq!(format_description(""), "");
+        assert_eq!(format_description("short"), "short");
+        assert_eq!(format_description("first\nsecond"), "first ...");
+        let ascii = "a".repeat(61);
+        assert_eq!(format_description(&ascii), format!("{} ...", "a".repeat(60)));
+        assert_eq!(format_description(&"a".repeat(60)), "a".repeat(60));
+        // byte 60 falls inside a multi-byte char
+        let mixed = format!("a{}", "中文描述".repeat(20));
+        let expected: String = mixed.chars().take(60).collect();
+        assert_eq!(format_description(&mixed), format!("{} ...", expected));
+        assert_eq!(format_description("中文描述"), "中文描述");
+    }
+}
