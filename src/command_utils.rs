@@ -86,11 +86,8 @@ pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutp
             KeeperError::FailedToRunTasks(format!("invalid command line: '{}'", command_line))
                 .into_report()
         })?;
-    // command line contains pipe or not
-    if command_and_args
-        .iter()
-        .any(|arg| arg == "|" || arg == "|&" || arg == ">" || arg == ">>")
-    {
+    // command line contains shell syntax, such as pipe, redirection, `&&` or `$VAR`
+    if needs_shell(command_line) || starts_with_env_assignment(&command_and_args[0]) {
         return run_command_by_shell(command_line, verbose);
     }
     let command_name = &command_and_args[0];
@@ -167,8 +164,9 @@ pub fn run_command_with_env_vars(
     env_vars: &Option<HashMap<String, String>>,
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
+    // child process inherits environment variables from tk, and no `envs(std::env::vars())`
+    // to avoid printing all environment variables(including secrets) in verbose mode
     let mut command = Command::new(command_name);
-    command.envs(std::env::vars());
     if args.len() > 0 {
         command.args(args);
     }
@@ -195,32 +193,65 @@ pub fn run_command_with_env_vars(
         .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
 }
 
+/// Run command line by POSIX `sh -c` (`cmd /C` on Windows), never by `$SHELL`,
+/// because fish/nushell/xonsh are not compatible with POSIX syntax.
 pub fn run_command_by_shell(
     command_line: &str,
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let mut command = if cfg!(target_os = "windows") {
-        Command::new("cmd")
-    } else {
-        let shell_name = std::env::var("SHELL").unwrap_or("sh".to_owned());
-        Command::new(&shell_name)
-    };
     if cfg!(target_os = "windows") {
-        command.args(["/C", command_line])
+        run_command_with_env_vars("cmd", &["/C", command_line], &None, &None, verbose)
     } else {
-        command.arg("-c").arg(command_line)
-    };
-    if verbose {
-        println!("[tk] command line:  {:?}", command);
+        run_command_with_env_vars("sh", &["-c", command_line], &None, &None, verbose)
     }
-    command
-        .envs(std::env::vars())
-        .stdin(Stdio::inherit())
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .output()
-        .map(CommandOutput::from)
-        .change_context(KeeperError::FailedToRunTasks(format!("{:?}", command)))
+}
+
+/// Check whether command line contains shell syntax outside of quotes:
+/// pipe, redirection, `&&`, `||`, `;`, `&`, subshell, `$VAR`, `$(...)`, backtick, glob or `~`.
+fn needs_shell(command_line: &str) -> bool {
+    let windows = cfg!(target_os = "windows");
+    let mut in_single_quote = false;
+    let mut in_double_quote = false;
+    let mut chars = command_line.chars();
+    while let Some(c) = chars.next() {
+        if in_single_quote {
+            if c == '\'' {
+                in_single_quote = false;
+            }
+            continue;
+        }
+        match c {
+            // escaped character is literal, except on Windows where `\` is a path separator
+            '\\' if !windows => {
+                chars.next();
+            }
+            '\'' if !in_double_quote => in_single_quote = true,
+            '"' => in_double_quote = !in_double_quote,
+            // expansion still works inside double quotes
+            '$' | '`' => return true,
+            '%' if windows => return true,
+            '|' | '&' | ';' | '<' | '>' | '(' | ')' | '*' | '?' | '[' | '~' | '\n'
+                if !in_double_quote =>
+            {
+                return true
+            }
+            '^' if windows && !in_double_quote => return true,
+            _ => {}
+        }
+    }
+    false
+}
+
+/// Check `FOO=bar` style environment variable assignment before the command name
+fn starts_with_env_assignment(first_arg: &str) -> bool {
+    match first_arg.split_once('=') {
+        Some((name, _)) => {
+            !name.is_empty()
+                && !name.starts_with(|c: char| c.is_ascii_digit())
+                && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+        }
+        None => false,
+    }
 }
 
 pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<KeeperError>> {
@@ -299,6 +330,59 @@ pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Outpu
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_needs_shell() {
+        for line in [
+            "ls -al | wc -l",
+            "ls -al|wc -l",
+            "cargo build && cargo test",
+            "make clean; make",
+            "echo hi > out.txt",
+            "cmd 2>&1",
+            "echo $HOME",
+            "echo \"$HOME\"",
+            "echo $(date)",
+            "echo `date`",
+            "rm -rf build/*",
+            "ls ~/bin",
+            "(cd src && ls)",
+            "sleep 1 &",
+        ] {
+            assert!(needs_shell(line), "{} should need shell", line);
+        }
+        for line in [
+            "cargo build --release",
+            "npm run build",
+            "echo 'a | b && c'",
+            "echo \"a | b; c > d\"",
+            "echo 'single $HOME'",
+            "echo a\\|b",
+            "mvn -DskipTests package",
+        ] {
+            assert!(!needs_shell(line), "{} should not need shell", line);
+        }
+    }
+
+    #[test]
+    fn test_starts_with_env_assignment() {
+        assert!(starts_with_env_assignment("RUST_LOG=debug"));
+        assert!(starts_with_env_assignment("FOO="));
+        assert!(!starts_with_env_assignment("cargo"));
+        assert!(!starts_with_env_assignment("--name=value"));
+        assert!(!starts_with_env_assignment("1FOO=bar"));
+        assert!(!starts_with_env_assignment("=bar"));
+    }
+
+    #[test]
+    fn test_run_shell_syntax() {
+        let output = run_command_line("true && false", false).unwrap();
+        assert!(!output.status.success());
+        let output = run_command_line("FOO=bar sh -c 'test \"$FOO\" = bar'", false).unwrap();
+        assert!(output.status.success());
+        let output = run_command_line("test \"$(echo ok)\" = ok", false).unwrap();
+        assert!(output.status.success());
+    }
 
     #[test]
     fn test_run_pipe_line() {
