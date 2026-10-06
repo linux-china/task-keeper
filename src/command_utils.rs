@@ -80,7 +80,12 @@ pub fn run_command(
 }
 
 pub fn run_command_line(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
-    let command_and_args = split_command_line(command_line).unwrap();
+    let command_and_args = split_command_line(command_line)
+        .filter(|parts| !parts.is_empty())
+        .ok_or_else(|| {
+            KeeperError::FailedToRunTasks(format!("invalid command line: '{}'", command_line))
+                .into_report()
+        })?;
     // command line contains pipe or not
     if command_and_args
         .iter()

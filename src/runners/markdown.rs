@@ -9,6 +9,7 @@ use std::env::temp_dir;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
+use std::process::ExitStatus;
 use uuid::Uuid;
 
 pub fn is_available() -> bool {
@@ -144,6 +145,7 @@ fn parse_task_from_code_block(
                 line.trim().to_string()
             }
         })
+        .filter(|line| !line.is_empty())
         .collect::<Vec<String>>();
     let mut command_lines: Vec<String> = vec![];
     let mut line_escape = false;
@@ -199,11 +201,16 @@ pub fn run_task(
         let command_line = format!("jbang run {}", file_path.to_str().unwrap());
         run_command_line(&command_line, verbose)
     } else {
-        BufReader::new(code_block.as_bytes())
-            .lines()
-            .map(|line| run_command_line(&line.unwrap(), verbose))
-            .last()
-            .unwrap()
+        let mut last_output = None;
+        for line in code_block.lines().map(str::trim).filter(|line| !line.is_empty()) {
+            last_output = Some(run_command_line(line, verbose)?);
+        }
+        // empty code block, such as only comments: nothing to run
+        Ok(last_output.unwrap_or_else(|| CommandOutput {
+            status: ExitStatus::default(),
+            stdout: None,
+            stderr: None,
+        }))
     }
 }
 
@@ -273,6 +280,20 @@ mod tests {
         let text = r#"{#hello .node .js defer key1=value1 key2="good morning" x-on:click="count++" @click="open = ! open"  @click.outside="open = false"}"#;
         let attributes = parse_markdown_attributes(text);
         println!("{:?}", attributes);
+    }
+
+    #[test]
+    fn test_parse_empty_code_block() {
+        let task = parse_task_from_code_block("demo", "# only comment\n$\n", "sh", "");
+        assert_eq!(task.code_block.as_deref(), Some(""));
+        let task = parse_task_from_code_block("demo", "$\n$ echo hi\n", "sh", "");
+        assert_eq!(task.code_block.as_deref(), Some("echo hi"));
+    }
+
+    #[test]
+    fn test_run_command_line_invalid() {
+        assert!(run_command_line("", false).is_err());
+        assert!(run_command_line("echo \"unclosed", false).is_err());
     }
 
     #[test]
