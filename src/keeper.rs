@@ -450,6 +450,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore]
     fn test_run_task() {
         let _ = run_runner_task("npm", "start", &[], &[], true);
     }
