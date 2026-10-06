@@ -779,9 +779,8 @@ fn diagnose() {
         if polyglot::java::find_sdk_home().is_none() {
             problems_count += 1;
             println!(
-                "{} .java-version found, but the JDK({}) not installed!",
+                "{} .java-version found, but the JDK not installed!",
                 "Warning:".bold().yellow(),
-                polyglot::java::find_sdk_home().unwrap().display()
             );
         }
     }
