@@ -428,7 +428,7 @@ pub fn run_task(
         } else {
             println!(
                 "{}",
-                "[uv] uv(https://github.com/astral-sh/uv) command not available for uv.lock"
+                "[tk] uv(https://github.com/astral-sh/uv) command not available for uv.lock"
                     .bold()
                     .red()
             );

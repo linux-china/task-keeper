@@ -814,9 +814,11 @@ fn diagnose() {
 /// Keep the first line of description and at most 60 characters (not bytes, to be safe for UTF-8)
 fn format_description(description: &str) -> String {
     const MAX_CHARS: usize = 60;
-    let first_line = description.lines().next().unwrap_or("");
-    let mut short_desc: String = first_line.chars().take(MAX_CHARS).collect();
-    if short_desc.len() < description.len() {
+    let mut lines = description.lines();
+    let mut chars = lines.next().unwrap_or("").chars();
+    let mut short_desc: String = chars.by_ref().take(MAX_CHARS).collect();
+    // truncated: characters left in the first line, or more lines after it
+    if chars.next().is_some() || lines.next().is_some() {
         short_desc.push_str(" ...");
     }
     short_desc
@@ -858,5 +860,9 @@ mod tests {
         let expected: String = mixed.chars().take(60).collect();
         assert_eq!(format_description(&mixed), format!("{} ...", expected));
         assert_eq!(format_description("中文描述"), "中文描述");
+        // a trailing line break is not truncation
+        assert_eq!(format_description("first\n"), "first");
+        assert_eq!(format_description("first\r\n"), "first");
+        assert_eq!(format_description(&"中".repeat(60)), "中".repeat(60));
     }
 }
