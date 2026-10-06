@@ -839,7 +839,7 @@ fn set_executable<P: AsRef<Path>>(path: P) {
 }
 
 #[cfg(not(unix))]
-fn set_executable<P: AsRef<Path>>(path: P) {}
+fn set_executable<P: AsRef<Path>>(_path: P) {}
 
 #[cfg(test)]
 mod tests {
