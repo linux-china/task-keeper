@@ -192,6 +192,11 @@ pub fn run_command_with_env_vars(
             command.env(key, value);
         }
     }
+    execute_command(command, verbose)
+}
+
+/// Spawn the command with inherited stdio and wait for it, or intercept its output for notification.
+fn execute_command(mut command: Command, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
     if verbose {
         println!("[tk] command line:  {:?}", command);
     }
@@ -214,10 +219,27 @@ pub fn run_command_by_shell(
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
     if cfg!(target_os = "windows") {
-        run_command_with_env_vars("cmd", &["/C", command_line], &None, &None, verbose)
+        run_command_by_cmd(command_line, verbose)
     } else {
         run_command_with_env_vars("sh", &["-c", command_line], &None, &None, verbose)
     }
+}
+
+/// Run command line by `cmd /D /S /C "<command line>"` on Windows.
+/// cmd.exe doesn't parse its command line by the MSVCRT rules that `Command::arg` escapes for,
+/// e.g. `"` would become `\"`, so the command line is passed verbatim by `raw_arg`.
+/// `/S` strips only the outermost quotes, and `/D` skips AutoRun commands from the registry.
+pub fn run_command_by_cmd(command_line: &str, verbose: bool) -> Result<CommandOutput, Report<KeeperError>> {
+    let mut command = Command::new("cmd");
+    command.args(["/D", "/S", "/C"]);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.raw_arg(format!("\"{}\"", command_line));
+    }
+    #[cfg(not(windows))]
+    command.arg(command_line);
+    execute_command(command, verbose)
 }
 
 /// Check whether command line contains shell syntax outside of quotes:
@@ -297,7 +319,7 @@ pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<K
 
     let stderr_thread = std::thread::spawn(move || {
         let mut stderr_bytes = Vec::new();
-        let mut buffer = [0; 32];
+        let mut buffer = [0; 8192];
         while let Ok(n) = stderr.read(&mut buffer) {
             if n == 0 {
                 break;
@@ -376,6 +398,18 @@ mod tests {
         ] {
             assert!(!needs_shell(line), "{} should not need shell", line);
         }
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn test_run_command_by_cmd_with_quotes() {
+        // quotes reach cmd.exe verbatim, rather than escaped as `\"`
+        let output = run_command_by_shell("if \"a b\"==\"a b\" (exit 0) else (exit 3)", false).unwrap();
+        assert!(output.status.success());
+        let output = run_command_by_shell("echo \"hello world\" | findstr \"hello world\"", false).unwrap();
+        assert!(output.status.success());
+        let output = run_command_by_shell("exit 7", false).unwrap();
+        assert_eq!(exit_code(&output.status), 7);
     }
 
     #[test]
