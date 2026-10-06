@@ -218,8 +218,19 @@ fn edit_snippet(matches: &ArgMatches) {
     }
 }
 
+/// On Windows, `Command::new` only appends `.exe` when searching PATH,
+/// so resolve `.cmd`/`.bat` wrappers, such as `code.cmd`, by `which` that honors `PATHEXT`.
+fn resolve_program(command_name: &str) -> std::ffi::OsString {
+    if cfg!(target_os = "windows") {
+        if let Ok(path) = which::which(command_name) {
+            return path.into_os_string();
+        }
+    }
+    std::ffi::OsString::from(command_name)
+}
+
 fn run_command(command_name: &str, args: &[&str]) {
-    let mut command = std::process::Command::new(command_name);
+    let mut command = std::process::Command::new(resolve_program(command_name));
     command
         .args(args)
         .envs(std::env::vars())
@@ -295,7 +306,7 @@ fn complete_shell(matches: &ArgMatches) {
 }
 
 pub fn capture_command_output(command_name: &str, args: &[&str]) -> io::Result<Output> {
-    let mut command = std::process::Command::new(command_name);
+    let mut command = std::process::Command::new(resolve_program(command_name));
     if args.len() > 0 {
         command.args(args);
     }

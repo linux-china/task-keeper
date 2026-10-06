@@ -2,6 +2,7 @@ use crate::errors::KeeperError;
 use colored::Colorize;
 use error_stack::{IntoReport, Report, ResultExt};
 use std::collections::HashMap;
+use std::ffi::OsString;
 use std::io;
 use std::io::{Read, Write};
 use std::process::{Command, ExitStatus, Output, Stdio};
@@ -57,6 +58,19 @@ pub fn exit_code(status: &ExitStatus) -> i32 {
 
 pub fn is_command_available(command_name: &str) -> bool {
     which(command_name).is_ok()
+}
+
+/// Program to spawn for `command_name`.
+/// On Windows, `Command::new` only appends `.exe` when searching PATH, so `.cmd`/`.bat` wrappers,
+/// such as npm, pnpm, yarn and composer, are not found; `which` honors `PATHEXT` and gives the full path.
+/// Since Rust 1.77, arguments for `.cmd`/`.bat` are escaped safely by std (CVE-2024-24576).
+pub fn resolve_program(command_name: &str) -> OsString {
+    if cfg!(target_os = "windows") {
+        if let Ok(path) = which(command_name) {
+            return path.into_os_string();
+        }
+    }
+    OsString::from(command_name)
 }
 
 /// Split a command line into command name and arguments.
@@ -124,7 +138,7 @@ pub fn run_command_line_from_stdin(
         println!("[tk] command line:  {:?}", command_line);
     }
     if is_command_available(&command_name) {
-        let mut child = Command::new(command_name)
+        let mut child = Command::new(resolve_program(command_name))
             .args(&args)
             .envs(std::env::vars())
             .stdin(Stdio::piped())
@@ -166,7 +180,7 @@ pub fn run_command_with_env_vars(
 ) -> Result<CommandOutput, Report<KeeperError>> {
     // child process inherits environment variables from tk, and no `envs(std::env::vars())`
     // to avoid printing all environment variables(including secrets) in verbose mode
-    let mut command = Command::new(command_name);
+    let mut command = Command::new(resolve_program(command_name));
     if args.len() > 0 {
         command.args(args);
     }
@@ -313,7 +327,7 @@ pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<K
 }
 
 pub fn capture_command_output(command_name: &str, args: &[&str]) -> Result<Output, Report<KeeperError>> {
-    let mut command = Command::new(command_name);
+    let mut command = Command::new(resolve_program(command_name));
     if args.len() > 0 {
         command.args(args);
     }
@@ -362,6 +376,18 @@ mod tests {
         ] {
             assert!(!needs_shell(line), "{} should not need shell", line);
         }
+    }
+
+    #[test]
+    fn test_resolve_program() {
+        if cfg!(target_os = "windows") {
+            // `cmd` is resolved by PATHEXT to the full path of cmd.exe
+            let program = resolve_program("cmd").to_string_lossy().to_lowercase();
+            assert!(program.ends_with("cmd.exe"), "{}", program);
+        } else {
+            assert_eq!(resolve_program("sh"), OsString::from("sh"));
+        }
+        assert_eq!(resolve_program("tk-no-such-command"), OsString::from("tk-no-such-command"));
     }
 
     #[test]
