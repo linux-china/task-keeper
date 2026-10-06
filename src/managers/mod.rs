@@ -280,7 +280,16 @@ pub fn run_task(
         }
     }
     if bld::is_available() {
-        queue.insert("bld", bld::run_task);
+        if bld::is_command_available() {
+            queue.insert("bld", bld::run_task);
+        } else {
+            println!(
+                "{}",
+                "[tk] bld(https://rife2.com/bld) command not available"
+                    .bold()
+                    .red()
+            );
+        }
     }
     if npm::is_available() {
         if npm::is_command_available() {
