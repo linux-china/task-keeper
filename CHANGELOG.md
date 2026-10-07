@@ -2,6 +2,11 @@
 
 # Task Keeper Changelog
 
+## [0.35.7] - 2026-10-07
+
+- Update to Maven 3.10.0
+- Fix bugs reported by LLM: Windows compatible problems, panic fix etc. 
+
 ## [0.35.6] - 2026-09-25
 
 - Update to Gradle 9.8.0
