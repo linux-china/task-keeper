@@ -2,6 +2,7 @@ use crate::command_utils::{CommandOutput, run_command, run_command_line, split_c
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report, ResultExt};
 use std::collections::HashMap;
+use std::io::Write;
 use which::which;
 
 pub fn is_available() -> bool {
@@ -97,8 +98,9 @@ pub fn run_task(
     }
 }
 
-/// Write the init script to temp dir, and run gradle with `--init-script <path>` as separate arguments,
+/// Write the init script to a unique temp file, and run gradle with `--init-script <path>` as separate arguments,
 /// so that paths with spaces and quoted task arguments are passed to gradle unchanged.
+/// The temp file keeps the script's extension (Gradle picks the DSL by it) and is removed after gradle exits.
 fn run_with_init_script(
     command_line: &str,
     script_name: &str,
@@ -106,11 +108,25 @@ fn run_with_init_script(
     extra_args: &[String],
     verbose: bool,
 ) -> Result<CommandOutput, Report<KeeperError>> {
-    let temp_file = std::env::temp_dir().join(script_name);
-    std::fs::write(&temp_file, script).change_context(KeeperError::FailedToRunTasks(format!(
-        "failed to write {}",
-        temp_file.display()
-    )))?;
+    let script_path = std::path::Path::new(script_name);
+    let prefix = script_path
+        .file_stem()
+        .map(|stem| format!("{}-", stem.to_string_lossy()))
+        .unwrap_or_default();
+    let suffix = script_path
+        .extension()
+        .map(|ext| format!(".{}", ext.to_string_lossy()))
+        .unwrap_or_default();
+    let write_error = || KeeperError::FailedToRunTasks(format!("failed to write {}", script_name));
+    let mut temp_file = tempfile::Builder::new()
+        .prefix(&prefix)
+        .suffix(&suffix)
+        .tempfile()
+        .change_context_lazy(write_error)?;
+    temp_file
+        .write_all(script)
+        .and_then(|_| temp_file.flush())
+        .change_context_lazy(write_error)?;
     let mut args = split_command_line(command_line)
         .filter(|parts| !parts.is_empty())
         .ok_or_else(|| {
@@ -119,7 +135,7 @@ fn run_with_init_script(
         })?;
     let program = args.remove(0);
     args.push("--init-script".to_owned());
-    args.push(temp_file.to_string_lossy().to_string());
+    args.push(temp_file.path().to_string_lossy().to_string());
     args.extend(extra_args.iter().cloned());
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
     run_command(&program, &args, verbose)
