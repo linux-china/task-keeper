@@ -4688,9 +4688,7 @@ dependencies = [
  "makefile-lossless",
  "minio",
  "regex",
- "reqwest 0.13.5",
  "rprompt",
- "rustls-webpki",
  "serde",
  "serde-xml-rs",
  "serde_json",
@@ -4700,7 +4698,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "uuid",
  "which",
  "windows-args",
 ]
