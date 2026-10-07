@@ -2,7 +2,6 @@ use crate::command_utils::{CommandOutput, run_command_line};
 use crate::errors::KeeperError;
 use error_stack::{IntoReport, Report};
 use serde::Deserialize;
-use serde_xml_rs::from_str;
 use std::collections::HashMap;
 use which::which;
 
@@ -153,21 +152,4 @@ pub struct Versioning {
 pub struct Versions {
     #[serde(rename = "version")]
     pub versions: Vec<String>,
-}
-
-pub fn parse_maven_metadata(url: &str) -> Result<Metadata, Report<KeeperError>> {
-    let text = reqwest::blocking::get(url).unwrap().text().unwrap();
-    from_str(&text).map_err(|_| KeeperError::InvalidMavenMetadataXml.into_report())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_metadata_xml() {
-        let url = "https://packages.jetbrains.team/maven/p/amper/amper/org/jetbrains/amper/cli/maven-metadata.xml";
-        let metadata: Metadata = parse_maven_metadata(url).unwrap();
-        println!("{:?}", metadata);
-    }
 }
