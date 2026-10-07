@@ -62,7 +62,7 @@ Too many differences, I want to save my brain and keyboard, and you know MacBook
 * proc(Procfile): https://devcenter.heroku.com/articles/procfile
 * Bun Shell(Taskfile.ts): https://bun.sh/docs/runtime/shell
 * usql(queries.sql): https://github.com/xo/usql/
-* markdown(README.md): shell code block support
+* Markdown(README.md): shell code block support
 * task.sh: vanilla shell script
 * fleet(fleet/run.json): https://www.jetbrains.com/help/fleet/run-configurations.html#reference
 * VS Code Tasks: https://code.visualstudio.com/docs/editor/tasks
