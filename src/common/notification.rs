@@ -1,4 +1,4 @@
-use crate::command_utils::CommandOutput;
+use crate::command_utils::{exit_code, CommandOutput};
 use minio::s3::builders::ObjectContent;
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
@@ -29,7 +29,7 @@ pub fn send_notification(
         task_id: task_id.clone(),
         command_name: command_name.to_string(),
         command_args: command_args.iter().map(|s| s.to_string()).collect(),
-        status: command_output.status.code().unwrap_or(0),
+        status: exit_code(&command_output.status),
         stdout: command_output.stdout.clone(),
         stderr: command_output.stderr.clone(),
     };
