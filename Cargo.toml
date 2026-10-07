@@ -32,6 +32,7 @@ toml = "1.1.6"
 java-properties = "2"
 colored = "3.1"
 clap = "4.6"
+clap_complete = "4.6"
 regex = "1.13"
 dirs = "6"
 dirs-sys = "0.5"
@@ -43,23 +44,19 @@ shlex = "2.0.1"
 windows-args = "0.2"
 cfg-if = "1"
 tempfile = "3.27"
-uuid = { version = "1.27", features = ["v4", "v7"] }
 logos = "0.16"
 shell-escape = "0.1.5"
 bytecount = "0.6.9"
 just = "1.58"
-reqwest = { version = "0.13", features = ["blocking"] }
 anyhow = "1.0"
 tokio = { version = "1.53", features = ["full"] }
 async-nats = "0.50"
 minio = "0.4"
 rprompt= "2.2"
 makefile-lossless="0.4.0"
-# crates for security from dependency tree
-rustls-webpki = "0.103.15"
 enable-ansi-support = "0.3.1"
 ctrlc = "3.5"
-clap_complete = "4.6"
+
 
 [profile.release]
 strip = true
