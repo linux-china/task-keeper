@@ -1,4 +1,4 @@
-use crate::command_utils::{CommandOutput, run_command_line};
+use crate::command_utils::{CommandOutput, run_command};
 use crate::errors::KeeperError;
 use crate::models::Task;
 use crate::task;
@@ -55,9 +55,11 @@ pub fn run_task(
         .find(|t| t.name == task)
         .ok_or_else(|| KeeperError::TaskNotFound(task.to_string()))?;
     let stub = include_str!("./stubs/bunt.min.js").trim();
-    let mut full_command = format!("bun --no-env-file -e '{}' 0 ", stub);
-    full_command.push_str(task.name.as_str());
-    run_command_line(&full_command, verbose)
+    run_command (
+        "bun",
+        &["--no-env-file", "-e", stub, "0", &task.name],
+        verbose,
+    )
 }
 
 #[cfg(test)]
