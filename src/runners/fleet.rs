@@ -171,7 +171,7 @@ fn run_configuration(
 fn get_command_name(configuration: &Configuration) -> String {
     match configuration.type_value.as_str() {
         "cargo" => "cargo".to_owned(),
-        "maven" | "maven-run" => "mvn".to_owned(),
+        "maven" | "maven-run" => managers::maven::get_mvn_command().to_string(),
         "gradle" => managers::gradle::get_gradle_command().to_string(),
         "docker-run" => "docker".to_owned(),
         "python" => "python".to_owned(),
