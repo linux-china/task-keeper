@@ -25,11 +25,20 @@ pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
             .map(|scripts| {
                 scripts
                     .iter()
-                    .filter(|(name, _)| !name.starts_with("pre") && !name.starts_with("post"))
+                    .filter(|(name, _)| !is_hook_script(name, |n| scripts.contains_key(n)))
                     .map(|(name, command)| task!(name, "npm", command))
                     .collect()
             })
             .unwrap_or_else(|| vec![])
+    })
+}
+
+/// `preX`/`postX` are npm hooks only when script `X` exists, e.g. `prebuild` for `build`,
+/// while `preview`, `prettier` or `postcss` are normal scripts.
+fn is_hook_script(name: &str, has_script: impl Fn(&str) -> bool) -> bool {
+    ["pre", "post"].iter().any(|prefix| {
+        name.strip_prefix(prefix)
+            .is_some_and(|base| !base.is_empty() && has_script(base))
     })
 }
 
@@ -52,6 +61,19 @@ pub fn run_task(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_is_hook_script() {
+        let scripts = ["build", "test", "preview", "prettier", "postcss", "prebuild", "posttest"];
+        let has_script = |n: &str| scripts.contains(&n);
+        assert!(is_hook_script("prebuild", has_script));
+        assert!(is_hook_script("posttest", has_script));
+        assert!(!is_hook_script("preview", has_script));
+        assert!(!is_hook_script("prettier", has_script));
+        assert!(!is_hook_script("postcss", has_script));
+        assert!(!is_hook_script("prepare", has_script));
+        assert!(!is_hook_script("build", has_script));
+    }
 
     #[test]
     fn test_parse() {
