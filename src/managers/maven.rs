@@ -98,7 +98,7 @@ pub fn run_task(
     }
 }
 
-fn get_mvn_command() -> &'static str {
+pub fn get_mvn_command() -> &'static str {
     if cfg!(windows) {
         let wrapper_available = std::env::current_dir()
             .map(|dir| dir.join("mvnw.cmd").exists())
