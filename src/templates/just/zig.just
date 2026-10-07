@@ -1,7 +1,7 @@
 #!/usr/bin/env just --justfile
 
 build:
-  zig build--summary all
+  zig build --summary all
 
 run:
-  zig buildrun --summary all
+  zig run --summary all
