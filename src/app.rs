@@ -66,6 +66,7 @@ pub fn build_app() -> Command {
             Arg::new("from")
                 .long("from")
                 .num_args(1)
+                .hide(true)
                 .help("Source Runner")
                 .required(false),
         )
@@ -73,6 +74,7 @@ pub fn build_app() -> Command {
             Arg::new("to")
                 .long("to")
                 .num_args(1)
+                .hide(true)
                 .help("Target Runner")
                 .required(false),
         )
