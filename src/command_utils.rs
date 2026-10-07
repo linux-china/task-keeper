@@ -6,6 +6,7 @@ use std::ffi::OsString;
 use std::io;
 use std::io::{Read, Write};
 use std::process::{Command, ExitStatus, Output, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use which::which;
 
 pub struct CommandOutput {
@@ -54,6 +55,36 @@ pub fn exit_code(status: &ExitStatus) -> i32 {
         }
     }
     1
+}
+
+/// Number of task processes running in the foreground, which receive Ctrl+C by themselves.
+static RUNNING_CHILDREN: AtomicUsize = AtomicUsize::new(0);
+
+/// Install Ctrl+C handler like cargo/just: while a task process is running, tk ignores Ctrl+C
+/// and lets the process (which receives the same signal from terminal) clean up and exit,
+/// then tk exits with its exit code. Otherwise tk exits immediately with 130.
+pub fn install_ctrlc_handler() {
+    let _ = ctrlc::set_handler(|| {
+        if RUNNING_CHILDREN.load(Ordering::SeqCst) == 0 {
+            std::process::exit(130);
+        }
+    });
+}
+
+/// Mark a task process running until the guard is dropped.
+struct RunningChildGuard;
+
+impl RunningChildGuard {
+    fn new() -> Self {
+        RUNNING_CHILDREN.fetch_add(1, Ordering::SeqCst);
+        RunningChildGuard
+    }
+}
+
+impl Drop for RunningChildGuard {
+    fn drop(&mut self) {
+        RUNNING_CHILDREN.fetch_sub(1, Ordering::SeqCst);
+    }
 }
 
 pub fn is_command_available(command_name: &str) -> bool {
@@ -151,6 +182,7 @@ pub fn run_command_line_from_stdin(
         println!("[tk] command line:  {:?}", command_line);
     }
     if is_command_available(&command_name) {
+        let _guard = RunningChildGuard::new();
         let mut child = Command::new(resolve_program(command_name))
             .args(&args)
             .envs(std::env::vars())
@@ -216,6 +248,7 @@ fn execute_command(mut command: Command, verbose: bool) -> Result<CommandOutput,
     if std::env::var("TK_TASK_ID").is_ok() {
         return intercept_output(&mut command);
     }
+    let _guard = RunningChildGuard::new();
     command
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
@@ -315,6 +348,7 @@ fn starts_with_env_assignment(first_arg: &str) -> bool {
 }
 
 pub fn intercept_output(command: &mut Command) -> Result<CommandOutput, Report<KeeperError>> {
+    let _guard = RunningChildGuard::new();
     let mut child = command
         .stdin(Stdio::inherit())
         .stdout(Stdio::piped())

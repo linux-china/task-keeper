@@ -4674,6 +4674,7 @@ dependencies = [
  "cfg-if",
  "clap",
  "colored",
+ "ctrlc",
  "dirs",
  "dirs-sys",
  "dotenvx-rs",

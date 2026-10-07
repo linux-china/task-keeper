@@ -58,6 +58,7 @@ makefile-lossless="0.4.0"
 # crates for security from dependency tree
 rustls-webpki = "0.103.15"
 enable-ansi-support = "0.3.1"
+ctrlc = "3.5"
 
 [profile.release]
 strip = true

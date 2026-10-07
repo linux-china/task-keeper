@@ -34,6 +34,7 @@ fn enable_virtual_terminal_processing() {
 fn main() {
     #[cfg(windows)]
     enable_virtual_terminal_processing();
+    command_utils::install_ctrlc_handler();
 
     let app = build_app();
     let matches = app.get_matches();
