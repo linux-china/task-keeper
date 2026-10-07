@@ -226,7 +226,7 @@ pub fn run_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<(), Report<KeeperError>> {
+) -> Result<i32, Report<KeeperError>> {
     let mut queue: HashMap<
         &str,
         fn(&str, &[&str], &[&str], bool) -> Result<CommandOutput, Report<KeeperError>>,
@@ -511,58 +511,48 @@ pub fn run_task(
     if queue.is_empty() {
         // no manager found
         println!("{}", "[tk] no available manager detected".bold().red());
-    } else if !runner.is_empty() {
+        return Ok(0);
+    }
+    if !runner.is_empty() {
         // run task by runner name
         if let Some(task) = queue.get(runner) {
-            println!(
-                "{}",
-                format!("[tk] execute {} from {}", task_name, runner)
-                    .bold()
-                    .blue()
-            );
-            let command_output = task(task_name, task_args, global_args, verbose)?;
-            if std::env::var("TK_TASK_ID").is_ok() {
-                send_notification(&command_output, task_name, task_args);
-            }
-            command_output.ensure_success(task_name)?;
-        } else {
-            return Err(KeeperError::FailedToRunTasks(format!(
-                "{} manager not available",
-                runner
-            ))
-            .into_report());
+            run_manager_task(runner, *task, task_name, task_args, global_args, verbose)?;
+            return Ok(1);
         }
-    } else {
-        // run task by all available managers
-        match task_name {
-            "sync" => {}
-            /*"start" => { // only execute start task once
-                if queue.len() == 1 {
-                    queue.iter().for_each(|(runner_name, task)| {
-                        println!("{}", format!("[tk] execute {} from {}", task_name, runner_name).bold().blue());
-                        task(task_name, task_args, global_args, verbose).unwrap();
-                    });
-                } else {
-                    let runner_names = queue.iter().map(|(runner_name, _task)| runner_name.to_owned()).collect::<Vec<_>>().join(",");
-                    println!("{}", format!("[tk] Failed to run start because of multi start tasks from {}", runner_names).bold().red());
-                }
-            }*/
-            _ => {
-                for (runner_name, task) in &queue {
-                    println!(
-                        "{}",
-                        format!("[tk] execute {} from {}", task_name, runner_name)
-                            .bold()
-                            .blue()
-                    );
-                    let command_output = task(task_name, task_args, global_args, verbose)?;
-                    if std::env::var("TK_TASK_ID").is_ok() {
-                        send_notification(&command_output, task_name, task_args);
-                    }
-                    command_output.ensure_success(task_name)?;
-                }
-            }
+        return Err(KeeperError::FailedToRunTasks(format!(
+            "{} manager not available",
+            runner
+        ))
+        .into_report());
+    }
+    // run task by all available managers which support the task
+    let mut task_count = 0;
+    for (runner_name, task) in &queue {
+        if get_manager_command_map(runner_name).contains_key(task_name) {
+            run_manager_task(runner_name, *task, task_name, task_args, global_args, verbose)?;
+            task_count += 1;
         }
     }
-    Ok(())
+    Ok(task_count)
+}
+
+fn run_manager_task(
+    runner: &str,
+    task: fn(&str, &[&str], &[&str], bool) -> Result<CommandOutput, Report<KeeperError>>,
+    task_name: &str,
+    task_args: &[&str],
+    global_args: &[&str],
+    verbose: bool,
+) -> Result<(), Report<KeeperError>> {
+    println!(
+        "{}",
+        format!("[tk] execute {} from {}", task_name, runner)
+            .bold()
+            .blue()
+    );
+    let command_output = task(task_name, task_args, global_args, verbose)?;
+    if std::env::var("TK_TASK_ID").is_ok() {
+        send_notification(&command_output, task_name, task_args);
+    }
+    command_output.ensure_success(task_name)
 }

@@ -37,8 +37,7 @@ pub fn run_tasks(
                     }
                     // execute package manager task
                     if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
-                        task_count += 1;
-                        run_manager_task(
+                        task_count += run_manager_task(
                             cli_runner,
                             target_task_name,
                             task_args,
@@ -51,8 +50,7 @@ pub fn run_tasks(
                 // runner is a project/package manager, such as cargo or maven
                 for target_task_name in target_task_names {
                     if managers::COMMANDS.contains(target_task_name) {
-                        task_count += 1;
-                        run_manager_task(
+                        task_count += run_manager_task(
                             cli_runner,
                             target_task_name,
                             task_args,
@@ -85,8 +83,7 @@ pub fn run_tasks(
                 }
                 // execute package manager task
                 if !runner_task_found && managers::COMMANDS.contains(target_task_name) {
-                    task_count += 1;
-                    run_manager_task(
+                    task_count += run_manager_task(
                         cli_runner,
                         target_task_name,
                         task_args,
@@ -120,7 +117,7 @@ pub fn run_manager_task(
     task_args: &[&str],
     global_args: &[&str],
     verbose: bool,
-) -> Result<(), Report<KeeperError>> {
+) -> Result<i32, Report<KeeperError>> {
     managers::run_task(runner, task_name, task_args, global_args, verbose)
 }
 
