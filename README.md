@@ -414,7 +414,11 @@ sq is a command-line snippets keeper to manage cli snippets, and it's based on J
 - Edit snippet: `sq edit snippet_name`. sq uses `EDITOR` environment variable to open snippets justfile.
 - Run snippet: `sq snippet_name`
 
-Snippets justfile: `$HOME/.sk/snippets.just`.
+Snippets justfile: `$HOME/.tk/snippets.just`.
+
+# Shell completion
+
+- sq: `sq completion <shell>`, and zsh/PowerShell completion includes snippet names. `sq completion --oh-my-zsh` installs zsh completion as oh-my-zsh plugin.
 
 # Notification
 

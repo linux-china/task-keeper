@@ -4673,6 +4673,7 @@ dependencies = [
  "bytecount",
  "cfg-if",
  "clap",
+ "clap_complete",
  "colored",
  "ctrlc",
  "dirs",

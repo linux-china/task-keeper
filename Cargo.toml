@@ -59,6 +59,7 @@ makefile-lossless="0.4.0"
 rustls-webpki = "0.103.15"
 enable-ansi-support = "0.3.1"
 ctrlc = "3.5"
+clap_complete = "4.6"
 
 [profile.release]
 strip = true

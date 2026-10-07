@@ -1,4 +1,5 @@
 use clap::{Arg, ArgAction, ArgMatches, Command};
+use clap_complete::Shell;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -276,9 +277,7 @@ pub fn count_lines<P: AsRef<Path>>(file_path: P) -> Result<usize, std::io::Error
 }
 
 fn complete_shell(matches: &ArgMatches) {
-    if matches.get_flag("zsh") {
-        println!("{}", include_str!("templates/completion/sq-completion.zsh"));
-    } else if matches.get_flag("oh-my-zsh") {
+    if matches.get_flag("oh-my-zsh") {
         let seq_plugin_dir = dirs::home_dir()
             .unwrap()
             .join(".oh-my-zsh")
@@ -300,8 +299,27 @@ fn complete_shell(matches: &ArgMatches) {
             sq_plugin_file.to_str().unwrap()
         );
         println!("Please add sq to plugins in your .zshrc file.");
+        return;
+    }
+    let shell = if matches.get_flag("zsh") {
+        Some(Shell::Zsh)
     } else {
-        println!("Only zsh and oh-my-zsh support now.")
+        matches.get_one::<Shell>("shell").copied()
+    };
+    match shell {
+        // zsh and PowerShell scripts complete snippet names dynamically from snippets.just
+        Some(Shell::Zsh) => {
+            println!("{}", include_str!("templates/completion/sq-completion.zsh"));
+        }
+        Some(Shell::PowerShell) => {
+            println!("{}", include_str!("templates/completion/sq-completion.ps1"));
+        }
+        Some(shell) => {
+            clap_complete::generate(shell, &mut build_sq_app(), "sq", &mut io::stdout());
+        }
+        None => {
+            println!("Please specify a shell: bash, zsh, fish, powershell, elvish");
+        }
     }
 }
 
@@ -371,6 +389,14 @@ pub fn build_sq_app() -> Command {
             Command::new("completion")
                 .about("Generate shell completion")
                 .arg(
+                    Arg::new("shell")
+                        .help("Shell type")
+                        .num_args(1)
+                        .index(1)
+                        .value_parser(clap::value_parser!(Shell))
+                        .required(false),
+                )
+                .arg(
                     Arg::new("zsh")
                         .long("zsh")
                         .help("Generation zsh completion")
@@ -379,7 +405,7 @@ pub fn build_sq_app() -> Command {
                         .required(false),
                 )
                 .arg(
-                    Arg::new("zsh")
+                    Arg::new("oh-my-zsh")
                         .long("oh-my-zsh")
                         .help("Generation oh-my-zsh completion")
                         .num_args(0)
