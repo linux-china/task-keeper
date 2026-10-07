@@ -146,7 +146,7 @@ fn add_snippet(matches: &ArgMatches) {
         .append(true)
         .open(&snippets_file_path)
         .unwrap();
-    file.write(format!("\n# {}\n{}:\n  {}\n", description.trim(), name.trim(), cli).as_bytes())
+    file.write_all(format!("\n# {}\n{}:\n  {}\n", description.trim(), name.trim(), cli).as_bytes())
         .unwrap();
     println!("{} added successfully", name.trim());
 }
