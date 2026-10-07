@@ -55,6 +55,14 @@ pub fn build_app() -> Command {
                 .required(false),
         )
         .arg(
+            Arg::new("json")
+                .long("json")
+                .action(ArgAction::SetTrue)
+                .requires("list")
+                .help("Output task list as JSON, used with --list")
+                .required(false),
+        )
+        .arg(
             Arg::new("runner")
                 .long("runner")
                 .short('r')

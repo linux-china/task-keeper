@@ -150,7 +150,11 @@ fn main() {
     let task_runner = matches.get_one::<String>("runner");
     // list tasks
     if matches.get_flag("list") {
-        list_tasks(task_runner);
+        if matches.get_flag("json") {
+            list_tasks_json(task_runner);
+        } else {
+            list_tasks(task_runner);
+        }
         return;
     }
     // run tasks
@@ -360,6 +364,78 @@ fn list_tasks(task_runner: Option<&String>) {
                 .red()
         );
     }
+}
+
+/// list tasks as machine-readable JSON, for IDE plugins or fzf integration
+fn list_tasks_json(task_runner: Option<&String>) {
+    let mut runners_json: Vec<serde_json::Value> = vec![];
+    // errors are not displayed, otherwise stdout would not be valid JSON
+    if let Ok(tasks_hashmap) = list_all_runner_tasks(false) {
+        RUNNERS.iter().for_each(|runner| {
+            if task_runner.is_none() || task_runner.unwrap() == *runner {
+                if let Some(tasks) = tasks_hashmap.get(*runner) {
+                    if !tasks.is_empty() {
+                        let tasks_json: Vec<serde_json::Value> = tasks
+                            .iter()
+                            .map(|task| {
+                                serde_json::json!({
+                                    "name": task.name,
+                                    "description": task.description,
+                                    "command": format!("tk -r {} {}", runner, task.name),
+                                })
+                            })
+                            .collect();
+                        runners_json.push(serde_json::json!({
+                            "name": runner,
+                            "file": runners::get_runner_file_name(runner),
+                            "url": runners::get_runner_web_url(runner),
+                            "tasks": tasks_json,
+                        }));
+                    }
+                }
+            }
+        });
+    }
+    let mut managers_json: Vec<serde_json::Value> = vec![];
+    managers::get_available_managers()
+        .into_iter()
+        .for_each(|manager_name| {
+            if task_runner.is_none() || task_runner.unwrap() == &manager_name {
+                let tool = if manager_name == "npm" {
+                    let package_json = common::parse_package_json().unwrap_or_default();
+                    common::get_npm_command(&package_json).to_string()
+                } else {
+                    manager_name.clone()
+                };
+                let mut task_commands: Vec<(String, String)> =
+                    managers::get_manager_command_map(&manager_name)
+                        .into_iter()
+                        .filter(|(task_name, _)| task_name != "init")
+                        .collect();
+                task_commands.sort();
+                let tasks_json: Vec<serde_json::Value> = task_commands
+                    .into_iter()
+                    .map(|(task_name, command_line)| {
+                        serde_json::json!({
+                            "name": task_name,
+                            "command": command_line,
+                        })
+                    })
+                    .collect();
+                managers_json.push(serde_json::json!({
+                    "name": manager_name,
+                    "tool": tool,
+                    "file": managers::get_manager_file_name(&manager_name),
+                    "url": managers::get_manager_web_url(&manager_name),
+                    "tasks": tasks_json,
+                }));
+            }
+        });
+    let output = serde_json::json!({
+        "runners": runners_json,
+        "managers": managers_json,
+    });
+    println!("{}", serde_json::to_string_pretty(&output).unwrap());
 }
 
 fn diagnose() {

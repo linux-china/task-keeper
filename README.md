@@ -31,7 +31,14 @@ such as `Apache Maven`, `Gradle`, `Cargo` and `npm` etc.
 After installation, execute `tk --help` for usage. Some commands as following:
 
 * list tasks: `tk --list`
+* list tasks as JSON for IDE plugins or scripts: `tk --list --json`
 * execute task: `tk task_name`
+
+Pick and run a task with [fzf](https://github.com/junegunn/fzf) and [jq](https://jqlang.org/):
+
+```shell
+tk --list --json | jq -r '.runners[].tasks[] | "\(.command)\t\(.description)"' | fzf | cut -f1 | sh
+```
 
 # Why task keeper?
 
