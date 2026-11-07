@@ -62,10 +62,10 @@ pub fn get_task_command_map() -> HashMap<String, String> {
         format!("{} extractSkillsJars", gradle_command),
     );
     if let Ok(code) = std::fs::read_to_string("gradle/wrapper/gradle-wrapper.properties") {
-        if !code.contains("gradle-9.8.2") {
+        if !code.contains("gradle-9.9.0") {
             task_command_map.insert(
                 "self-update".to_string(),
-                format!("{} wrapper --gradle-version=9.8.2", gradle_command),
+                format!("{} wrapper --gradle-version=9.9.0", gradle_command),
             );
         }
     }
@@ -82,14 +82,37 @@ pub fn run_task(
         if task == "update" || task == "outdated" {
             let script = include_bytes!("./gradle_scripts/init-versions.gradle");
             let extra_args: Vec<String> = task_args.iter().map(|arg| arg.to_string()).collect();
-            run_with_init_script(command_line, "init-versions.gradle", script, &extra_args, verbose)
+            run_with_init_script(
+                command_line,
+                "init-versions.gradle",
+                script,
+                &extra_args,
+                verbose,
+            )
         } else if task == "sbom" {
             let script = include_bytes!("./gradle_scripts/init-cyclonedx.gradle");
             let extra_args: Vec<String> = task_args.iter().map(|arg| arg.to_string()).collect();
-            run_with_init_script(command_line, "init-cyclonedx.gradle", script, &extra_args, verbose)
+            run_with_init_script(
+                command_line,
+                "init-cyclonedx.gradle",
+                script,
+                &extra_args,
+                verbose,
+            )
         } else if task == "skills" {
             let script = include_bytes!("./gradle_scripts/init-skillsjars.gradle");
-            run_with_init_script(command_line, "init-skillsjars.gradle", script, &skills_args(task_args), verbose)
+            run_with_init_script(
+                command_line,
+                "init-skillsjars.gradle",
+                script,
+                &skills_args(task_args),
+                verbose,
+            )
+        } else if task == "self-update" {
+            run_command_line(command_line, verbose)?;
+            let gradle_command = get_gradle_command();
+            // download new gradle
+            run_command_line(&format!("{} :wrapper", gradle_command), verbose)
         } else {
             run_command_line(command_line, verbose)
         }
@@ -231,7 +254,10 @@ mod tests {
         assert_eq!(skills_args(&[]), vec!["-Pdir=.agents/skills"]);
         assert_eq!(skills_args(&["-Ddir=a b"]), vec!["-Pdir=a b"]);
         assert_eq!(skills_args(&["--dir=x"]), vec!["-Pdir=x"]);
-        assert_eq!(skills_args(&["-dir=x", "--info"]), vec!["-Pdir=x", "--info"]);
+        assert_eq!(
+            skills_args(&["-dir=x", "--info"]),
+            vec!["-Pdir=x", "--info"]
+        );
         assert_eq!(skills_args(&["-Pdir=x"]), vec!["-Pdir=x"]);
     }
 
