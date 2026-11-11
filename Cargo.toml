@@ -50,7 +50,7 @@ bytecount = "0.6.9"
 just = "1.59"
 anyhow = "1.0"
 tokio = { version = "1.54", features = ["full"] }
-async-nats = "0.50"
+async-nats = "0.52"
 minio = "0.4"
 rprompt= "2.2"
 makefile-lossless="0.4.8"
