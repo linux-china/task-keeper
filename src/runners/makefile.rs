@@ -19,7 +19,7 @@ pub fn is_command_available() -> bool {
 
 pub fn list_tasks() -> Result<Vec<Task>, Report<KeeperError>> {
     if let Ok(file) = std::fs::File::open("Makefile") {
-        if let Ok(mf) = makefile_lossless::Makefile::read(file) {
+        if let Ok(mf) = makefile_lossless::Makefile::from_reader(file) {
             return Ok(mf
                 .rules()
                 .flat_map(|r| r.targets().collect::<Vec<_>>())
