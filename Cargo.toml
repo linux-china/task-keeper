@@ -8,7 +8,6 @@ keywords = ["task", "just", "npm", "bun"]
 categories = ["command-line-utilities"]
 documentation = "https://github.com/linux-china/task-keeper"
 readme = "README.md"
-homepage = "https://github.com/linux-china/task-keeper"
 repository = "https://github.com/linux-china/task-keeper"
 license = "Apache-2.0"
 rust-version = "1.91.0"
